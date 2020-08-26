@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class OrbComponent : MonoBehaviour
 {
     public float speed;
     private float ring_speed = .1f, pulse_speed = .1f;
     public GameObject pulse, ring;
+    private Light2D pulse_light;
     private bool enter = false, stay = false, r = false, j = false, isjumping = false;
     private float red = 255, green = 255, blue = 255, scale = 1;
 
@@ -23,6 +25,7 @@ public class OrbComponent : MonoBehaviour
         player = gamemanager.getController();
         particles = gameObject.GetComponent<ParticleSystem>();
 
+        pulse_light = pulse.transform.GetChild(0).gameObject.GetComponent<Light2D>();
         pulse.SetActive(false);
         ring.SetActive(false);
 
@@ -74,6 +77,8 @@ public class OrbComponent : MonoBehaviour
         
         if (j)
         {
+            pulse_light.intensity = pulse.GetComponent<SpriteRenderer>().color.a;
+
             if (pulse.transform.localScale.x == scale && sfx != null) { sfx.PlayOneShot(sfx.clip, 1f); }
             pulse.transform.localScale = new Vector2(pulse.transform.localScale.x * .92f, pulse.transform.localScale.y * .92f);
             pulse.GetComponent<SpriteRenderer>().color = new Color(red, green, blue, pulse.GetComponent<SpriteRenderer>().color.a * .92f);
