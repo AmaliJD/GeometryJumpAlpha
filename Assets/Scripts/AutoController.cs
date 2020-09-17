@@ -134,13 +134,13 @@ public class AutoController : PlayerController
             // CHECK IF GROUNDED
             if (reversed)
             {
-                grounded = /*Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.up, .51f, groundLayer) &&*/ checkGrounded
+                grounded = !Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.down, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(circle_collider, groundLayer));
                 regate = -1;
             }
             else
             {//.9
-                grounded = /*Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.down, .51f, groundLayer) &&*/ checkGrounded
+                grounded = !Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.up, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(circle_collider, groundLayer));
                 regate = 1;
             }
@@ -171,7 +171,12 @@ public class AutoController : PlayerController
             // JUMP!
             if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space"))
             {
-                if (!grounded || yellow || pink || red || green || blue || black)
+                jump = true;
+                jump_ground = true;
+                released = false;
+                fromGround = ((grounded || time < 0.05f) && jump);
+
+                if (!fromGround)
                 {
                     isjumping = true;
                 }
@@ -187,10 +192,6 @@ public class AutoController : PlayerController
                 {
                     downjump = false;
                 }
-
-                jump = true;
-                jump_ground = true;
-                released = false;
             }
 
             // RELEASE JUMP
@@ -310,10 +311,10 @@ public class AutoController : PlayerController
         else
         {
             float difference = transform.rotation.eulerAngles.z % 90;
-            if (difference >= 45)
+            if (difference >= 55)
             {
                 transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, 
-                    new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + (90 - difference)), .7f);
+                    new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + (90 - difference)), .8f);
             }
             else
             {

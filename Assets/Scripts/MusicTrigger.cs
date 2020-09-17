@@ -8,7 +8,9 @@ public class MusicTrigger : MonoBehaviour
     public Mode mode;
 
     private GameManager gamemanager;
+
     public AudioSource bgmusic;
+
     public float volume, fadetime;
     public bool oneuse;
     private bool omaewamou = false;

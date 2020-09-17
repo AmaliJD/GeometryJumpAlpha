@@ -115,7 +115,7 @@ public class CubeController : PlayerController
         }
         else
         {
-            transform.localScale = new Vector2(1f, 1f);
+            transform.localScale = new Vector2(1.05f, 1.05f);
             jumpForce = 21f;
         }
 
@@ -150,6 +150,8 @@ public class CubeController : PlayerController
                 regate = 1;
             }
 
+            Debug.Log("Grounded: " + grounded);
+
             // IF GROUNDED --> TURN OFF TRAIL
             if (grounded)
             {
@@ -182,11 +184,16 @@ public class CubeController : PlayerController
             // Movement Speed
             moveX = Input.GetAxisRaw("Horizontal") * speed;
 
+            
+
             // JUMP!
             if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space"))
             {
+                jump = true;
+                released = false;
+                fromGround = ((grounded || time < .07f) && jump);
 
-                if (!grounded || yellow || pink || red || green || blue || black)
+                if (!fromGround)
                 {
                     isjumping = true;
                 }
@@ -202,9 +209,6 @@ public class CubeController : PlayerController
                 {
                     downjump = false;
                 }
-
-                jump = true;
-                released = false;
             }
 
             // RELEASE JUMP
@@ -326,7 +330,7 @@ public class CubeController : PlayerController
             }
             else
             {
-                player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 1.5f);
+                player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 1.2f); //1.5
             }
         }
 
@@ -986,6 +990,7 @@ public class CubeController : PlayerController
         reversed = respawn_rev;
         mini = respawn_mini;
         ChangeSize();
+
         if (reversed)
         {
             player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
@@ -1007,13 +1012,13 @@ public class CubeController : PlayerController
         player_body.gravityScale = 0;
 
         Invoke("undead", 1);
-        //player_body.transform.position += respawn - transform.position;
     }
 
     public void undead()
     {
         speed = respawn_speed;
-        player_body.transform.position += respawn - transform.position;
+        //transform.position += respawn - transform.position;
+        transform.position = respawn;
 
         crouch = false;
         HEIGHT.GetComponent<Animator>().ResetTrigger("Crouch");
@@ -1022,7 +1027,7 @@ public class CubeController : PlayerController
         HEIGHT.GetComponent<Animator>().SetTrigger("Default");
         HEIGHT.localPosition = new Vector3(0, 0, 0);
 
-        player_renderer.SetActive(true); //player_renderer.enabled = true;
+        player_renderer.SetActive(true);
         player_collider.enabled = true;
         player_body.gravityScale = grav_scale;
 
