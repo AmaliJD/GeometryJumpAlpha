@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0457ffbc3f8d52d458db5b10ebb9f241, type: 3}
   m_Name: Global Light
   m_EditorClassIdentifier: 
-  color: {r: 0, g: 0.49056602, b: 0.43999472, a: 0.10980392}
+  color: {r: 0.71590805, g: 0, b: 1, a: 1}
   reference: {fileID: 11400000, guid: 49eab7c734e5d6540bb93b190cdafb0e, type: 2}

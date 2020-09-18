@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Cinemachine;
 using Cinemachine.PostFX;
+using UnityEngine.Experimental.Rendering.Universal;
 
 
 public class GameManager : MonoBehaviour

@@ -49,7 +49,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 43a0a48e52543204a889737af0dbb086, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -156,4 +156,5 @@ MonoBehaviour:
   channel: {fileID: 0}
   new_color: {r: 1, g: 1, b: 1, a: 1}
   duration: 4
+  hold: 0
   oneuse: 0

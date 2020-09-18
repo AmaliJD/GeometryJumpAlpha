@@ -129,6 +129,7 @@ public class AutoController : PlayerController
         {
             // CHECK IF DEAD
             dead = check_death && (Physics2D.IsTouchingLayers(circle_collider, deathLayer) || Mathf.Abs(player_body.velocity.x) <= .2f);
+            if (dead) { Debug.LogError("DEAD: velocity = " + player_body.velocity.x); }
             //grounded = Physics2D.Raycast(player_body.transform.position, Vector2.down, .51f, groundLayer);
 
             // CHECK IF GROUNDED
