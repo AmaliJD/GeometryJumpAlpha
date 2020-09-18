@@ -15,5 +15,7 @@ public class ColorReferenceEditor : Editor
         {
             (target as ColorReference).Set((target as ColorReference));
         }
+
+        serializedObject.ApplyModifiedProperties();
     }
 }

@@ -40,6 +40,12 @@ public abstract class ColorAssigner : MonoBehaviour
 
     private void OnColorChanged() => AssignColor(color, hue, sat, val, alpha);
 
+    /*private void Awake()
+    {
+        UnsubscribeColorChange();
+        //SubscribeColorChange();
+    }*/
+
     private void Start()
     {
         savedColor.r = color.r;
@@ -64,6 +70,7 @@ public abstract class ColorAssigner : MonoBehaviour
         if (start == 1)
         {
             color.Set(savedColor);
+            //SubscribeColorChange(); // added
         }
     }
 
@@ -75,6 +82,11 @@ public abstract class ColorAssigner : MonoBehaviour
             UnsubscribeColorChange();
             SubscribeColorChange();
             OnColorChanged();
+
+            savedColor.r = color.r;
+            savedColor.g = color.g;
+            savedColor.b = color.b;
+            savedColor.a = color.a;
         }
     }
 #endif

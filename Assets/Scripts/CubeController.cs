@@ -150,7 +150,7 @@ public class CubeController : PlayerController
                 regate = 1;
             }
 
-            Debug.Log("Grounded: " + grounded);
+            //Debug.Log("Grounded: " + grounded);
 
             // IF GROUNDED --> TURN OFF TRAIL
             if (grounded)
