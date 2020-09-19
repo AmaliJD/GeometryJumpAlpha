@@ -31,6 +31,8 @@ TagManager:
   - Global Light
   - Mini
   - Mega
+  - TriggerOrb
+  - TeleOrb
   layers:
   - Default
   - TransparentFX

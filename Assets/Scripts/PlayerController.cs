@@ -4,6 +4,7 @@ using UnityEngine;
 
 public abstract class PlayerController : MonoBehaviour
 {
+    private int pp = 0;
     public AudioSource death_sfx;
     public abstract void Move();
     public abstract void Jump();

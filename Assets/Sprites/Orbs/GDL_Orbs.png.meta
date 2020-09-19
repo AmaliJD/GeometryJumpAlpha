@@ -32,6 +32,24 @@ TextureImporter:
   - first:
       213: 8115846729841555335
     second: GDL_Orbs_5
+  - first:
+      213: -8793484936820895295
+    second: GDL_Orbs_4
+  - first:
+      213: -3679209598005588009
+    second: GDL_Orbs_5
+  - first:
+      213: 441060155124601823
+    second: GDL_Orbs_6
+  - first:
+      213: 4527615599127349969
+    second: GDL_Orbs_7
+  - first:
+      213: -1757347648802778330
+    second: GDL_Orbs_8
+  - first:
+      213: 7504214250653802948
+    second: GDL_Orbs_9
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -156,7 +174,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 400
+        y: 600
         width: 200
         height: 200
       alignment: 0
@@ -177,7 +195,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 200
-        y: 400
+        y: 600
         width: 200
         height: 200
       alignment: 0
@@ -197,8 +215,8 @@ TextureImporter:
       name: GDL_Orbs_2
       rect:
         serializedVersion: 2
-        x: 0
-        y: 200
+        x: 400
+        y: 600
         width: 200
         height: 200
       alignment: 0
@@ -218,8 +236,8 @@ TextureImporter:
       name: GDL_Orbs_3
       rect:
         serializedVersion: 2
-        x: 200
-        y: 200
+        x: 0
+        y: 400
         width: 200
         height: 200
       alignment: 0
@@ -239,6 +257,111 @@ TextureImporter:
       name: GDL_Orbs_4
       rect:
         serializedVersion: 2
+        x: 200
+        y: 400
+        width: 200
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c1da033a0447f580800000000000000
+      internalID: -8793484936820895295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GDL_Orbs_5
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 400
+        width: 200
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7df4ba82d52d0fcc0800000000000000
+      internalID: -3679209598005588009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GDL_Orbs_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 200
+        width: 200
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd3d7cecfd5fe1600800000000000000
+      internalID: 441060155124601823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GDL_Orbs_7
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 200
+        width: 200
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1dac089266255de30800000000000000
+      internalID: 4527615599127349969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GDL_Orbs_8
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 200
+        width: 200
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6231e3ecf95ac97e0800000000000000
+      internalID: -1757347648802778330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GDL_Orbs_9
+      rect:
+        serializedVersion: 2
         x: 0
         y: 0
         width: 200
@@ -250,29 +373,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7d4b25aebae8d02f0800000000000000
-      internalID: -1004990272811911977
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: GDL_Orbs_5
-      rect:
-        serializedVersion: 2
-        x: 200
-        y: 0
-        width: 200
-        height: 200
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 787b8b7e99741a070800000000000000
-      internalID: 8115846729841555335
+      spriteID: 4c1e4a81a13542860800000000000000
+      internalID: 7504214250653802948
       vertices: []
       indices: 
       edges: []

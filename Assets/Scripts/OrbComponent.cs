@@ -77,11 +77,10 @@ public class OrbComponent : MonoBehaviour
         
         if (j)
         {
-            pulse_light.intensity = pulse.GetComponent<SpriteRenderer>().color.a;
-
             if (pulse.transform.localScale.x == scale && sfx != null) { sfx.PlayOneShot(sfx.clip, 1f); }
             pulse.transform.localScale = new Vector2(pulse.transform.localScale.x * .92f, pulse.transform.localScale.y * .92f);
             pulse.GetComponent<SpriteRenderer>().color = new Color(red, green, blue, pulse.GetComponent<SpriteRenderer>().color.a * .92f);
+            pulse_light.intensity = pulse_light.intensity * .9f;
             if (pulse.GetComponent<SpriteRenderer>().color.a <= 0)
             {
                 j = false;
@@ -112,6 +111,7 @@ public class OrbComponent : MonoBehaviour
         pulse.SetActive(false);
         pulse.transform.localScale = new Vector2(scale, scale);
         pulse.GetComponent<SpriteRenderer>().color = new Color(ring.GetComponent<SpriteRenderer>().color.r, ring.GetComponent<SpriteRenderer>().color.g, 1);
+        pulse_light.intensity = 1;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
