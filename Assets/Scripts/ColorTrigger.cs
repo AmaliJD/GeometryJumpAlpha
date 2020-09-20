@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using UnityEditor;
 using UnityEngine.Experimental.Rendering.Universal;
 using UnityEngine.UI;
 

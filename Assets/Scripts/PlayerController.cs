@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Security.Policy;
+//using System.Security.Policy; //THIS IS THE MARK OF THE UNITY GHOST
 using UnityEngine;
 
 public abstract class PlayerController : MonoBehaviour
