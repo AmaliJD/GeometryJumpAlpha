@@ -60,6 +60,7 @@ public abstract class PlayerController : MonoBehaviour
 
         respawn_rev = false;
         respawn_mini = false;
+        restartmusic = false;
 
         crouch = false;
         crouched = true;

@@ -53,6 +53,15 @@ TextureImporter:
   - first:
       213: -8739211229321255509
     second: triggers_8
+  - first:
+      213: 9216130828502299138
+    second: triggers_8
+  - first:
+      213: -5017733413902670814
+    second: triggers_9
+  - first:
+      213: 9182784909436024217
+    second: triggers_10
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -177,7 +186,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 316
-        y: 248
+        y: 372
         width: 158
         height: 124
       alignment: 0
@@ -198,7 +207,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 124
+        y: 248
         width: 158
         height: 124
       alignment: 0
@@ -219,7 +228,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 158
-        y: 124
+        y: 248
         width: 158
         height: 124
       alignment: 0
@@ -240,7 +249,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 316
-        y: 124
+        y: 248
         width: 158
         height: 124
       alignment: 0
@@ -261,7 +270,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 124
         width: 158
         height: 124
       alignment: 0
@@ -278,53 +287,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: triggers_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 248
-        width: 158
-        height: 124
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 091af0f7fd3b27f90800000000000000
-      internalID: -6957300701843185264
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: triggers_1
-      rect:
-        serializedVersion: 2
-        x: 158
-        y: 248
-        width: 158
-        height: 124
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: df4951a623ce121d0800000000000000
-      internalID: -3377158544278842115
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: triggers_7
       rect:
         serializedVersion: 2
         x: 158
-        y: 0
+        y: 124
         width: 158
         height: 124
       alignment: 0
@@ -341,10 +308,73 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
+      name: triggers_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 372
+        width: 158
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: abc0102bfbc37e490800000000000000
+      internalID: -7717132642453222214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: triggers_1
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 372
+        width: 158
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65e33e3e038247db0800000000000000
+      internalID: -4795163512795873706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
       name: triggers_8
       rect:
         serializedVersion: 2
         x: 316
+        y: 124
+        width: 158
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 202f76cc82646ef70800000000000000
+      internalID: 9216130828502299138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: triggers_9
+      rect:
+        serializedVersion: 2
+        x: 0
         y: 0
         width: 158
         height: 124
@@ -355,8 +385,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ba5a33370b518b680800000000000000
-      internalID: -8739211229321255509
+      spriteID: 22429be8b0e6d5ab0800000000000000
+      internalID: -5017733413902670814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: triggers_10
+      rect:
+        serializedVersion: 2
+        x: 158
+        y: 0
+        width: 158
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99570cff83ecf6f70800000000000000
+      internalID: 9182784909436024217
       vertices: []
       indices: 
       edges: []
