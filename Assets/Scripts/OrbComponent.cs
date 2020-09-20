@@ -12,6 +12,8 @@ public class OrbComponent : MonoBehaviour
     private bool enter = false, stay = false, r = false, j = false, isjumping = false;
     private float red = 255, green = 255, blue = 255, scale = 1;
 
+    public Transform TeleportTo;
+
     public AudioSource sfx;
 
     private PlayerController player;
@@ -112,6 +114,11 @@ public class OrbComponent : MonoBehaviour
         pulse.transform.localScale = new Vector2(scale, scale);
         pulse.GetComponent<SpriteRenderer>().color = new Color(ring.GetComponent<SpriteRenderer>().color.r, ring.GetComponent<SpriteRenderer>().color.g, 1);
         pulse_light.intensity = 1;
+    }
+
+    public Transform getTeleport()
+    {
+        return TeleportTo;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

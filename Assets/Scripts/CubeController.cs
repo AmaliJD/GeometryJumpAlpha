@@ -4,21 +4,10 @@ using UnityEngine.Events;
 
 public class CubeController : PlayerController
 {
-    //  reference velocity
-    private Vector3 v_Velocity;
-
-    private Rigidbody2D player_body;
     public Collider2D player_collider, crouch_collider;
 
-    private AudioSource bgmusic;
-
-    public LayerMask groundLayer;
-    public LayerMask deathLayer;
     public TrailRenderer trail;
 
-    public Transform HEIGHT;
-    private GameObject eyes;
-    private GameObject icon;
     public GameObject jetpack;
     public GameObject ship;
     public GameObject ufo;
@@ -26,39 +15,23 @@ public class CubeController : PlayerController
     public GameObject ball;
     public GameObject spider;
 
-    public ParticleSystem death_particles;
-    public GameObject player_renderer;
-
     private float jumpForce = 21f;
-    private float speed, speed0 = 40f, speed1 = 55f, speed2 = 75f, speed3 = 90f, speed4 = 110f, respawn_speed;
-    private float posJump, negate = 1, regate = 1;
+    private float posJump;
 
-    private float moveX, grav_scale, prev_velocity = 0;
+    private float moveX, grav_scale;
     private float smoothing;
 
     private float time = 0;
-    private bool grounded = false, prev_grounded = true, fromGround = false, reversed = false, jump = false, downjump = false, released = false, checkGrounded = true;
-    private bool yellow = false, blue = false, red = false, pink = false, green = false, black = false;
-    private bool yellow_p = false, blue_p = false, red_p = false, pink_p = false;
-    private bool grav = false, gravN = false, teleA = false;
-    private Vector3 teleB, respawn;
-    private bool respawn_rev = false, respawn_mini = false;
-    private bool crouch = false, crouched = false, facingRight = true, dead = false, able = true;
-
-    private bool isjumping = false;
 
     private float maxSpeed = 110f;
 
-    private bool mini = false;
-
-    void Awake()
+    public override void Awake2()
     {
         speed = speed1;
         moveX = 0;
         smoothing = .05f;
         v_Velocity = Vector3.zero;
         posJump = jumpForce;
-        player_body = GetComponent<Rigidbody2D>();
         player_collider = GetComponent<Collider2D>();
 
         grav_scale = player_body.gravityScale;
@@ -67,7 +40,6 @@ public class CubeController : PlayerController
         setRespawn(transform.position, reversed, mini);
         setRepawnSpeed(1f);
 
-        eyes = GameObject.Find("Icon_Eyes");
         setAnimation();
     }
 
@@ -95,10 +67,10 @@ public class CubeController : PlayerController
 
         trail.transform.localPosition = new Vector3(0, 0, 0);
 
-        HEIGHT.GetComponent<Animator>().ResetTrigger("Crouch");
-        HEIGHT.GetComponent<Animator>().ResetTrigger("Squash");
-        HEIGHT.GetComponent<Animator>().ResetTrigger("Stretch");
-        HEIGHT.GetComponent<Animator>().SetTrigger("Default");
+        Cube_Anim.ResetTrigger("Crouch");
+        Cube_Anim.ResetTrigger("Squash");
+        Cube_Anim.ResetTrigger("Stretch");
+        Cube_Anim.SetTrigger("Default");
 
         eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
         eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
@@ -106,7 +78,7 @@ public class CubeController : PlayerController
         eyes.transform.Find("Eyes_Normal").gameObject.SetActive(true);
     }
 
-    void ChangeSize()
+    public void ChangeSize()
     {
         if (mini)
         {
@@ -121,11 +93,6 @@ public class CubeController : PlayerController
 
         posJump = jumpForce;
         if (reversed) { jumpForce *= -1; }
-    }
-
-    public override void setIcons(GameObject i)
-    {
-        icon = i;
     }
 
     void Update()
@@ -149,7 +116,7 @@ public class CubeController : PlayerController
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(crouch_collider, groundLayer));
                 regate = 1;
             }
-
+            
             //Debug.Log("Grounded: " + grounded);
 
             // IF GROUNDED --> TURN OFF TRAIL
@@ -163,10 +130,10 @@ public class CubeController : PlayerController
 
                 if (!prev_grounded && prev_velocity > 13)
                 {
-                    HEIGHT.GetComponent<Animator>().ResetTrigger("Crouch");
-                    HEIGHT.GetComponent<Animator>().ResetTrigger("Default");
-                    HEIGHT.GetComponent<Animator>().ResetTrigger("Stretch");
-                    HEIGHT.GetComponent<Animator>().SetTrigger("Squash");
+                    Cube_Anim.ResetTrigger("Crouch");
+                    Cube_Anim.ResetTrigger("Default");
+                    Cube_Anim.ResetTrigger("Stretch");
+                    Cube_Anim.SetTrigger("Squash");
                 }
             }
 
@@ -266,18 +233,18 @@ public class CubeController : PlayerController
     public override void Move()
     {
         // If the input is moving the player right and the player is facing left...
-        if ((!reversed && moveX > 0 && !facingRight) || (reversed && moveX < 0 && !facingRight && (fromGround || grounded)))
+        if ((!reversed && moveX > 0 && !facingright) || (reversed && moveX < 0 && !facingright && (fromGround || grounded)))
         {
             // ... flip the player.
             negate = 1;
-            facingRight = !facingRight;
+            facingright = !facingright;
         }
         // Otherwise if the input is moving the player left and the player is facing right...
-        else if ((!reversed && moveX < 0 && facingRight) || (reversed && moveX > 0 && facingRight && (fromGround || grounded)))
+        else if ((!reversed && moveX < 0 && facingright) || (reversed && moveX > 0 && facingright && (fromGround || grounded)))
         {
             // ... flip the player.
             negate = -1;
-            facingRight = !facingRight;
+            facingright = !facingright;
         }
 
         // if crouching, change movement controls
@@ -285,10 +252,10 @@ public class CubeController : PlayerController
         {
             if (!crouched)
             {
-                HEIGHT.GetComponent<Animator>().ResetTrigger("Default");
-                HEIGHT.GetComponent<Animator>().ResetTrigger("Squash");
-                HEIGHT.GetComponent<Animator>().ResetTrigger("Stretch");
-                HEIGHT.GetComponent<Animator>().SetTrigger("Crouch");
+                Cube_Anim.ResetTrigger("Default");
+                Cube_Anim.ResetTrigger("Squash");
+                Cube_Anim.ResetTrigger("Stretch");
+                Cube_Anim.SetTrigger("Crouch");
             }
 
             moveX = 0;
@@ -315,10 +282,10 @@ public class CubeController : PlayerController
             if (crouched)
             {
                 crouched = false;
-                HEIGHT.GetComponent<Animator>().ResetTrigger("Crouch");
-                HEIGHT.GetComponent<Animator>().ResetTrigger("Squash");
-                HEIGHT.GetComponent<Animator>().ResetTrigger("Stretch");
-                HEIGHT.GetComponent<Animator>().SetTrigger("Default");
+                Cube_Anim.ResetTrigger("Crouch");
+                Cube_Anim.ResetTrigger("Squash");
+                Cube_Anim.ResetTrigger("Stretch");
+                Cube_Anim.SetTrigger("Default");
             }
             player_collider.enabled = true;
             crouch_collider.enabled = false;
@@ -349,6 +316,13 @@ public class CubeController : PlayerController
 
     public override void Jump()
     {
+        if(teleorb && jump)
+        {
+            jump = false;
+            teleorb = false;
+            player_body.transform.position += teleOrb_translate;
+        }
+
         if (yellow && jump)
         {
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
@@ -482,9 +456,9 @@ public class CubeController : PlayerController
         else if ((grounded || time < .07f) && jump && downjump)
         {
             time = 1;
-            HEIGHT.GetComponent<Animator>().ResetTrigger("Default");
-            HEIGHT.GetComponent<Animator>().ResetTrigger("Squash");
-            HEIGHT.GetComponent<Animator>().SetTrigger("Stretch");
+            Cube_Anim.ResetTrigger("Default");
+            Cube_Anim.ResetTrigger("Squash");
+            Cube_Anim.SetTrigger("Stretch");
             trail.emitting = false;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce);
             grounded = false;
@@ -503,10 +477,10 @@ public class CubeController : PlayerController
         }
         else if (fromGround && ((!reversed && released && player_body.velocity.y > 0) || (reversed && released && player_body.velocity.y < 0)))
         {
-            HEIGHT.GetComponent<Animator>().ResetTrigger("Crouch");
-            HEIGHT.GetComponent<Animator>().ResetTrigger("Squash");
-            HEIGHT.GetComponent<Animator>().ResetTrigger("Stretch");
-            HEIGHT.GetComponent<Animator>().SetTrigger("Default");
+            Cube_Anim.ResetTrigger("Crouch");
+            Cube_Anim.ResetTrigger("Squash");
+            Cube_Anim.ResetTrigger("Stretch");
+            Cube_Anim.SetTrigger("Default");
             player_body.velocity /= 2;
             released = false;
             fromGround = false;
@@ -803,178 +777,13 @@ public class CubeController : PlayerController
     public override void Flip()
     {
         // Switch the way the player is labelled as facing.
-        facingRight = !facingRight;
+        facingright = !facingright;
 
         // Multiply the player's x local scale by -1.
         Vector3 theScale = transform.localScale;
         theScale.x *= -1;
         transform.localScale = theScale;
     }
-
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (!enabled) { return; }
-        if (collision.gameObject.tag == "PortalGravity")
-        {
-            grav = true;
-        }
-        if (collision.gameObject.tag == "PortalGravityN")
-        {
-            gravN = true;
-        }
-        if (collision.gameObject.tag == "TeleportA")
-        {
-            teleA = true;
-
-            Transform t = collision.gameObject.transform;
-
-            Transform tb = t;
-            foreach (Transform tr in t)
-            {
-                if (tr.tag == "TeleportB")
-                {
-                    tb = tr.GetComponent<Transform>();
-                    break;
-                }
-            }
-
-            //teleB = t.InverseTransformPoint(tb.position);
-            teleB = tb.position - t.position;
-            //teleB.z = transform.position.z;
-            teleB.z = 0;
-            /*
-            if (player_body.velocity.x > 0)
-            {
-                teleB.x -= .35f;
-            }
-            else if (player_body.velocity.x < 0)
-            {
-                teleB.x += .35f;
-            }
-
-            if (player_body.velocity.y < 0)
-            {
-                teleB.y += .35f;
-            }
-            else if (player_body.velocity.y > 0)
-            {
-                teleB.y -= .35f;
-            }*/
-        }
-        if (collision.gameObject.tag == "YellowPad")
-        {
-            yellow_p = true;
-        }
-        if (collision.gameObject.tag == "PinkPad")
-        {
-            pink_p = true;
-        }
-        if (collision.gameObject.tag == "RedPad")
-        {
-            red_p = true;
-        }
-        if (collision.gameObject.tag == "BluePad")
-        {
-            blue_p = true;
-        }
-        if (collision.gameObject.tag == "Speed0x")
-        {
-            speed = speed0;
-        }
-        if (collision.gameObject.tag == "Speed1x")
-        {
-            speed = speed1;
-        }
-        if (collision.gameObject.tag == "Speed2x")
-        {
-            speed = speed2;
-        }
-        if (collision.gameObject.tag == "Speed3x")
-        {
-            speed = speed3;
-        }
-        if (collision.gameObject.tag == "Speed4x")
-        {
-            speed = speed4;
-        }
-    }
-
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (!enabled) { return; }
-        if (collision.gameObject.tag == "YellowOrb")
-        {
-            yellow = true;
-        }
-        if (collision.gameObject.tag == "BlueOrb")
-        {
-            blue = true;
-        }
-        if (collision.gameObject.tag == "PinkOrb")
-        {
-            pink = true;
-        }
-        if (collision.gameObject.tag == "RedOrb")
-        {
-            red = true;
-        }
-        if (collision.gameObject.tag == "GreenOrb")
-        {
-            green = true;
-        }
-        if (collision.gameObject.tag == "BlackOrb")
-        {
-            black = true;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (!enabled) { return; }
-        if (collision.gameObject.tag == "YellowOrb")
-        {
-            yellow = false;
-        }
-        if (collision.gameObject.tag == "BlueOrb")
-        {
-            blue = false;
-        }
-        if (collision.gameObject.tag == "PinkOrb")
-        {
-            pink = false;
-        }
-        if (collision.gameObject.tag == "RedOrb")
-        {
-            red = false;
-        }
-        if (collision.gameObject.tag == "GreenOrb")
-        {
-            green = false;
-        }
-        if (collision.gameObject.tag == "BlackOrb")
-        {
-            black = false;
-        }
-        if (collision.gameObject.tag == "YellowPad")
-        {
-            yellow_p = false;
-        }
-        if (collision.gameObject.tag == "PinkPad")
-        {
-            pink_p = false;
-        }
-        if (collision.gameObject.tag == "RedPad")
-        {
-            red_p = false;
-        }
-        if (collision.gameObject.tag == "BluePad")
-        {
-            blue_p = false;
-        }
-    }
-
-    private bool restartmusic = false;
 
     public override void Respawn()
     {
@@ -1021,11 +830,11 @@ public class CubeController : PlayerController
         transform.position = respawn;
 
         crouch = false;
-        HEIGHT.GetComponent<Animator>().ResetTrigger("Crouch");
-        HEIGHT.GetComponent<Animator>().ResetTrigger("Squash");
-        HEIGHT.GetComponent<Animator>().ResetTrigger("Stretch");
-        HEIGHT.GetComponent<Animator>().SetTrigger("Default");
-        HEIGHT.localPosition = new Vector3(0, 0, 0);
+        Cube_Anim.ResetTrigger("Crouch");
+        Cube_Anim.ResetTrigger("Squash");
+        Cube_Anim.ResetTrigger("Stretch");
+        Cube_Anim.SetTrigger("Default");
+        Cube_Anim.transform.localPosition = new Vector3(0, 0, 0);
 
         player_renderer.SetActive(true);
         player_collider.enabled = true;
@@ -1050,11 +859,6 @@ public class CubeController : PlayerController
     {
         StopAllCoroutines();
         reversed = false;  yellow = false; pink = false; red = false; green = false; blue = false; black = false; teleA = false;
-    }
-
-    public override void setBGMusic(AudioSource audio)
-    {
-        bgmusic = audio;
     }
 
     public override void setRepawnSpeed(float s)
@@ -1091,35 +895,6 @@ public class CubeController : PlayerController
         player_collider.enabled = true;
         crouch_collider.enabled = false;
         transform.rotation = new Quaternion(0, 0, 0, 0);
-    }
-
-    public override void setRestartMusicOnDeath(bool r)
-    {
-        restartmusic = r;
-    }
-    public override void setAble(bool a)
-    {
-        able = a;
-    }
-
-    public override void setVariables(bool j, bool r, bool m)
-    {
-        jump = j;
-        reversed = r;
-        mini = m;
-    }
-    public override bool getMini()
-    {
-        return mini;
-    }
-
-    public override bool getReversed()
-    {
-        return reversed;
-    }
-    public override bool isDead()
-    {
-        return dead;
     }
     public override string getMode()
     {

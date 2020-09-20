@@ -4,67 +4,33 @@ using UnityEngine.Events;
 
 public class ShipController : PlayerController
 {
-    //  reference velocity
-    private Vector3 v_Velocity;
-
-    private Rigidbody2D player_body;
     public Collider2D player_collider;
 
-    private AudioSource bgmusic;
-
-    public LayerMask groundLayer;
-    public LayerMask deathLayer;
     public TrailRenderer maintrail, trail1, trail2;
 
-    public ParticleSystem death_particles;
     public ParticleSystem flame_burst1, flame_burst2;
-
-    public GameObject player_renderer;
-    public Transform HEIGHT;
-    private GameObject eyes;
-    private GameObject icon;
     public GameObject jetpack;
 
     private float jumpForce = 10f;
-    private float speed, speed0 = 40f, speed1 = 55f, speed2 = 75f, speed3 = 90f, speed4 = 110f, respawn_speed;
-    private float posJump, negate = 1, regate = 1;
+    private float posJump;
 
     private float moveX, grav_scale;
     private float smoothing;
 
-    private bool grounded = false, reversed = false, jump = false, checkGrounded = true,
-                    yellow_j = false, red_j = false, blue_j = false, pink_j = false, green_j = false, black_j = false;
-
-    private bool yellow = false, blue = false, red = false, pink = false, green = false, black = false;
-    private bool yellow_p = false, blue_p = false, red_p = false, pink_p = false;
-    private bool grav = false, gravN = false, teleA = false;
-    private Vector3 teleB, respawn;
-    private bool respawn_rev = false, respawn_mini = false;
-    private bool crouch = false, upright = true, dead = false, able = true;
-
-    private bool isjumping = false;
     private float time;
 
     private float maxSpeed = 6f;
 
-    private bool mini = false;
-
-    void Awake()
+    public override void Awake2()
     {
         speed = getSpeed();
         moveX = speed;
         smoothing = .05f;
         v_Velocity = Vector3.zero;
         posJump = jumpForce;
-        player_body = GetComponent<Rigidbody2D>();
         player_collider = GetComponent<Collider2D>();
 
         grav_scale = player_body.gravityScale;
-
-        setRespawn(transform.position, reversed, mini);
-        setRepawnSpeed(1f);
-
-        eyes = GameObject.Find("Icon_Eyes");
         //icon = eyes.transform.parent.gameObject;
         //setAnimation();
     }
@@ -95,11 +61,6 @@ public class ShipController : PlayerController
         eyes = GameObject.Find("Icon_Eyes");
         trail1.transform.localPosition = new Vector3(-.5f, -.35f, 0);
 
-        HEIGHT.GetComponent<Animator>().ResetTrigger("Crouch");
-        HEIGHT.GetComponent<Animator>().ResetTrigger("Squash");
-        HEIGHT.GetComponent<Animator>().ResetTrigger("Stretch");
-        HEIGHT.GetComponent<Animator>().SetTrigger("Default");
-
         eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
         eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
         eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
@@ -119,11 +80,6 @@ public class ShipController : PlayerController
         }
 
         posJump = jumpForce;
-    }
-
-    public override void setIcons(GameObject i)
-    {
-        icon = i;
     }
 
     void Update()
@@ -636,7 +592,7 @@ public class ShipController : PlayerController
     public override void Flip()
     {
         // Switch the way the player is labelled as facing.
-        //facingRight = !facingRight;
+        //facingright = !facingright;
 
         // Multiply the player's x local scale by -1.
         Vector3 theScale = transform.localScale;
@@ -644,152 +600,6 @@ public class ShipController : PlayerController
         transform.localScale = theScale;
     }
 
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (!enabled) { return; }
-        if (collision.gameObject.tag == "PortalGravity")
-        {
-            grav = true;
-        }
-        if (collision.gameObject.tag == "PortalGravityN")
-        {
-            gravN = true;
-        }
-        if (collision.gameObject.tag == "TeleportA")
-        {
-            teleA = true;
-
-            Transform t = collision.gameObject.transform;
-
-            Transform tb = t;
-            foreach (Transform tr in t)
-            {
-                if (tr.tag == "TeleportB")
-                {
-                    tb = tr.GetComponent<Transform>();
-                    break;
-                }
-            }
-
-            //teleB = t.InverseTransformPoint(tb.position);
-            teleB = tb.position - t.position;
-            //teleB.z = transform.position.z;
-            teleB.z = 0;
-        }
-        if (collision.gameObject.tag == "YellowPad")
-        {
-            yellow_p = true;
-        }
-        if (collision.gameObject.tag == "PinkPad")
-        {
-            pink_p = true;
-        }
-        if (collision.gameObject.tag == "RedPad")
-        {
-            red_p = true;
-        }
-        if (collision.gameObject.tag == "BluePad")
-        {
-            blue_p = true;
-        }
-        if (collision.gameObject.tag == "Speed0x")
-        {
-            speed = speed0;
-        }
-        if (collision.gameObject.tag == "Speed1x")
-        {
-            speed = speed1;
-        }
-        if (collision.gameObject.tag == "Speed2x")
-        {
-            speed = speed2;
-        }
-        if (collision.gameObject.tag == "Speed3x")
-        {
-            speed = speed3;
-        }
-        if (collision.gameObject.tag == "Speed4x")
-        {
-            speed = speed4;
-        }
-        if (collision.gameObject.tag == "BlueOrb")
-        {
-            blue = true;
-        }
-    }
-
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (!enabled) { return; }
-        if (collision.gameObject.tag == "YellowOrb")
-        {
-            yellow = true;
-        }
-        if (collision.gameObject.tag == "PinkOrb")
-        {
-            pink = true;
-        }
-        if (collision.gameObject.tag == "RedOrb")
-        {
-            red = true;
-        }
-        if (collision.gameObject.tag == "GreenOrb")
-        {
-            green = true;
-        }
-        if (collision.gameObject.tag == "BlackOrb")
-        {
-            black = true;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (!enabled) { return; }
-        if (collision.gameObject.tag == "YellowOrb")
-        {
-            yellow = false;
-        }
-        if (collision.gameObject.tag == "BlueOrb")
-        {
-            blue = false;
-        }
-        if (collision.gameObject.tag == "PinkOrb")
-        {
-            pink = false;
-        }
-        if (collision.gameObject.tag == "RedOrb")
-        {
-            red = false;
-        }
-        if (collision.gameObject.tag == "GreenOrb")
-        {
-            green = false;
-        }
-        if (collision.gameObject.tag == "BlackOrb")
-        {
-            black = false;
-        }
-        if (collision.gameObject.tag == "YellowPad")
-        {
-            yellow_p = false;
-        }
-        if (collision.gameObject.tag == "PinkPad")
-        {
-            pink_p = false;
-        }
-        if (collision.gameObject.tag == "RedPad")
-        {
-            red_p = false;
-        }
-        if (collision.gameObject.tag == "BluePad")
-        {
-            blue_p = false;
-        }
-    }
-
-    private bool restartmusic = false;
     public override void Respawn()
     {
         able = false;
@@ -872,11 +682,6 @@ public class ShipController : PlayerController
         reversed = false; jump = false; yellow = false; pink = false; red = false; green = false; blue = false; black = false; teleA = false;
     }
 
-    public override void setBGMusic(AudioSource audio)
-    {
-        bgmusic = audio;
-    }
-
     public override void setRepawnSpeed(float s)
     {
         if (s == 0) { respawn_speed = speed0; }
@@ -913,38 +718,12 @@ public class ShipController : PlayerController
     }
     public override void setColliders()
     {
-        //player_collider.enabled = false;
+        player_collider.enabled = true;
         //player_collider.isTrigger = true;
     }
-    public override void setRestartMusicOnDeath(bool r)
-    {
-        restartmusic = r;
-    }
 
-    public override void setAble(bool a)
-    {
-        able = a;
-    }
-    public override void setVariables(bool j, bool r, bool m)
-    {
-        jump = j;
-        reversed = r;
-        mini = m;
-    }
-    public override bool getMini()
-    {
-        return mini;
-    }
-    public override bool getReversed()
-    {
-        return reversed;
-    }
-    public override bool isDead()
-    {
-        return dead;
-    }
     public override string getMode()
     {
-        return "auto_ship";
+        return "ship";
     }
 }

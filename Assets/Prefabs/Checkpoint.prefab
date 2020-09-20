@@ -5308,7 +5308,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6885066021732429651}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -14.05, y: -8.65, z: -10}
+  m_LocalPosition: {x: -14.05, y: -8.65, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6885066020639470188}
@@ -5359,6 +5359,7 @@ MonoBehaviour:
   green: {fileID: 6885066021082740478}
   active: {fileID: 6885066021273828190}
   reversed: 0
+  mini: 0
   speed: 1
 --- !u!1 &6885066021931707499
 GameObject:

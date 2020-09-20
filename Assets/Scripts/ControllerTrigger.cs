@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class ControllerTrigger : MonoBehaviour
 {
     public enum Mode { cube, auto, ship, auto_ship, ufo, auto_ufo, wave, auto_wave, ball, auto_ball, spider, auto_spider }
@@ -53,4 +54,67 @@ public class ControllerTrigger : MonoBehaviour
             }
         }
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (show_portal)
+        {
+            if (mode.ToString().Equals("cube") || mode.ToString().Equals("auto"))
+            {
+                cube_portal.SetActive(true);
+                ship_portal.SetActive(false);
+                ufo_portal.SetActive(false);
+                wave_portal.SetActive(false);
+                ball_portal.SetActive(false);
+                spider_portal.SetActive(false);
+            }
+            else if (mode.ToString().Equals("ship") || mode.ToString().Equals("auto_ship"))
+            {
+                ship_portal.SetActive(true);
+                cube_portal.SetActive(false);
+                ufo_portal.SetActive(false);
+                wave_portal.SetActive(false);
+                ball_portal.SetActive(false);
+                spider_portal.SetActive(false);
+            }
+            else if (mode.ToString().Equals("ufo") || mode.ToString().Equals("auto_ufo"))
+            {
+                ufo_portal.SetActive(true);
+                cube_portal.SetActive(false);
+                ship_portal.SetActive(false);
+                wave_portal.SetActive(false);
+                ball_portal.SetActive(false);
+                spider_portal.SetActive(false);
+            }
+            else if (mode.ToString().Equals("wave") || mode.ToString().Equals("auto_wave"))
+            {
+                wave_portal.SetActive(true);
+                cube_portal.SetActive(false);
+                ship_portal.SetActive(false);
+                ufo_portal.SetActive(false);
+                ball_portal.SetActive(false);
+                spider_portal.SetActive(false);
+            }
+            else if (mode.ToString().Equals("ball") || mode.ToString().Equals("auto_ball"))
+            {
+                ball_portal.SetActive(true);
+                cube_portal.SetActive(false);
+                ship_portal.SetActive(false);
+                ufo_portal.SetActive(false);
+                wave_portal.SetActive(false);
+                spider_portal.SetActive(false);
+            }
+            else if (mode.ToString().Equals("spider") || mode.ToString().Equals("auto_spider"))
+            {
+                spider_portal.SetActive(true);
+                cube_portal.SetActive(false);
+                ship_portal.SetActive(false);
+                ufo_portal.SetActive(false);
+                wave_portal.SetActive(false);
+                ball_portal.SetActive(false);
+            }
+        }
+    }
+#endif
 }

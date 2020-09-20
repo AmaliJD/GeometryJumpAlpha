@@ -4,64 +4,33 @@ using UnityEngine.Events;
 
 public class AutoController : PlayerController
 {
-    //  reference velocity
-    private Vector3 v_Velocity;
-
-    private Rigidbody2D player_body;
     public Collider2D player_collider;
     public CircleCollider2D circle_collider;
-
-    private AudioSource bgmusic;
-
-    public LayerMask groundLayer;
-    public LayerMask deathLayer;
+    
     public TrailRenderer trail;
 
-    public ParticleSystem death_particles;
-    public GameObject player_renderer;
-    public Transform HEIGHT;
-    private GameObject eyes;
-    private GameObject icon;
-
     private float jumpForce = 19.2f; //19.2
-    private float speed, speed0 = 40, speed1 = 55f, speed2 = 75f, speed3 = 90f, speed4 = 110f, respawn_speed;
-    private float posJump, negate = 1, regate = 1;
+    private float posJump;
 
     private float moveX, grav_scale;
     private float smoothing;
 
     private float time = 0;
-    private bool grounded = false, prev_grounded = true, fromGround = false, reversed = false, jump = false, jump_ground = false, downjump = false, released = false, checkGrounded = true;
-    private bool yellow = false, blue = false, red = false, pink = false, green = false, black = false;
-    private bool yellow_p = false, blue_p = false, red_p = false, pink_p = false;
-    private bool grav = false, gravN = false, teleA = false;
-    private Vector3 teleB, respawn;
-    private bool respawn_rev = false, respawn_mini = false;
-    private bool crouch = false, facingRight = true, dead = false, check_death = false, able = true;
-
-    private bool isjumping = false;
 
     private float maxSpeed = 21f * 1.5f;
 
-    private bool mini = false;
-
-    void Awake()
+    public override void Awake2()
     {
         speed = getSpeed();
         moveX = speed;
         smoothing = .05f;
         v_Velocity = Vector3.zero;
         posJump = jumpForce;
-        player_body = GetComponent<Rigidbody2D>();
         player_collider = GetComponent<Collider2D>();
 
         grav_scale = player_body.gravityScale;
 
         circle_collider.enabled = false;
-        setRespawn(transform.position, reversed, false);
-        setRepawnSpeed(1f);
-
-        eyes = GameObject.Find("Icon_Eyes");
         //setAnimation();
     }
 
@@ -90,11 +59,6 @@ public class AutoController : PlayerController
 
         trail.transform.localPosition = new Vector3(0, 0, 0);
 
-        HEIGHT.GetComponent<Animator>().ResetTrigger("Crouch");
-        HEIGHT.GetComponent<Animator>().ResetTrigger("Squash");
-        HEIGHT.GetComponent<Animator>().ResetTrigger("Stretch");
-        HEIGHT.GetComponent<Animator>().SetTrigger("Default");
-
         eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
         eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
         eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
@@ -116,11 +80,6 @@ public class AutoController : PlayerController
 
         posJump = jumpForce;
         if (reversed) { jumpForce *= -1; }
-    }
-
-    public override void setIcons(GameObject i)
-    {
-        icon = i;
     }
 
     void Update()
@@ -241,19 +200,19 @@ public class AutoController : PlayerController
     public override void Move()
     {
         // If the input is moving the player right and the player is facing left...
-        if ((!reversed && speed > 0 && !facingRight && grounded) || (reversed && speed < 0 && !facingRight && grounded))
+        if ((!reversed && speed > 0 && !facingright && grounded) || (reversed && speed < 0 && !facingright && grounded))
         {
             // ... flip the player.
             negate = 1;
-            facingRight = !facingRight;
+            facingright = !facingright;
             //Flip();
         }
         // Otherwise if the input is moving the player left and the player is facing right...
-        else if ((!reversed && speed < 0 && facingRight && grounded) || (reversed && speed > 0 && facingRight && grounded))
+        else if ((!reversed && speed < 0 && facingright && grounded) || (reversed && speed > 0 && facingright && grounded))
         {
             // ... flip the player.
             negate = -1;
-            facingRight = !facingRight;
+            facingright = !facingright;
             //Flip();
         }
 
@@ -295,11 +254,11 @@ public class AutoController : PlayerController
         if (grounded && Mathf.Abs(transform.rotation.eulerAngles.z % 90) <= .001f) { return; }
         
         //Vector3 axis = Vector3.forward;
-        float step = -7.5f;
+        float step = -7.6f;
 
         if (reversed)
         {
-            step = 7.5f;
+            step = 7.6f;
         }
 
         //Debug.Log(grounded);
@@ -688,7 +647,7 @@ public class AutoController : PlayerController
     public override void Flip()
     {
         // Switch the way the player is labelled as facing.
-        //facingRight = !facingRight;
+        //facingright = !facingright;
 
         // Multiply the player's x local scale by -1.
         Vector3 theScale = transform.localScale;
@@ -696,189 +655,6 @@ public class AutoController : PlayerController
         transform.localScale = theScale;
     }
 
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (!enabled) { return; }
-        if (collision.gameObject.tag == "PortalGravity")
-        {
-            grav = true;
-        }
-        if (collision.gameObject.tag == "PortalGravityN")
-        {
-            gravN = true;
-        }
-        if (collision.gameObject.tag == "TeleportA")
-        {
-            teleA = true;
-
-            Transform t = collision.gameObject.transform;
-
-            Transform tb = t;
-            foreach (Transform tr in t)
-            {
-                if (tr.tag == "TeleportB")
-                {
-                    tb = tr.GetComponent<Transform>();
-                    break;
-                }
-            }
-
-            //teleB = t.InverseTransformPoint(tb.position);
-            teleB = tb.position - t.position;
-            //teleB.z = transform.position.z;
-            teleB.z = 0;
-
-            //.35
-            /*
-            if (player_body.velocity.x > 0)
-            {
-                teleB.x -= .4f;
-            }
-            else if (player_body.velocity.x < 0)
-            {
-                teleB.x += .4f;
-            }
-
-            if (player_body.velocity.y < 0)
-            {
-                teleB.y += .4f;
-            }
-            else if (player_body.velocity.y > 0)
-            {
-                teleB.y -= .4f;
-            }*/
-        }
-        if (collision.gameObject.tag == "Mini")
-        {
-            if(!mini)
-            {
-                mini = true;
-                ChangeSize();
-            }
-
-        }
-        if (collision.gameObject.tag == "Mega")
-        {
-            if (mini)
-            {
-                mini = false;
-                ChangeSize();
-            }
-        }
-        if (collision.gameObject.tag == "YellowPad")
-        {
-            yellow_p = true;
-        }
-        if (collision.gameObject.tag == "PinkPad")
-        {
-            pink_p = true;
-        }
-        if (collision.gameObject.tag == "RedPad")
-        {
-            red_p = true;
-        }
-        if (collision.gameObject.tag == "BluePad")
-        {
-            blue_p = true;
-        }
-        if (collision.gameObject.tag == "Speed0x")
-        {
-            speed = speed0;
-        }
-        if (collision.gameObject.tag == "Speed1x")
-        {
-            speed = speed1;
-        }
-        if (collision.gameObject.tag == "Speed2x")
-        {
-            speed = speed2;
-        }
-        if (collision.gameObject.tag == "Speed3x")
-        {
-            speed = speed3;
-        }
-        if (collision.gameObject.tag == "Speed4x")
-        {
-            speed = speed4;
-        }
-        if (collision.gameObject.tag == "BlueOrb")
-        {
-            blue = true;
-        }
-    }
-
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (!enabled) { return; }
-        if (collision.gameObject.tag == "YellowOrb")
-        {
-            yellow = true;
-        }
-        if (collision.gameObject.tag == "PinkOrb")
-        {
-            pink = true;
-        }
-        if (collision.gameObject.tag == "RedOrb")
-        {
-            red = true;
-        }
-        if (collision.gameObject.tag == "GreenOrb")
-        {
-            green = true;
-        }
-        if (collision.gameObject.tag == "BlackOrb")
-        {
-            black = true;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (!enabled) { return; }
-        if (collision.gameObject.tag == "YellowOrb")
-        {
-            yellow = false;
-        }
-        if (collision.gameObject.tag == "BlueOrb")
-        {
-            blue = false;
-        }
-        if (collision.gameObject.tag == "PinkOrb")
-        {
-            pink = false;
-        }
-        if (collision.gameObject.tag == "RedOrb")
-        {
-            red = false;
-        }
-        if (collision.gameObject.tag == "GreenOrb")
-        {
-            green = false;
-        }
-        if (collision.gameObject.tag == "BlackOrb")
-        {
-            black = false;
-        }
-        if (collision.gameObject.tag == "YellowPad")
-        {
-            yellow_p = false;
-        }
-        if (collision.gameObject.tag == "PinkPad")
-        {
-            pink_p = false;
-        }
-        if (collision.gameObject.tag == "RedPad")
-        {
-            red_p = false;
-        }
-        if (collision.gameObject.tag == "BluePad")
-        {
-            blue_p = false;
-        }
-    }
-
-    private bool restartmusic = false;
     public override void Respawn()
     {
         able = false;
@@ -972,11 +748,6 @@ public class AutoController : PlayerController
         reversed = false; jump = false; jump_ground = false; yellow = false; pink = false; red = false; green = false; blue = false; black = false; teleA = false;
     }
 
-    public override void setBGMusic(AudioSource audio)
-    {
-        bgmusic = audio;
-    }
-
     public override void setRepawnSpeed(float s)
     {
         if (s == 0) { respawn_speed = speed0; }
@@ -1020,34 +791,6 @@ public class AutoController : PlayerController
         player_collider.enabled = false;
         //player_collider.isTrigger = true;
 
-    }
-    public override void setRestartMusicOnDeath(bool r)
-    {
-        restartmusic = r;
-    }
-    public override void setAble(bool a)
-    {
-        able = a;
-    }
-    public override void setVariables(bool j, bool r, bool m)
-    {
-        jump_ground = false;
-        jump = j;
-        reversed = r;
-        mini = m;
-    }
-    public override bool getMini()
-    {
-        return mini;
-    }
-
-    public override bool getReversed()
-    {
-        return reversed;
-    }
-    public override bool isDead()
-    {
-        return dead;
     }
     public override string getMode()
     {

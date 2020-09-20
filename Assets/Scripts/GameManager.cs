@@ -97,23 +97,7 @@ public class GameManager : MonoBehaviour
         iconcontroller = FindObjectOfType<IconController>();
         icon = iconcontroller.getIcon();
 
-        cubecontroller.setIcons(icon);
-        autocontroller.setIcons(icon);
-
-        shipcontroller.setIcons(icon);
-        autoshipcontroller.setIcons(icon);
-
-        ufocontroller.setIcons(icon);
-        autoufocontroller.setIcons(icon);
-
-        wavecontroller.setIcons(icon);
-        autowavecontroller.setIcons(icon);
-
-        ballcontroller.setIcons(icon);
-        autoballcontroller.setIcons(icon);
-
-        spidercontroller.setIcons(icon);
-        autospidercontroller.setIcons(icon);
+        playercontroller.setIcons(icon);
     }
     void Update()
     {
@@ -124,6 +108,7 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown("r"))
         {
+            playercontroller.resetStaticVariables();
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
@@ -281,10 +266,9 @@ public class GameManager : MonoBehaviour
 
     public void setPlayerController(string mode, bool startmusic, bool restartmusic)
     {
-        bool reversed = playercontroller.getReversed();
-        bool mini = playercontroller.getMini();
-        float speed;
-        //Debug.Log("reversed: " + reversed);
+        //bool reversed = playercontroller.getReversed();
+        //bool mini = playercontroller.getMini();
+        //float speed;
 
         if(mode.Equals(playercontroller.getMode()))
         {
@@ -302,8 +286,8 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (/*mode != playercontroller.getMode())
-            || */(mode.Equals("cube") && playercontroller != cubecontroller)
+        if (mode != playercontroller.getMode())/*
+            || (mode.Equals("cube") && playercontroller != cubecontroller)
             || (mode.Equals("auto") && playercontroller != autocontroller)
             || (mode.Equals("ship") && playercontroller != shipcontroller)
             || (mode.Equals("auto_ship") && playercontroller != autoshipcontroller)
@@ -314,7 +298,7 @@ public class GameManager : MonoBehaviour
             || (mode.Equals("ball") && playercontroller != ballcontroller)
             || (mode.Equals("auto_ball") && playercontroller != autoballcontroller)
             || (mode.Equals("spider") && playercontroller != spidercontroller)
-            || (mode.Equals("auto_spider") && playercontroller != autospidercontroller))//*/
+            || (mode.Equals("auto_spider") && playercontroller != autospidercontroller))*/
         {
             //Debug.Log("curr: " + playercontroller.getMode() + "    new: " + mode);
             if (bgmusic != newbgmusic)
@@ -325,17 +309,16 @@ public class GameManager : MonoBehaviour
 
             playercontroller.enabled = false;
             playercontroller.setAble(false);
-            reversed = playercontroller.getReversed();
-            speed = playercontroller.getSpeed();
-            mini = playercontroller.getMini();
+            //reversed = playercontroller.getReversed();
+            //speed = playercontroller.getSpeed();
+            //mini = playercontroller.getMini();
             playercontroller.resetColliders();
-            playercontroller.setVariables(false, false, false);
+            //playercontroller.setVariables(false, false, false);
 
             if (playercontroller.isDead())
             {
-                Debug.Log("DEAD");
-                reversed = checkpointcontroller.getReversed();
-                speed = checkpointcontroller.getSpeed();
+                //reversed = checkpointcontroller.getReversed();
+                //speed = checkpointcontroller.getSpeed();
             }
 
             if (mode.Equals("cube")) { playercontroller = cubecontroller; }
@@ -355,7 +338,7 @@ public class GameManager : MonoBehaviour
             playercontroller.setColliders();
             playercontroller.setIcons(icon);
             playercontroller.setBGMusic(bgmusic);
-            playercontroller.setSpeed(speed);
+            //playercontroller.setSpeed(speed);
             playercontroller.setRestartMusicOnDeath(restartmusic);
 
             if (startmusic)
@@ -363,15 +346,15 @@ public class GameManager : MonoBehaviour
                 bgmusic.Play();
                 bgmusic.volume = 1;
             }
-
+            /*
             if (checkpointcontroller.getIndex() != -1)
             {
                 playercontroller.setRespawn(checkpointcontroller.getTransform(), checkpointcontroller.getReversed(), checkpointcontroller.getMini());
                 playercontroller.setRepawnSpeed(checkpointcontroller.getSpeed());
-            }
+            }*/
 
 
-            playercontroller.setVariables((Input.GetButton("Jump") || Input.GetKey("space")), reversed, mini);
+            //playercontroller.setVariables((Input.GetButton("Jump") || Input.GetKey("space")), reversed, mini);
             playercontroller.setAnimation();
             playercontroller.setAble(true);
             playercontroller.enabled = true;

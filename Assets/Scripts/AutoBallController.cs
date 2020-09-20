@@ -4,61 +4,33 @@ using UnityEngine.Events;
 
 public class AutoBallController : PlayerController
 {
-    //  reference velocity
-    private Vector3 v_Velocity;
-
-    private Rigidbody2D player_body;
     public Collider2D player_collider;
     public CircleCollider2D circle_collider;
 
-    private AudioSource bgmusic;
-
-    public LayerMask groundLayer;
-    public LayerMask deathLayer;
     public TrailRenderer trail;
 
-    public ParticleSystem death_particles;
-    public GameObject player_renderer;
-    public Transform HEIGHT;
-    private GameObject icon;
     public GameObject ball;
 
     private float jumpForce = 15f;
-    private float speed, speed0 = 40f, speed1 = 55f, speed2 = 75f, speed3 = 90f, speed4 = 110f, respawn_speed;
-    private float posJump, negate = 1, regate = 1;
+    private float posJump;
 
     private float moveX, grav_scale;
     private float smoothing;
 
-    private bool grounded = false, reversed = false, jump = false, checkGrounded = true;
-    private bool yellow = false, blue = false, red = false, pink = false, green = false, black = false;
-    private bool yellow_p = false, blue_p = false, red_p = false, pink_p = false;
-    private bool grav = false, gravN = false, teleA = false;
-    private Vector3 teleB, respawn;
-    private bool respawn_rev = false, respawn_mini = false;
-    private bool crouch = false, facingRight = true, dead = false, able = true;
-
-    private bool isjumping = false;
-
     private float maxSpeed = 15*1.5f;
 
-    private bool mini = false;
-
-    void Awake()
+    public override void Awake2()
     {
         speed = getSpeed();
         moveX = speed;
         smoothing = .05f;
         v_Velocity = Vector3.zero;
         posJump = jumpForce;
-        player_body = GetComponent<Rigidbody2D>();
         player_collider = GetComponent<Collider2D>();
 
         grav_scale = player_body.gravityScale;
 
         circle_collider.enabled = false;
-        setRespawn(transform.position, reversed, mini);
-        setRepawnSpeed(1f);
 
         //eyes = GameObject.Find("Icon_Eyes");
         //setAnimation();
@@ -83,11 +55,6 @@ public class AutoBallController : PlayerController
         icon.SetActive(false);
 
         trail.transform.localPosition = new Vector3(0, 0, 0);
-
-        HEIGHT.GetComponent<Animator>().ResetTrigger("Crouch");
-        HEIGHT.GetComponent<Animator>().ResetTrigger("Squash");
-        HEIGHT.GetComponent<Animator>().ResetTrigger("Stretch");
-        HEIGHT.GetComponent<Animator>().SetTrigger("Default");
     }
     void ChangeSize()
     {
@@ -103,10 +70,6 @@ public class AutoBallController : PlayerController
         }
 
         posJump = jumpForce;
-    }
-    public override void setIcons(GameObject i)
-    {
-        icon = i;
     }
 
     void Update()
@@ -203,19 +166,19 @@ public class AutoBallController : PlayerController
     public override void Move()
     {
         // If the input is moving the player right and the player is facing left...
-        if ((!reversed && speed > 0 && !facingRight && grounded) || (reversed && speed < 0 && !facingRight && grounded))
+        if ((!reversed && speed > 0 && !facingright && grounded) || (reversed && speed < 0 && !facingright && grounded))
         {
             // ... flip the player.
             negate = 1;
-            facingRight = !facingRight;
+            facingright = !facingright;
             //Flip();
         }
         // Otherwise if the input is moving the player left and the player is facing right...
-        else if ((!reversed && speed < 0 && facingRight && grounded) || (reversed && speed > 0 && facingRight && grounded))
+        else if ((!reversed && speed < 0 && facingright && grounded) || (reversed && speed > 0 && facingright && grounded))
         {
             // ... flip the player.
             negate = -1;
-            facingRight = !facingRight;
+            facingright = !facingright;
             //Flip();
         }
 
@@ -534,7 +497,7 @@ public class AutoBallController : PlayerController
     public override void Flip()
     {
         // Switch the way the player is labelled as facing.
-        //facingRight = !facingRight;
+        //facingright = !facingright;
 
         // Multiply the player's x local scale by -1.
         Vector3 theScale = transform.localScale;
@@ -707,7 +670,6 @@ public class AutoBallController : PlayerController
         }
     }
 
-    private bool restartmusic = false;
     public override void Respawn()
     {
         able = false;
@@ -800,11 +762,6 @@ public class AutoBallController : PlayerController
         reversed = false; jump = false; yellow = false; pink = false; red = false; green = false; blue = false; black = false; teleA = false;
     }
 
-    public override void setBGMusic(AudioSource audio)
-    {
-        bgmusic = audio;
-    }
-
     public override void setRepawnSpeed(float s)
     {
         if (s == 0) { respawn_speed = speed0; }
@@ -842,34 +799,8 @@ public class AutoBallController : PlayerController
         //player_collider.isTrigger = true;
         circle_collider.enabled = true;
     }
-    public override void setRestartMusicOnDeath(bool r)
-    {
-        restartmusic = r;
-    }
-    public override void setAble(bool a)
-    {
-        able = a;
-    }
-    public override void setVariables(bool j, bool r, bool m)
-    {
-        jump = j;
-        reversed = r;
-        mini = m;
-    }
-    public override bool getMini()
-    {
-        return mini;
-    }
-    public override bool getReversed()
-    {
-        return reversed;
-    }
-    public override bool isDead()
-    {
-        return dead;
-    }
     public override string getMode()
     {
-        return "auto";
+        return "auto_ball";
     }
 }
