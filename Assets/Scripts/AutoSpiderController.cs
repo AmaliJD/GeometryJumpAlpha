@@ -68,7 +68,7 @@ public class AutoSpiderController : PlayerController
         Spider_Anim.GetComponent<Animator>().ResetTrigger("jump");
         Spider_Anim.GetComponent<Animator>().SetTrigger("stop");
     }
-    void ChangeSize()
+    public override void ChangeSize()
     {
         if (mini)
         {

@@ -70,7 +70,7 @@ public class AutoWaveController : PlayerController
         trail.transform.localPosition = new Vector3(0f, 0f, 0);
     }
 
-    void ChangeSize()
+    public override void ChangeSize()
     {
         if (mini)
         {

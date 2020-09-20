@@ -70,7 +70,7 @@ public class UfoController : PlayerController
         eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
         eyes.transform.Find("Eyes_Normal").gameObject.SetActive(true);
     }
-    void ChangeSize()
+    public override void ChangeSize()
     {
         if (mini)
         {

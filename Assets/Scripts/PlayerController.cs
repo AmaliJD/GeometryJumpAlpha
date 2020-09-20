@@ -237,6 +237,16 @@ public abstract class PlayerController : MonoBehaviour
         {
             speed = speed4;
         }
+        if (collision.gameObject.tag == "Mini")
+        {
+            mini = true;
+            ChangeSize();
+        }
+        if (collision.gameObject.tag == "Mega")
+        {
+            mini = false;
+            ChangeSize();
+        }
     }
 
     protected void OnTriggerExit2D(Collider2D collision)
@@ -295,6 +305,7 @@ public abstract class PlayerController : MonoBehaviour
     // ABSTRACT METHOD ----------------------------------------------------------
     public abstract void Awake2();
     public abstract void setAnimation();
+    public abstract void ChangeSize();
     public abstract void Move();
     public abstract void Jump();
     public abstract void Pad();

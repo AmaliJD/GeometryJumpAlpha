@@ -78,7 +78,7 @@ public class CubeController : PlayerController
         eyes.transform.Find("Eyes_Normal").gameObject.SetActive(true);
     }
 
-    public void ChangeSize()
+    public override void ChangeSize()
     {
         if (mini)
         {

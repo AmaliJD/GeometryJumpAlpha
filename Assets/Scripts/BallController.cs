@@ -58,7 +58,7 @@ public class BallController : PlayerController
 
         trail.transform.localPosition = new Vector3(0, 0, 0);
     }
-    void ChangeSize()
+    public override void ChangeSize()
     {
         if (mini)
         {
