@@ -64,6 +64,7 @@ public class ColorTriggerEditor : Editor
         EditorGUILayout.PropertyField(serializedObject.FindProperty("sat"), true);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("val"), true);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("alpha"), true);
+        EditorGUILayout.Space();
         //trigger.hue = EditorGUILayout.Slider("Hue", trigger.hue, -360f, 360f);
         //trigger.sat = EditorGUILayout.Slider("Sat", trigger.sat, -1f, 1f);
         //trigger.val = EditorGUILayout.Slider("Val", trigger.val, -1f, 1f);
