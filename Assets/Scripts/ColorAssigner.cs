@@ -50,6 +50,16 @@ public abstract class ColorAssigner : MonoBehaviour
         color.Set(savedColor);
     }*/
 
+    private void Awake()
+    {
+        if(color.refer != null)
+        {
+            color.channelcolor = color.refer.channelcolor;
+            AssignColor(color.refer.channelcolor, hue, sat, val, alpha);
+            SubscribeColorChange();
+        }
+    }
+
     private void Start()
     {
         savedColor.r = color.r;

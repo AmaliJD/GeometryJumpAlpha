@@ -88,7 +88,7 @@ public class ManaOrb : MonoBehaviour
                 }
                 else
                 {
-                    transform.position = Vector3.Lerp(transform.position, new Vector3(cube.transform.position.x, cube.transform.position.y, 0f), .66f);
+                    transform.position = Vector3.Lerp(transform.position, new Vector3(cube.transform.position.x, cube.transform.position.y, 0f), .7f); //.66
                 }
 
                 if (Mathf.Abs(transform.position.x - cube.transform.position.x) <= .2 && Mathf.Abs(transform.position.y - cube.transform.position.y) <= .2)
