@@ -39,34 +39,10 @@ public abstract class ColorAssigner : MonoBehaviour
     private void UnsubscribeColorChange() => color.Changed -= OnColorChanged;
 
     private void OnColorChanged() => AssignColor(color, hue, sat, val, alpha);
-    /*
-    private void Awake()
-    {
-        savedColor.r = color.r;
-        savedColor.g = color.g;
-        savedColor.b = color.b;
-        savedColor.a = color.a;
 
-        color.Set(savedColor);
-    }*/
-
-    private void Awake()
-    {
-        if(color.refer != null)
-        {
-            color.channelcolor = color.refer.channelcolor;
-            AssignColor(color.refer.channelcolor, hue, sat, val, alpha);
-            SubscribeColorChange();
-        }
-    }
-
+    
     private void Start()
     {
-        savedColor.r = color.r;
-        savedColor.g = color.g;
-        savedColor.b = color.b;
-        savedColor.a = color.a;
-
         start = 1;
         if (color != null)
         {
@@ -74,6 +50,19 @@ public abstract class ColorAssigner : MonoBehaviour
             SubscribeColorChange();
             AssignColor(color, hue, sat, val, alpha);
         }
+        if(color.flag)
+        {
+            //Debug.Log("FLAG");
+            color.flag = false;
+            color.channelcolor = color.refer.channelcolor;
+            AssignColor(color.refer.channelcolor, hue, sat, val, alpha);
+            SubscribeColorChange();
+        }
+
+        savedColor.r = color.r;
+        savedColor.g = color.g;
+        savedColor.b = color.b;
+        savedColor.a = color.a;
     }
 
     private void OnDestroy()
@@ -92,6 +81,10 @@ public abstract class ColorAssigner : MonoBehaviour
 #if UNITY_EDITOR
     private void OnValidate()
     {
+        if(color.refer != null)
+        {
+            color.flag = true;
+        }
         if (color != null)
         {
             UnsubscribeColorChange();

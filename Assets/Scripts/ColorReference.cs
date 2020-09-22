@@ -6,14 +6,7 @@ public class ColorReference : ScriptableObject
 {
     [SerializeField] private UnityEngine.Color color;
     [SerializeField] private ColorReference reference;
-
-    /*public void Awake()
-    {
-        Debug.Log("REF");
-        if (reference != null) { color = reference.color; }
-        channelcolor = color;
-        //Set(reference.color);
-    }*/
+    private bool ref_flag = false;
 
     public float a
     {
@@ -48,6 +41,12 @@ public class ColorReference : ScriptableObject
     public ColorReference refer
     {
         get => reference;
+    }
+
+    public bool flag
+    {
+        get => ref_flag;
+        set => ref_flag = value;
     }
 
     // Define every other function / property you need

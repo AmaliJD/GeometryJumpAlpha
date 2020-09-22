@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(PulseTrigger))]
+[CustomEditor(typeof(PulseTrigger)), CanEditMultipleObjects]
 public class PulseTriggerEditor : Editor
 {
     public override void OnInspectorGUI()

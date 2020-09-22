@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(ColorTrigger))]
+[CustomEditor(typeof(ColorTrigger)), CanEditMultipleObjects]
 public class ColorTriggerEditor : Editor
 {
     public override void OnInspectorGUI()

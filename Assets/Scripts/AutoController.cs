@@ -254,11 +254,11 @@ public class AutoController : PlayerController
         if (grounded && Mathf.Abs(transform.rotation.eulerAngles.z % 90) <= .001f) { return; }
         
         //Vector3 axis = Vector3.forward;
-        float step = -7.6f;
+        float step = -7.7f;
 
         if (reversed)
         {
-            step = 7.6f;
+            step = 7.7f;
         }
 
         //Debug.Log(grounded);

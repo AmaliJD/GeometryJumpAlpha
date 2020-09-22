@@ -204,6 +204,8 @@ public class ColorTrigger : MonoBehaviour
             }
         }
 
+        //Debug.Log("COLOR: " + (channel.channelcolor == new_color));
+
         if (oneuse)
         {
             Destroy(gameObject);

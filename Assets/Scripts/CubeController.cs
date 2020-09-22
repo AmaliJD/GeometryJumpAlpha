@@ -154,7 +154,7 @@ public class CubeController : PlayerController
             
 
             // JUMP!
-            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space"))
+            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
             {
                 jump = true;
                 released = false;
@@ -179,7 +179,7 @@ public class CubeController : PlayerController
             }
 
             // RELEASE JUMP
-            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space"))
+            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
                 isjumping = false;
                 jump = false;
@@ -187,7 +187,7 @@ public class CubeController : PlayerController
             }
 
             // CROUCH
-            if (Input.GetAxisRaw("Vertical") < 0)
+            if (Input.GetAxisRaw("Vertical") < 0 || Input.GetKey(KeyCode.LeftShift))
             {
                 crouch = true;
             }
