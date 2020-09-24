@@ -29,7 +29,7 @@ public class StopColorChange : MonoBehaviour
     {
         int index = channel_ids.IndexOf(id);
 
-        if(index != -1)
+        if(index != -1 && active_trigger[index] != null)
         {
             active_trigger[index].BroadcastMessage("Stop");
         }
@@ -48,6 +48,5 @@ public class StopColorChange : MonoBehaviour
             channel_ids[index] = id;
             active_trigger[index] = g;
         }
-        
     }
 }

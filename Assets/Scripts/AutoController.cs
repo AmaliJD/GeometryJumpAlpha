@@ -9,7 +9,7 @@ public class AutoController : PlayerController
     
     public TrailRenderer trail;
 
-    private float jumpForce = 19.2f; //19.2
+    private float jumpForce = 19.21f; //19.2
     private float posJump;
 
     private float moveX, grav_scale;
@@ -129,7 +129,7 @@ public class AutoController : PlayerController
             moveX = speed;
 
             // JUMP!
-            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space"))
+            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
             {
                 jump = true;
                 jump_ground = true;
@@ -155,7 +155,7 @@ public class AutoController : PlayerController
             }
 
             // RELEASE JUMP
-            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space"))
+            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
                 isjumping = false;
                 jump = false;
@@ -254,11 +254,11 @@ public class AutoController : PlayerController
         if (grounded && Mathf.Abs(transform.rotation.eulerAngles.z % 90) <= .001f) { return; }
         
         //Vector3 axis = Vector3.forward;
-        float step = -7.7f;
+        float step = -8.1f;
 
         if (reversed)
         {
-            step = 7.7f;
+            step = 8.1f;
         }
 
         //Debug.Log(grounded);

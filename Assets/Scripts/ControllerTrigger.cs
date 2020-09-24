@@ -115,6 +115,15 @@ public class ControllerTrigger : MonoBehaviour
                 ball_portal.SetActive(false);
             }
         }
+        else
+        {
+            spider_portal.SetActive(false);
+            cube_portal.SetActive(false);
+            ship_portal.SetActive(false);
+            ufo_portal.SetActive(false);
+            wave_portal.SetActive(false);
+            ball_portal.SetActive(false);
+        }
     }
 #endif
 }

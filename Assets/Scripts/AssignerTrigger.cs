@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+//using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -12,7 +13,7 @@ public class AssignerTrigger : MonoBehaviour
     [SerializeField] [Range(-1f, 1f)] private float val;
     [SerializeField] [Range(-1f, 1f)] private float alpha;
 
-    private Color curr_color;
+    public float duration;
     public bool oneuse = true;
     private bool inuse = false;
 
@@ -27,26 +28,47 @@ public class AssignerTrigger : MonoBehaviour
         if (collision.gameObject.tag == "Player" && !inuse)
         {
             inuse = true;
-            Activate();
+            StartCoroutine(Activate());
         }
     }
 
-    void Activate()
+    private IEnumerator Activate()
     {
+        float time = 0;
+        Color tempColor;
+
+        float hue_step = (hue - assigner.hue) / (duration * Time.deltaTime);
+        float sat_step = (sat - assigner.sat) / (duration * Time.deltaTime);
+        float val_step = (val - assigner.val) / (duration * Time.deltaTime);
+        float alpha_step = (alpha - assigner.alpha) / (duration * Time.deltaTime);
+
+        while (time < duration)
+        {
+            assigner.hue += hue_step;
+            assigner.sat += sat_step;
+            assigner.val += val_step;
+            assigner.alpha += alpha_step;
+
+            tempColor = assigner.ColorReference.channelcolor;
+            assigner.ColorReference.Set(tempColor);
+
+            time += Time.deltaTime;
+            yield return null;
+        }
+
         assigner.hue = hue;
         assigner.sat = sat;
         assigner.val = val;
         assigner.alpha = alpha;
 
-        Color tempColor = assigner.ColorReference.channelcolor;
-        //assigner.ColorReference.Set(Color.white);
+        tempColor = assigner.ColorReference.channelcolor;
         assigner.ColorReference.Set(tempColor);
 
         if (oneuse)
         {
             Destroy(gameObject);
         }
-
+        
         inuse = false;
     }
 
