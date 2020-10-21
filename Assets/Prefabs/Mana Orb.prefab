@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2698715868115901171
 Transform:
   m_ObjectHideFlags: 0
@@ -118,7 +118,7 @@ MonoBehaviour:
   m_LightType: 3
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 1
-  m_Color: {r: 0, g: 0.105446815, b: 1, a: 1}
+  m_Color: {r: 0.4292453, g: 0.48967817, b: 1, a: 1}
   m_Intensity: 1
   m_LightVolumeOpacity: 0
   m_ApplyToSortingLayers: 00000000
@@ -200,7 +200,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 9bda1958a70705740b57bee97dc954b5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -370,7 +370,7 @@ MonoBehaviour:
   y: 2
   blueLight: {fileID: 2698715868161054170}
   whiteLight: {fileID: 2698715868115901172}
-  get: {fileID: 0}
+  pickup: {fileID: 0}
   sfx: {fileID: 0}
 --- !u!1 &2698715869188247937
 GameObject:

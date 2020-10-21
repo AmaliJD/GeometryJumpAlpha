@@ -14,8 +14,15 @@ public class AdaptiveLighting : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        light.intensity = 1 - global.intensity;
+        if(1 - global.intensity >= 0)
+        {
+            light.intensity = 1 - global.intensity;
+        }
+        else
+        {
+            light.intensity = 0;
+        }
     }
 }

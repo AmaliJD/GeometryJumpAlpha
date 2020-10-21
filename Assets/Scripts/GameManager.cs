@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour
     public Text DevTools;
     public CinemachineBrain main_camera_brain;
 
+    public ColorReference[] color_channels;
+    private Color[] channel_colors;
+
     private float time = 0;
     private bool shortcuts_enabled = false, game = false;
 
@@ -97,17 +100,39 @@ public class GameManager : MonoBehaviour
         icon = iconcontroller.getIcon();
 
         playercontroller.setIcons(icon);
+
+        // ------------------------------------------------------------------------------------------------
+        channel_colors = new Color[color_channels.Length];
+        int i = 0;
+        foreach(ColorReference c in color_channels)
+        {
+            channel_colors[i] = c.channelcolor;
+            if(c.refer != null) { channel_colors[i] = c.refer.channelcolor; }
+            i++;
+        }
+    }
+
+    void resetColorChannels()
+    {
+        int i = 0;
+        foreach (ColorReference c in color_channels)
+        {
+            c.Set(channel_colors[i]);
+            i++;
+        }
     }
     void Update()
     {
         if (Input.GetKeyDown("escape"))
         {
+            resetColorChannels();
             Application.Quit();
         }
 
         if (Input.GetKeyDown("r"))
         {
             playercontroller.resetStaticVariables();
+            resetColorChannels();
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
@@ -360,6 +385,20 @@ public class GameManager : MonoBehaviour
 
             return;
         }
+    }
+
+    public void playBGMusic(float playvolume)
+    {
+        if (bgmusic != newbgmusic)
+        {
+            bgmusic.Stop();
+            bgmusic = newbgmusic;
+        }
+
+        playercontroller.setBGMusic(bgmusic);
+
+        bgmusic.volume = playvolume;
+        bgmusic.Play();
     }
 
     public void setBGMusic(AudioSource audio)

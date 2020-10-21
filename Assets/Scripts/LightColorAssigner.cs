@@ -29,7 +29,7 @@ public class LightColorAssigner : ColorAssigner
 
         //a += 1;
         //if (a > 1) { a = 1; }
-        //else if (a < 0) { a = 0; }
+        if (a < 0) { a = 0; }
 
         color = Color.HSVToRGB(h, s, v);
         color.a = a;

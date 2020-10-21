@@ -8,14 +8,14 @@ public class SpawnTrigger : MonoBehaviour
     public float[] delay;
     public bool loop;
 
-    private bool inuse = false;
+    private bool inuse = false, finished = false;
 
     private void Awake()
     {
         gameObject.transform.GetChild(0).gameObject.SetActive(false);
     }
 
-    private IEnumerator Begin()
+    public IEnumerator Begin()
     {
         int i = 0;
 
@@ -30,13 +30,14 @@ public class SpawnTrigger : MonoBehaviour
                 yield return null;
             }
 
+            // Move Trigger
             if(trigger.GetComponent<MoveTrigger>() != null)
             {
                 MoveTrigger move = trigger.GetComponent<MoveTrigger>();
                 float d2 = move.getDuration();
                 time = 0;
 
-                Debug.Log("Trigger " +  i);
+                //Debug.Log("Trigger " +  i);
                 StartCoroutine(move.Move());
                 
                 while (time <= d2)
@@ -53,6 +54,42 @@ public class SpawnTrigger : MonoBehaviour
                 move.StopAllCoroutines();
             }
 
+            // Spawn Trigger
+            if (trigger.GetComponent<SpawnTrigger>() != null)
+            {
+                SpawnTrigger spawn = trigger.GetComponent<SpawnTrigger>();
+
+                StartCoroutine(spawn.Begin());
+            }
+
+            // Music
+            else if (trigger.GetComponent<MusicTrigger>() != null)
+            {
+                MusicTrigger music = trigger.GetComponent<MusicTrigger>();
+                float d2 = music.getDuration();
+                time = 0;
+
+                // Volume
+                if(music.mode == MusicTrigger.Mode.volume)
+                {
+                    StartCoroutine(music.setMusicVolume());
+
+                    while (music.getFinished() != true)
+                    {
+                        Debug.Log("Waiting to finish");
+                        yield return null;
+                    }
+                }
+
+                // Change Song
+                else if (music.mode == MusicTrigger.Mode.music)
+                {
+                    music.setBGMusic();
+                }
+
+                music.StopAllCoroutines();
+            }
+
             i++;
 
             if(i == triggers.Length && loop)
@@ -62,6 +99,11 @@ public class SpawnTrigger : MonoBehaviour
 
             yield return null;
         }
+    }
+
+    public bool getFinished()
+    {
+        return finished;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

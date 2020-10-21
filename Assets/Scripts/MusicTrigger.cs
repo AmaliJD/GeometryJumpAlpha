@@ -11,18 +11,27 @@ public class MusicTrigger : MonoBehaviour
 
     public AudioSource bgmusic;
 
-    public float volume, fadetime;
+    public float volume, fadetime, playvolume = 1;
+    public bool play;
     public bool oneuse;
-    private bool omaewamou = false;
+    private bool omaewamou = false, finished = false;
     // Start is called before the first frame update
     void Awake()
     {
         gamemanager = FindObjectOfType<GameManager>();
         gameObject.transform.GetChild(0).gameObject.SetActive(false);
     }
-    private void setBGMusic()
+    public void setBGMusic()
     {
         gamemanager.setBGMusic(bgmusic);
+
+        if(play)
+        {
+            gamemanager.playBGMusic(playvolume);
+        }
+
+        finished = true;
+
         if (oneuse)
         {
             Destroy(gameObject);
@@ -37,28 +46,44 @@ public class MusicTrigger : MonoBehaviour
         else
         {
             float time = 0;
+            //float timer = 0;
             float step = (bgMusic.volume - volume) / (fadetime / Time.deltaTime);
 
             while (time < fadetime)
             {
                 bgMusic.volume = bgMusic.volume - step;
+                //bgMusic.volume = Mathf.Lerp(bgMusic.volume, volume, time);
 
                 time += Time.deltaTime;
+                //time += Time.deltaTime / (fadetime * 100);
                 yield return null;
             }
         }
 
         bgMusic.volume = volume;
+        finished = true;
 
         if (oneuse)
         {
             Destroy(gameObject);
         }
     }
+
+    public float getDuration()
+    {
+        return fadetime;
+    }
+
+    public bool getFinished()
+    {
+        return finished;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Player" && !omaewamou)
         {
+            finished = false;
             if (oneuse) { omaewamou = true; }
             if(mode.ToString() == "music") { setBGMusic(); }
             else if (mode.ToString() == "volume") { StartCoroutine(setMusicVolume()); }
