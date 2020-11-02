@@ -20,6 +20,30 @@ TextureImporter:
   - first:
       213: 5135815580686281332
     second: GrayscaleOrbs_5
+  - first:
+      213: -503686248124854761
+    second: GrayscaleOrbs_0
+  - first:
+      213: -3995277822818276524
+    second: GrayscaleOrbs_1
+  - first:
+      213: 119838170339677596
+    second: GrayscaleOrbs_2
+  - first:
+      213: -7276541670787650463
+    second: GrayscaleOrbs_3
+  - first:
+      213: 2723512058321073176
+    second: GrayscaleOrbs_4
+  - first:
+      213: 3756602381785427643
+    second: GrayscaleOrbs_5
+  - first:
+      213: 145494647975101609
+    second: GrayscaleOrbs_6
+  - first:
+      213: -1366432319664164900
+    second: GrayscaleOrbs_7
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -154,8 +178,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 706f7609711346150800000000000000
-      internalID: 5864866592019969543
+      spriteID: 71ec446a60c8209f0800000000000000
+      internalID: -503686248124854761
       vertices: []
       indices: 
       edges: []
@@ -175,8 +199,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5211789ec4538a310800000000000000
-      internalID: 1416440687259750693
+      spriteID: 45babefecfbed88c0800000000000000
+      internalID: -3995277822818276524
       vertices: []
       indices: 
       edges: []
@@ -185,8 +209,8 @@ TextureImporter:
       name: GrayscaleOrbs_2
       rect:
         serializedVersion: 2
-        x: 0
-        y: 200
+        x: 400
+        y: 400
         width: 200
         height: 200
       alignment: 0
@@ -196,8 +220,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a892aec72931432e0800000000000000
-      internalID: -2147069602467010166
+      spriteID: c9511a55e20c9a100800000000000000
+      internalID: 119838170339677596
       vertices: []
       indices: 
       edges: []
@@ -206,6 +230,27 @@ TextureImporter:
       name: GrayscaleOrbs_3
       rect:
         serializedVersion: 2
+        x: 0
+        y: 200
+        width: 200
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16cef5737e7840b90800000000000000
+      internalID: -7276541670787650463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GrayscaleOrbs_4
+      rect:
+        serializedVersion: 2
         x: 200
         y: 200
         width: 200
@@ -217,14 +262,35 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ae0828650c59b4a10800000000000000
-      internalID: 1894772721557078250
+      spriteID: 81478b989cbdbc520800000000000000
+      internalID: 2723512058321073176
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrayscaleOrbs_4
+      name: GrayscaleOrbs_5
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 200
+        width: 200
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbee4b086f1222430800000000000000
+      internalID: 3756602381785427643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GrayscaleOrbs_6
       rect:
         serializedVersion: 2
         x: 0
@@ -238,14 +304,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0b2e5fca593324a80800000000000000
-      internalID: -8484162030067653968
+      spriteID: 9a4c6498c96e40200800000000000000
+      internalID: 145494647975101609
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrayscaleOrbs_5
+      name: GrayscaleOrbs_7
       rect:
         serializedVersion: 2
         x: 200
@@ -259,8 +325,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 47ae8b65f05164740800000000000000
-      internalID: 5135815580686281332
+      spriteID: cdfedc08b05790de0800000000000000
+      internalID: -1366432319664164900
       vertices: []
       indices: 
       edges: []

@@ -16,6 +16,8 @@ public abstract class PlayerController : MonoBehaviour
 
     protected AudioSource bgmusic;
 
+    protected GameManager gamemanager;
+
     protected Vector3 v_Velocity; // ref Velocity
 
     // SHARED STATIC VARIABLES
@@ -89,6 +91,8 @@ public abstract class PlayerController : MonoBehaviour
     // SHARED METHODS
     private void Awake()
     {
+        gamemanager = FindObjectOfType<GameManager>();
+
         player_body = GetComponent<Rigidbody2D>();
         Cube_Anim = player_renderer.transform.GetComponent<Animator>();
 

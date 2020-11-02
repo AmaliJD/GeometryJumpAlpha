@@ -104,7 +104,8 @@ public class OrbComponent : MonoBehaviour
         r = false;
         ring.SetActive(false);
         ring.transform.localScale = new Vector2(.6f, .6f);
-        ring.GetComponent<SpriteRenderer>().color = new Color(ring.GetComponent<SpriteRenderer>().color.r, ring.GetComponent<SpriteRenderer>().color.g, 1);
+        ring.GetComponent<SpriteRenderer>().color = new Color(ring.GetComponent<SpriteRenderer>().color.r, ring.GetComponent<SpriteRenderer>().color.g,
+                                                        ring.GetComponent<SpriteRenderer>().color.b, 1);
     }
 
     void PulseSetup()
@@ -112,7 +113,7 @@ public class OrbComponent : MonoBehaviour
         j = false;
         pulse.SetActive(false);
         pulse.transform.localScale = new Vector2(scale, scale);
-        pulse.GetComponent<SpriteRenderer>().color = new Color(ring.GetComponent<SpriteRenderer>().color.r, ring.GetComponent<SpriteRenderer>().color.g, 1);
+        pulse.GetComponent<SpriteRenderer>().color = new Color(red, green, blue, 1);
         pulse_light.intensity = 1;
     }
 

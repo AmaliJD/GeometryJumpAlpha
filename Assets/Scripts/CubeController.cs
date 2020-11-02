@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
+using Cinemachine;
 
 public class CubeController : PlayerController
 {
@@ -189,7 +189,7 @@ public class CubeController : PlayerController
             }
 
             // CROUCH
-            if (Input.GetAxisRaw("Vertical") < 0 || Input.GetKey(KeyCode.LeftShift))
+            if (Input.GetAxisRaw("Vertical") < 0 || Input.GetKey(KeyCode.LeftShift) || Input.GetMouseButton(1))
             {
                 crouch = true;
             }
@@ -828,8 +828,11 @@ public class CubeController : PlayerController
     public void undead()
     {
         speed = respawn_speed;
-        //transform.position += respawn - transform.position;
+        Vector3 positionDelta = respawn - transform.position;
         transform.position = respawn;
+
+        CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+        activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
 
         crouch = false;
         Cube_Anim.ResetTrigger("Crouch");
@@ -841,6 +844,9 @@ public class CubeController : PlayerController
         player_renderer.SetActive(true);
         player_collider.enabled = true;
         player_body.gravityScale = grav_scale;
+
+        //gamemanager.disableCameras();
+        //gamemanager.enableCameras();
 
         //bgmusic.volume = 1;
         if (restartmusic) { bgmusic.Play(); }

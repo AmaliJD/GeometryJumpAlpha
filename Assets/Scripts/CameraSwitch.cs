@@ -8,22 +8,25 @@ public class CameraSwitch : MonoBehaviour
 {
     public CinemachineVirtualCamera activeCamera;
     private List<CinemachineVirtualCamera> cameraList;
-    private GameObject[] initialList;
+    //private GameObject[] initialList;
     private GameManager gamemanager;
 
     private void Awake()
     {
         gamemanager = FindObjectOfType<GameManager>();
         cameraList = new List<CinemachineVirtualCamera>();
-        initialList = GameObject.FindGameObjectsWithTag("Camera");
+        //initialList = GameObject.FindGameObjectsWithTag("Camera");
 
+        cameraList = gamemanager.getCameraList();
+
+        /*
         int i = 0;
         foreach (GameObject g in initialList)
         {
             cameraList.Add(g.GetComponent<CinemachineVirtualCamera>());
             cameraList[i].gameObject.SetActive(true);
             cameraList[i].Priority = 5;
-        }
+        }*/
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

@@ -5,14 +5,16 @@ using UnityEngine.Experimental.Rendering.Universal;
 
 public class LightColorAssigner : ColorAssigner
 {
+    public float base_intensity = 1;
     protected override void AssignColor(Color color, float hue, float sat, float val, float alpha)
     {
         if (this == null) { return; }
 
         float h = 0, s = 0, v = 0, a = color.a;
+        a *= base_intensity;
 
         Color.RGBToHSV(color, out h, out s, out v);
-
+        
         h += (hue / 360);
         s += sat;
         v += val;
@@ -32,7 +34,7 @@ public class LightColorAssigner : ColorAssigner
         if (a < 0) { a = 0; }
 
         color = Color.HSVToRGB(h, s, v);
-        color.a = a;
+        //color.a = a;
 
         GetComponent<Light2D>().color = color;
         GetComponent<Light2D>().intensity = a;

@@ -13,13 +13,29 @@ public class GameManager : MonoBehaviour
     public Text Mana;
     public Text Timer;
     public Text DevTools;
+    public GameObject Pause_Menu;
+    public GameObject Menu1;
+    public GameObject Menu2;
+    public GameObject WindowedResolution;
+
+    public Button Menu_Button;
+    public Button Restart_Button;
+    public Button Options_Button;
+    public Button Fullscreen_Button;
+    public Button Effects_Button;
+    public Button Res1440_Button;
+    public Button Res1080_Button;
+    public Button Res720_Button;
+
     public CinemachineBrain main_camera_brain;
+    private float aspectratio = 16f / 9f;
+    private int prev_width, prev_height;
 
     public ColorReference[] color_channels;
     private Color[] channel_colors;
 
     private float time = 0;
-    private bool shortcuts_enabled = false, game = false;
+    private bool shortcuts_enabled = false, game = false, paused = false;
 
     private GameObject effects;
     private GameObject globallight;
@@ -61,10 +77,27 @@ public class GameManager : MonoBehaviour
 
     private float deltaTime = 0.0f;
 
+    private GameObject[] initialList;
+    private List<CinemachineVirtualCamera> cameraList;
+    CinemachineVirtualCamera activeCamera;
+
     private void Awake()
     {
         Resources.UnloadUnusedAssets();
         Screen.SetResolution(1920, 1080, true);
+        Screen.fullScreen = true;
+        prev_width = 1920;
+        prev_height = 1080;
+
+        Restart_Button.onClick.AddListener(Restart);
+        Options_Button.onClick.AddListener(Options);
+        Menu_Button.onClick.AddListener(ReturnToMenu);
+        Fullscreen_Button.onClick.AddListener(ToggleFullscreen);
+        Effects_Button.onClick.AddListener(TogglePostProcessing);
+
+        Res1440_Button.onClick.AddListener(() => { SetResolution(1440); });
+        Res1080_Button.onClick.AddListener(() => { SetResolution(1080); });
+        Res720_Button.onClick.AddListener(() => { SetResolution(720); });
 
         player = GameObject.Find("Player");
         playerlight = GameObject.Find("Player Light Bright"); playerlight.SetActive(false);
@@ -110,6 +143,38 @@ public class GameManager : MonoBehaviour
             if(c.refer != null) { channel_colors[i] = c.refer.channelcolor; }
             i++;
         }
+
+        // camera list ------------------------
+        cameraList = new List<CinemachineVirtualCamera>();
+        initialList = GameObject.FindGameObjectsWithTag("Camera");
+
+        i = 0;
+        foreach (GameObject g in initialList)
+        {
+            cameraList.Add(g.GetComponent<CinemachineVirtualCamera>());
+            cameraList[i].gameObject.SetActive(true);
+            cameraList[i].Priority = 5;
+        }
+    }
+
+    public List<CinemachineVirtualCamera> getCameraList()
+    {
+        return cameraList;
+    }
+
+    public CinemachineVirtualCamera getActiveCamera()
+    {
+        foreach (CinemachineVirtualCamera c in cameraList)
+        {
+            if (c.Priority == 10) { activeCamera = c; break; }
+        }
+
+        return activeCamera;
+    }
+
+    public Transform getPlayerTransform()
+    {
+        return player.transform;
     }
 
     void resetColorChannels()
@@ -121,21 +186,97 @@ public class GameManager : MonoBehaviour
             i++;
         }
     }
+
+    // Button Functions
+    public void Restart()
+    {
+        playercontroller.resetStaticVariables();
+        resetColorChannels();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Time.timeScale = 1.0f;
+    }
+    public void Options()
+    {
+        Menu1.SetActive(false);
+        Menu2.SetActive(true);
+    }
+    public void ToggleFullscreen()
+    {
+        Screen.fullScreen = !Screen.fullScreen;
+    }
+    public void SetResolution(int width)
+    {
+        switch(width)
+        {
+            case 1440:
+                Screen.SetResolution(2560, 1440, true); Screen.fullScreen = false; break;
+            case 1080:
+                Screen.SetResolution(1920, 1080, true); Screen.fullScreen = false; break;
+            case 720:
+                Screen.SetResolution(1280, 720, true); Screen.fullScreen = false; break;
+            default:
+                break;
+        }
+        
+    }
+    public void TogglePostProcessing()
+    {
+        effects.SetActive(!effects.activeSelf);
+        Debug.Log(main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>() == null);
+        postfxon = !postfxon;
+        if (postfxon && main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>() != null)
+        {
+            main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>().enabled = true;
+        }
+        else
+        {
+            main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>().enabled = false;
+        }
+    }
+    public void ReturnToMenu()
+    {
+        playercontroller.resetStaticVariables();
+        resetColorChannels();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
     void Update()
     {
-        if (Input.GetKeyDown("escape"))
+        if (Input.GetKeyDown("q"))
         {
             resetColorChannels();
             Application.Quit();
         }
-
-        if (Input.GetKeyDown("r"))
+        if (Input.GetKeyDown("f"))
         {
-            playercontroller.resetStaticVariables();
-            resetColorChannels();
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            Screen.fullScreen = !Screen.fullScreen;
         }
 
+        if (Input.GetKeyDown("escape"))
+        {
+            if (!paused)
+            {
+                paused = !paused;
+                Pause_Menu.SetActive(true);
+                bgmusic.Pause();
+                Time.timeScale = 0;
+            }
+            else if(paused)
+            {
+                if(Menu1.activeSelf)
+                {
+                    paused = !paused;
+                    Pause_Menu.SetActive(false);
+                    Time.timeScale = 1;
+                    bgmusic.Play();
+                }
+                else
+                {
+                    Menu1.SetActive(true);
+                    Menu2.SetActive(false);
+                }
+            }
+        }
+        /*
         if (shortcuts_enabled)
         {
             if (Input.GetKeyDown("p"))
@@ -180,12 +321,7 @@ public class GameManager : MonoBehaviour
                 DevTools.color = Color.clear;
                 shortcuts_enabled = false;
             }
-        }
-
-        if (Input.GetKeyDown("f"))
-        {
-            Screen.fullScreen = !Screen.fullScreen;
-        }
+        }*/
 
 
         if (!game)
@@ -218,6 +354,9 @@ public class GameManager : MonoBehaviour
         {
             main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>().enabled = false;
         }*/
+
+        prev_height = Screen.height;
+        prev_width = Screen.width;
     }
 
     public PlayerController getController()
