@@ -20,6 +20,8 @@ public abstract class PlayerController : MonoBehaviour
 
     protected Vector3 v_Velocity; // ref Velocity
 
+    protected RaycastHit2D headHit;
+
     // SHARED STATIC VARIABLES
     static public bool jump = false, isjumping = false, jump_ground = false, reversed = false, downjump = false, released = false;
     static public bool grounded = false, prev_grounded = false, fromGround = false, checkGrounded = true;
@@ -37,7 +39,7 @@ public abstract class PlayerController : MonoBehaviour
     static public bool yellow = false, blue = false, red = false, pink = false, green = false, black = false, teleorb = false, triggerorb = false;
     static public bool yellow_j = false, red_j = false, blue_j = false, pink_j = false, green_j = false, black_j = false, teleorb_j = false, triggerorb_j = false;
     static public bool yellow_p = false, blue_p = false, red_p = false, pink_p = false;
-    static public bool grav = false, gravN = false, teleA = false;
+    static public bool grav = false, gravN = false, gravC = false, teleA = false;
     static public Vector3 teleB, respawn, teleOrb_translate;
 
     static public float speed, speed0 = 40f, speed1 = 55f, speed2 = 75f, speed3 = 90f, speed4 = 110f, respawn_speed;
@@ -84,7 +86,14 @@ public abstract class PlayerController : MonoBehaviour
 
     [SerializeField] protected LayerMask groundLayer;
     [SerializeField] protected LayerMask deathLayer;
-    
+
+    [SerializeField] protected ParticleSystem grounded_particles;
+    [SerializeField] protected ParticleSystem ground_impact_particles;
+    [SerializeField] protected ParticleSystem speed0_particles;
+    [SerializeField] protected ParticleSystem speed1_particles;
+    [SerializeField] protected ParticleSystem speed2_particles;
+    [SerializeField] protected ParticleSystem speed3_particles;
+    [SerializeField] protected ParticleSystem speed4_particles;
     [SerializeField] protected ParticleSystem death_particles;
     [SerializeField] protected AudioSource death_sfx;
 
@@ -128,11 +137,33 @@ public abstract class PlayerController : MonoBehaviour
     {
         able = a;
     }
+    public void setMini(bool m)
+    {
+        mini = m;
+        ChangeSize();
+    }
 
     // GET METHODS
     public bool isDead()
     {
         return dead;
+    }
+
+    public bool getMini()
+    {
+        return mini;
+    }
+
+    public void playSpeedParticles(int s)
+    {
+        switch(s)
+        {
+            case 0: speed0_particles.Play(); break;
+            case 1: speed1_particles.Play(); break;
+            case 2: speed2_particles.Play(); break;
+            case 3: speed3_particles.Play(); break;
+            case 4: speed4_particles.Play(); break;
+        }
     }
 
     // OnCollision
@@ -187,6 +218,10 @@ public abstract class PlayerController : MonoBehaviour
         {
             gravN = true;
         }
+        if (collision.gameObject.tag == "PortalGravityC")
+        {
+            gravC = true;
+        }
         if (collision.gameObject.tag == "TeleportA")
         {
             teleA = true;
@@ -233,6 +268,7 @@ public abstract class PlayerController : MonoBehaviour
         if (collision.gameObject.tag == "Speed2x")
         {
             speed = speed2;
+            speed2_particles.Play();
         }
         if (collision.gameObject.tag == "Speed3x")
         {

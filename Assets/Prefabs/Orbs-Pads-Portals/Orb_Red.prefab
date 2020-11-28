@@ -5074,9 +5074,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4843508459546585865}
+  - component: {fileID: 7292225071487670465}
+  - component: {fileID: 3038114092164905387}
   m_Layer: 0
   m_Name: Orb_Red
-  m_TagString: Untagged
+  m_TagString: RedOrb
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5099,6 +5101,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7292225071487670465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4843508459546585864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ba127ebc6a8ef94b8b5121905f3d1c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: -300
+  pulse: {fileID: 4843508459428299350}
+  ring: {fileID: 4843508459346485889}
+  TeleportTo: {fileID: 0}
+  sfx: {fileID: 0}
+--- !u!58 &3038114092164905387
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4843508459546585864}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.7
 --- !u!1 &4843508460080382643
 GameObject:
   m_ObjectHideFlags: 0
@@ -10008,11 +10043,10 @@ GameObject:
   - component: {fileID: 4843508460796206224}
   - component: {fileID: 4843508460796206236}
   - component: {fileID: 4843508460796206227}
-  - component: {fileID: 4843508460796206226}
   - component: {fileID: 4843508460796206225}
   m_Layer: 0
   m_Name: Orb_Red_Sprite
-  m_TagString: RedOrb
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10095,7 +10129,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4843508460796206231}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
@@ -10104,22 +10138,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.8
---- !u!114 &4843508460796206226
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4843508460796206231}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ba127ebc6a8ef94b8b5121905f3d1c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: -300
-  pulse: {fileID: 4843508459428299350}
-  ring: {fileID: 4843508459346485889}
-  sfx: {fileID: 0}
 --- !u!114 &4843508460796206225
 MonoBehaviour:
   m_ObjectHideFlags: 0

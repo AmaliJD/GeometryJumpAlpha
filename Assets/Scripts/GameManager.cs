@@ -81,6 +81,9 @@ public class GameManager : MonoBehaviour
     private List<CinemachineVirtualCamera> cameraList;
     CinemachineVirtualCamera activeCamera;
 
+    //PLAYROOM
+    public SpriteRenderer Background;
+
     private void Awake()
     {
         Resources.UnloadUnusedAssets();
@@ -235,9 +238,9 @@ public class GameManager : MonoBehaviour
     }
     public void ReturnToMenu()
     {
-        playercontroller.resetStaticVariables();
-        resetColorChannels();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        //playercontroller.resetStaticVariables();
+        //resetColorChannels();
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     void Update()
     {
@@ -250,6 +253,60 @@ public class GameManager : MonoBehaviour
         {
             Screen.fullScreen = !Screen.fullScreen;
         }
+        if (Input.GetKeyDown("r"))
+        {
+            Restart();
+        }
+
+        // PLAYROOM
+        if (Input.GetKeyDown("c"))
+        {
+            playercontroller.Respawn();
+        }
+        if (Input.GetKeyDown("5"))
+        {
+            playercontroller.setSpeed(0);
+            playercontroller.playSpeedParticles(0);
+        }
+        if (Input.GetKeyDown("1"))
+        {
+            playercontroller.setSpeed(1);
+            playercontroller.playSpeedParticles(1);
+        }
+        if (Input.GetKeyDown("2"))
+        {
+            playercontroller.setSpeed(2);
+            playercontroller.playSpeedParticles(2);
+        }
+        if (Input.GetKeyDown("3"))
+        {
+            playercontroller.setSpeed(3);
+            playercontroller.playSpeedParticles(3);
+        }
+        if (Input.GetKeyDown("4"))
+        {
+            playercontroller.setSpeed(4);
+            playercontroller.playSpeedParticles(4);
+        }
+        if (Input.GetKeyDown("m"))
+        {
+            playercontroller.setMini(!playercontroller.getMini());
+        }
+        if (Input.GetKeyDown("t"))
+        {
+            if (Time.timeScale == 1.0f)
+                Time.timeScale = .3f;
+            else
+                Time.timeScale = 1.0f;
+        }
+        if (Input.GetKey(KeyCode.Backspace))
+        {
+            float h, s, v;
+            Color.RGBToHSV(Background.color, out h, out s, out v);
+
+            Background.color = Color.HSVToRGB(h+.01f, s, v);
+        }
+
 
         if (Input.GetKeyDown("escape"))
         {
@@ -321,7 +378,7 @@ public class GameManager : MonoBehaviour
                 DevTools.color = Color.clear;
                 shortcuts_enabled = false;
             }
-        }*/
+        }//*/
 
 
         if (!game)

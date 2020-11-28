@@ -33,6 +33,7 @@ TagManager:
   - Mega
   - TriggerOrb
   - TeleOrb
+  - PortalGravityC
   layers:
   - Default
   - TransparentFX

@@ -25,6 +25,8 @@ public class CubeController : PlayerController
 
     private float maxSpeed = 110f;
 
+    private Vector3 impact_position = Vector3.zero;
+
     public override void Awake2()
     {
         speed = speed1;
@@ -85,11 +87,13 @@ public class CubeController : PlayerController
         if (mini)
         {
             transform.localScale = new Vector2(.47f, .47f);
-            jumpForce = 15f;
+            transform.position = transform.position - new Vector3(0, .29f, 0);
+            jumpForce = 16.5f;
         }
         else
         {
             transform.localScale = new Vector2(1.05f, 1.05f);
+            transform.position = transform.position + new Vector3(0, .29f, 0);
             jumpForce = 21f;
         }
 
@@ -111,12 +115,16 @@ public class CubeController : PlayerController
                 grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.up, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(crouch_collider, groundLayer));
                 regate = -1;
+                grounded_particles.gravityModifier = -Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = -Mathf.Abs(ground_impact_particles.gravityModifier);
             }
             else
             {//.9
                 grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.down, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(crouch_collider, groundLayer));
                 regate = 1;
+                grounded_particles.gravityModifier = Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = Mathf.Abs(ground_impact_particles.gravityModifier);
             }
             
             //Debug.Log("Grounded: " + grounded);
@@ -153,7 +161,22 @@ public class CubeController : PlayerController
             // Movement Speed
             moveX = Input.GetAxisRaw("Horizontal") * speed;
 
-            
+            if(grounded && (Mathf.Abs(player_body.velocity.x) > .1f || jump))
+            {
+                if (!grounded_particles.isPlaying)
+                {
+                    grounded_particles.Play();
+                } 
+            }
+            else
+            {
+                grounded_particles.Stop();
+            }
+
+            if ((prev_grounded && !grounded) || (!prev_grounded && grounded && prev_velocity > 10f))
+            {
+                ground_impact_particles.Play();
+            }
 
             // JUMP!
             if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
@@ -188,8 +211,20 @@ public class CubeController : PlayerController
                 released = true;
             }
 
+            float hitDist = mini ? 0 : .6f;
+            if (!reversed)
+            {
+                headHit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), Vector2.up, hitDist, groundLayer);
+            }
+            else
+            {
+                headHit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, hitDist, groundLayer);
+            }
+            Debug.DrawLine(transform.position - new Vector3(-1, .2f, 0), transform.position + new Vector3(1, hitDist, 0), Color.red);
+            Debug.Log("headHit: " + headHit.distance);
+
             // CROUCH
-            if (Input.GetAxisRaw("Vertical") < 0 || Input.GetKey(KeyCode.LeftShift) || Input.GetMouseButton(1))
+            if (Input.GetAxisRaw("Vertical") < 0 || Input.GetKey(KeyCode.LeftShift) || Input.GetMouseButton(1) || headHit.distance > 0)
             {
                 crouch = true;
             }
@@ -250,7 +285,22 @@ public class CubeController : PlayerController
         }
 
         // if crouching, change movement controls
-        if (crouch && grounded)
+        if (headHit.distance > 0)
+        {
+            crouch_collider.enabled = true;
+            player_collider.enabled = false;
+
+            Cube_Anim.SetTrigger("Crouch");
+
+            crouched = true;
+
+            if (!grounded)
+            {
+                Vector2 targetVelocity = new Vector2(moveX * Time.fixedDeltaTime * 10f, player_body.velocity.y);
+                player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, 0);
+            }
+        }
+        else if (crouch && grounded)
         {
             if (!crouched)
             {
@@ -289,17 +339,19 @@ public class CubeController : PlayerController
                 Cube_Anim.ResetTrigger("Stretch");
                 Cube_Anim.SetTrigger("Default");
             }
+
             player_collider.enabled = true;
             crouch_collider.enabled = false;
+
             Vector2 targetVelocity = new Vector2(moveX * Time.fixedDeltaTime * 10f, player_body.velocity.y);
 
             if (Mathf.Abs(targetVelocity.x) > Mathf.Abs(player_body.velocity.x) || !grounded)
             {
-                player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * .7f);
+                player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * .7f); // .7
             }
             else
             {
-                player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 1.2f); //1.5
+                player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 1.1f); //1.2
             }
         }
 
@@ -506,6 +558,7 @@ public class CubeController : PlayerController
             yellow_p = false;
             checkGrounded = false;
             grounded = false;
+            jump = false;
 
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
@@ -532,6 +585,7 @@ public class CubeController : PlayerController
             pink_p = false;
             checkGrounded = false;
             grounded = false;
+            jump = false;
 
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
@@ -558,6 +612,7 @@ public class CubeController : PlayerController
             red_p = false;
             checkGrounded = false;
             grounded = false;
+            jump = false;
 
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
@@ -664,6 +719,59 @@ public class CubeController : PlayerController
                 }
 
                 player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
+                grav_scale = player_body.gravityScale;
+                StartCoroutine(RotateAround(Vector3.forward, regate * negate * -180.0f, 0.5f));
+            }
+        }
+        else if (gravC)
+        {
+            gravC = false;
+            fromGround = false;
+            released = false;
+
+            if (reversed)
+            {
+                reversed = false;
+                jumpForce = posJump;
+                trail.emitting = true;
+                /*
+                if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .5f);
+                }
+                else
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .75f);
+                }*/
+                if (player_body.velocity.y >= 15f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, 15f);
+                }
+
+                player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
+                grav_scale = player_body.gravityScale;
+                StartCoroutine(RotateAround(Vector3.forward, regate * negate * -180.0f, 0.5f));
+            }
+            else if (!reversed)
+            {
+                reversed = true;
+                jumpForce = -posJump;
+                trail.emitting = true;
+                /*
+                if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
+                }
+                else
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
+                }*/
+                if (player_body.velocity.y <= -15f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, -15f);
+                }
+
+                player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
                 grav_scale = player_body.gravityScale;
                 StartCoroutine(RotateAround(Vector3.forward, regate * negate * -180.0f, 0.5f));
             }

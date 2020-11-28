@@ -16,7 +16,7 @@ public class IconController : MonoBehaviour
     void Awake()
     {
         //*
-        index = Random.Range(0,19);
+        index = Random.Range(0,20);
 
         float h = 0, h2 = 0, s = 0, v = 0, a = p1.a;
         Color.RGBToHSV(p1, out h, out s, out v);

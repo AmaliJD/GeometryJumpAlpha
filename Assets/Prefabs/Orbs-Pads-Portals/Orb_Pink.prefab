@@ -4982,11 +4982,10 @@ GameObject:
   - component: {fileID: 8727639002678150630}
   - component: {fileID: 8727639002678150634}
   - component: {fileID: 8727639002678150629}
-  - component: {fileID: 8727639002678150628}
   - component: {fileID: 8727639002678150631}
   m_Layer: 0
   m_Name: Orb_Pink_Sprite
-  m_TagString: PinkOrb
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5068,7 +5067,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8727639002678150625}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
@@ -5077,22 +5076,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.7
---- !u!114 &8727639002678150628
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8727639002678150625}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ba127ebc6a8ef94b8b5121905f3d1c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: -300
-  pulse: {fileID: 8727639003404174908}
-  ring: {fileID: 8727639003751668423}
-  sfx: {fileID: 0}
 --- !u!114 &8727639002678150631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5193,9 +5176,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8727639002972393831}
+  - component: {fileID: 9092500945367075167}
+  - component: {fileID: 8886074731447591686}
   m_Layer: 0
   m_Name: Orb_Pink
-  m_TagString: Untagged
+  m_TagString: PinkOrb
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5218,6 +5203,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9092500945367075167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8727639002972393830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ba127ebc6a8ef94b8b5121905f3d1c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: -300
+  pulse: {fileID: 8727639003404174908}
+  ring: {fileID: 8727639003751668423}
+  TeleportTo: {fileID: 0}
+  sfx: {fileID: 0}
+--- !u!58 &8886074731447591686
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8727639002972393830}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.6
 --- !u!1 &8727639003404174908
 GameObject:
   m_ObjectHideFlags: 0

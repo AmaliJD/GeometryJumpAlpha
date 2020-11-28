@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0457ffbc3f8d52d458db5b10ebb9f241, type: 3}
   m_Name: Player Color 2
   m_EditorClassIdentifier: 
-  color: {r: 0.19777489, g: 0.49056602, b: 0, a: 1}
+  color: {r: 0.55605793, g: 0, b: 1, a: 1}
+  reference: {fileID: 0}

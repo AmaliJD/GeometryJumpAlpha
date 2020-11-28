@@ -18,11 +18,13 @@ public class AdaptiveLighting : MonoBehaviour
     {
         if(1 - global.intensity >= 0)
         {
+            light.gameObject.SetActive(true);
             light.intensity = 1 - global.intensity;
         }
         else
         {
             light.intensity = 0;
+            light.gameObject.SetActive(false);
         }
     }
 }

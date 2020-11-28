@@ -80,8 +80,8 @@ public class OrbComponent : MonoBehaviour
         if (j)
         {
             if (pulse.transform.localScale.x == scale && sfx != null) { sfx.PlayOneShot(sfx.clip, 1f); }
-            pulse.transform.localScale = new Vector2(pulse.transform.localScale.x * .92f, pulse.transform.localScale.y * .92f);
-            pulse.GetComponent<SpriteRenderer>().color = new Color(red, green, blue, pulse.GetComponent<SpriteRenderer>().color.a * .92f);
+            pulse.transform.localScale = new Vector2(pulse.transform.localScale.x * .95f, pulse.transform.localScale.y * .95f); //.92
+            pulse.GetComponent<SpriteRenderer>().color = new Color(red, green, blue, pulse.GetComponent<SpriteRenderer>().color.a * .7f); //.92
             pulse_light.intensity = pulse_light.intensity * .9f;
             if (pulse.GetComponent<SpriteRenderer>().color.a <= 0)
             {

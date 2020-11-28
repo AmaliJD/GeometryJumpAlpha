@@ -299,9 +299,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3288254411455058903}
+  - component: {fileID: 4494346137472601902}
+  - component: {fileID: 4685488560264882554}
   m_Layer: 0
   m_Name: B
-  m_TagString: Untagged
+  m_TagString: TeleOrb
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -324,6 +326,39 @@ Transform:
   m_Father: {fileID: 5103076500554530980}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4494346137472601902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3288254411455058900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ba127ebc6a8ef94b8b5121905f3d1c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 300
+  pulse: {fileID: 3288254412218724754}
+  ring: {fileID: 3288254412726134470}
+  TeleportTo: {fileID: 8587006503976209663}
+  sfx: {fileID: 0}
+--- !u!58 &4685488560264882554
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3288254411455058900}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.6
 --- !u!1 &3288254411621338681
 GameObject:
   m_ObjectHideFlags: 0
@@ -564,10 +599,9 @@ GameObject:
   - component: {fileID: 3288254412329595942}
   - component: {fileID: 3288254412329595943}
   - component: {fileID: 3288254412329595940}
-  - component: {fileID: 3288254412329595941}
   m_Layer: 0
   m_Name: Orb_TeleB
-  m_TagString: TeleOrb
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -649,7 +683,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3288254412329595939}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
@@ -676,23 +710,6 @@ MonoBehaviour:
   restSmoothTime: 4
   beatScale: {x: 1.1, y: 1.1}
   restScale: {x: 0.5, y: 0.5}
---- !u!114 &3288254412329595941
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3288254412329595939}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ba127ebc6a8ef94b8b5121905f3d1c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 300
-  pulse: {fileID: 3288254412218724754}
-  ring: {fileID: 3288254412726134470}
-  TeleportTo: {fileID: 8587006503976209663}
-  sfx: {fileID: 0}
 --- !u!1 &3288254412394715979
 GameObject:
   m_ObjectHideFlags: 0
@@ -702,9 +719,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3288254412394715978}
+  - component: {fileID: 6818610371489323765}
+  - component: {fileID: 406246460219999498}
   m_Layer: 0
   m_Name: A
-  m_TagString: Untagged
+  m_TagString: TeleOrb
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -727,6 +746,39 @@ Transform:
   m_Father: {fileID: 5103076500554530980}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6818610371489323765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3288254412394715979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ba127ebc6a8ef94b8b5121905f3d1c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: -300
+  pulse: {fileID: 5103076500955625531}
+  ring: {fileID: 5103076499967006201}
+  TeleportTo: {fileID: 3288254412329595938}
+  sfx: {fileID: 0}
+--- !u!58 &406246460219999498
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3288254412394715979}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.6
 --- !u!1 &3288254412454692092
 GameObject:
   m_ObjectHideFlags: 0
@@ -10815,10 +10867,9 @@ GameObject:
   - component: {fileID: 3719501670636539981}
   - component: {fileID: 3046494039277876117}
   - component: {fileID: 5741112552004585071}
-  - component: {fileID: 4570919494228150612}
   m_Layer: 0
   m_Name: Orb_TeleA
-  m_TagString: TeleOrb
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10899,7 +10950,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5418619730143006808}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
@@ -10926,23 +10977,6 @@ MonoBehaviour:
   restSmoothTime: 4
   beatScale: {x: 1.1, y: 1.1}
   restScale: {x: 0.5, y: 0.5}
---- !u!114 &4570919494228150612
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5418619730143006808}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ba127ebc6a8ef94b8b5121905f3d1c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: -300
-  pulse: {fileID: 5103076500955625531}
-  ring: {fileID: 5103076499967006201}
-  TeleportTo: {fileID: 3288254412329595938}
-  sfx: {fileID: 0}
 --- !u!1 &6750053929875221774
 GameObject:
   m_ObjectHideFlags: 0
