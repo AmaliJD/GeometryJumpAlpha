@@ -221,7 +221,7 @@ public class CubeController : PlayerController
                 headHit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, hitDist, groundLayer);
             }
             Debug.DrawLine(transform.position - new Vector3(-1, .2f, 0), transform.position + new Vector3(1, hitDist, 0), Color.red);
-            Debug.Log("headHit: " + headHit.distance);
+            //Debug.Log("headHit: " + headHit.distance);
 
             // CROUCH
             if (Input.GetAxisRaw("Vertical") < 0 || Input.GetKey(KeyCode.LeftShift) || Input.GetMouseButton(1) || headHit.distance > 0)

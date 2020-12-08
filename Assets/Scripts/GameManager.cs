@@ -87,10 +87,10 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Resources.UnloadUnusedAssets();
-        Screen.SetResolution(1920, 1080, true);
+        Screen.SetResolution(Screen.resolutions[Screen.resolutions.Length - 1].width, Screen.resolutions[Screen.resolutions.Length - 1].height, true);
         Screen.fullScreen = true;
-        prev_width = 1920;
-        prev_height = 1080;
+        prev_width = Screen.width;
+        prev_height = Screen.height;
 
         Restart_Button.onClick.AddListener(Restart);
         Options_Button.onClick.AddListener(Options);
@@ -251,12 +251,45 @@ public class GameManager : MonoBehaviour
         }
         if (Input.GetKeyDown("f"))
         {
-            Screen.fullScreen = !Screen.fullScreen;
+            if (!Screen.fullScreen)
+            {
+                Screen.SetResolution(Screen.resolutions[Screen.resolutions.Length - 1].width, Screen.resolutions[Screen.resolutions.Length - 1].height, true);
+            }
+            else
+            {
+                Screen.fullScreen = !Screen.fullScreen;
+            }
         }
         if (Input.GetKeyDown("r"))
         {
             Restart();
         }
+
+        /*if(!Input.GetMouseButton(0))
+        {
+            if (prev_height != Screen.height && !Screen.fullScreen)
+            {
+                int remainder = Screen.height % 9;
+                int newHeight = Screen.height - remainder;
+
+                Screen.SetResolution((int)(newHeight * aspectratio), newHeight, true);
+                Screen.fullScreen = false;
+
+                prev_height = newHeight;
+                prev_width = Screen.width;
+            }
+            else if (prev_width != Screen.width && !Screen.fullScreen)
+            {
+                int remainder = Screen.width % 16;
+                int newWidth = Screen.width - remainder;
+
+                Screen.SetResolution(newWidth, (int)(newWidth * (1 / aspectratio)), true);
+                Screen.fullScreen = false;
+
+                prev_height = Screen.height;
+                prev_width = newWidth;
+            }
+        }*/
 
         // PLAYROOM
         if (Input.GetKeyDown("c"))
