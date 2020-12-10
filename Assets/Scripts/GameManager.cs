@@ -609,8 +609,8 @@ public class GameManager : MonoBehaviour
 
             //playercontroller.setVariables((Input.GetButton("Jump") || Input.GetKey("space")), reversed, mini);
             playercontroller.setAnimation();
-            playercontroller.setAble(true);
             playercontroller.enabled = true;
+            playercontroller.setAble(true);
 
             return;
         }

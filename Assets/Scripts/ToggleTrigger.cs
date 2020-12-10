@@ -6,19 +6,22 @@ public class ToggleTrigger : MonoBehaviour
 {
     public int activeCount;
     public bool childTrigger;
+    public bool toggleMode;
     GameManager gamemanager;
 
     public GameObject[] on_targets;
     public GameObject[] off_targets;
     private bool omaewamou = false;
+    private bool finished = true;
 
     private void Awake()
     {
         gamemanager = GameObject.FindObjectOfType<GameManager>();
     }
 
-    private void toggle()
+    public void toggle()
     {
+        finished = false;
         foreach(GameObject obj in on_targets)
         {
             obj.SetActive(true);
@@ -27,10 +30,13 @@ public class ToggleTrigger : MonoBehaviour
         {
             obj.SetActive(false);
         }
+        finished = true;
     }
 
-    private IEnumerator Toggle()
+    public IEnumerator Toggle()
     {
+        finished = false;
+
         foreach (GameObject obj in on_targets)
         {
             if(!childTrigger)
@@ -53,7 +59,31 @@ public class ToggleTrigger : MonoBehaviour
             yield return null;
         }
 
-        Destroy(gameObject);
+        if(toggleMode)
+        {
+            /*GameObject[] temp_on = off_targets;
+            GameObject[] temp_off = on_targets;
+
+            off_targets = new GameObject[temp_off.Length];
+            on_targets = new GameObject[temp_on.Length];
+
+            off_targets = temp_off;
+            on_targets = temp_on;*/
+
+            GameObject[] temp = off_targets;
+            off_targets = on_targets;
+            on_targets = temp;
+        }
+
+        finished = true;
+
+        if(omaewamou)
+            Destroy(gameObject);
+    }
+
+    public bool getFinished()
+    {
+        return finished;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

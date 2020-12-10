@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 9077039052743679963}
   m_Layer: 0
   m_Name: ToggleTrigger
-  m_TagString: Untagged
+  m_TagString: ToggleTrigger
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -154,5 +154,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeCount: 0
+  childTrigger: 0
   on_targets: []
   off_targets: []

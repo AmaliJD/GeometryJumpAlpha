@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 6297193685398508634}
   m_Layer: 0
   m_Name: ColorTrigger[0]
-  m_TagString: Untagged
+  m_TagString: ColorTrigger
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

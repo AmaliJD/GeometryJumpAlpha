@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1952926771351277067}
   m_Layer: 0
   m_Name: MusicTrigger
-  m_TagString: Untagged
+  m_TagString: MusicTrigger
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -75,6 +75,8 @@ MonoBehaviour:
   bgmusic: {fileID: 0}
   volume: 0
   fadetime: 0
+  playvolume: 1
+  play: 0
   oneuse: 0
 --- !u!1 &4297783660508541940
 GameObject:

@@ -377,6 +377,13 @@ public class CubeController : PlayerController
             player_body.transform.position += teleOrb_translate;
         }
 
+        if(triggerorb && jump)
+        {
+            triggerorb = false;
+            SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
+            StartCoroutine(spawn.Begin());
+        }
+        
         if (yellow && jump)
         {
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
@@ -899,6 +906,10 @@ public class CubeController : PlayerController
     {
         able = false;
         if (restartmusic) { bgmusic.Stop(); }
+
+        grounded_particles.Stop();
+        ground_impact_particles.Stop();
+
         crouch_collider.enabled = false;
         player_collider.enabled = false;
         StopAllCoroutines();

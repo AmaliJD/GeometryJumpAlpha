@@ -329,6 +329,13 @@ public class AutoController : PlayerController
 
     public override void Jump()
     {
+        if (teleorb && jump)
+        {
+            jump = false;
+            teleorb = false;
+            player_body.transform.position += teleOrb_translate;
+        }
+
         if (yellow && jump)
         {
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
@@ -659,6 +666,10 @@ public class AutoController : PlayerController
     {
         able = false;
         if (restartmusic) { bgmusic.Stop(); }
+
+        grounded_particles.Stop();
+        ground_impact_particles.Stop();
+
         player_collider.enabled = false;
         circle_collider.enabled = false;
         StopAllCoroutines();
@@ -690,6 +701,7 @@ public class AutoController : PlayerController
         death_sfx.PlayOneShot(death_sfx.clip, 1f);
         player_body.gravityScale = 0;
 
+        speed = respawn_speed;
         Invoke("reposition", 1f);
         //player_body.transform.position += respawn - transform.position;
 
@@ -706,10 +718,10 @@ public class AutoController : PlayerController
     {
         if (!enabled)
         {
-            Debug.Log("KMY SORRY");
-            jump = false;
+            Debug.Log("KMS SORRY");
+            //jump = false;
             jump_ground = false;
-            dead = true;
+            //dead = true;
             player_renderer.SetActive(true);
             speed = respawn_speed;
             resetColliders();

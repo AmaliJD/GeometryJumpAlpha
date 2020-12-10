@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 8357185520630936043}
   m_Layer: 0
   m_Name: PulseTrigger[0]
-  m_TagString: Untagged
+  m_TagString: PulseTrigger
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -153,8 +153,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98c8cb8d2d8cfb44db8256116ba77b8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  channelmode: 1
+  copy: 0
   channel: {fileID: 0}
+  objects: []
+  copy_color: {fileID: 0}
   new_color: {r: 1, g: 1, b: 1, a: 1}
+  hue: 0
+  sat: 0
+  val: 0
+  alpha: 0
   duration: 4
   hold: 0
   oneuse: 0

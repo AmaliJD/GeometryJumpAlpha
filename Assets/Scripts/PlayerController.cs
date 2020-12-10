@@ -36,6 +36,7 @@ public abstract class PlayerController : MonoBehaviour
     static public bool crouch = false, crouched = true;
     static public bool facingright = true, upright = true, mini = false;
 
+    static public GameObject OrbTouched = null;
     static public bool yellow = false, blue = false, red = false, pink = false, green = false, black = false, teleorb = false, triggerorb = false;
     static public bool yellow_j = false, red_j = false, blue_j = false, pink_j = false, green_j = false, black_j = false, teleorb_j = false, triggerorb_j = false;
     static public bool yellow_p = false, blue_p = false, red_p = false, pink_p = false;
@@ -170,12 +171,9 @@ public abstract class PlayerController : MonoBehaviour
     protected void OnTriggerStay2D(Collider2D collision)
     {
         if (!enabled) { return; }
-        if (collision.gameObject.tag == "TriggerOrb")
-        {
-            triggerorb = true;
-        }
         if (collision.gameObject.tag == "TeleOrb")
         {
+            OrbTouched = collision.gameObject;
             teleorb = true;
 
             teleOrb_translate = collision.gameObject.GetComponent<OrbComponent>().getTeleport().position - collision.gameObject.GetComponent<OrbComponent>().transform.position;
@@ -184,32 +182,43 @@ public abstract class PlayerController : MonoBehaviour
         if (collision.gameObject.tag == "YellowOrb")
         {
             yellow = true;
+            OrbTouched = collision.gameObject;
         }
         if (collision.gameObject.tag == "BlueOrb")
         {
             blue = true;
+            OrbTouched = collision.gameObject;
         }
         if (collision.gameObject.tag == "PinkOrb")
         {
             pink = true;
+            OrbTouched = collision.gameObject;
         }
         if (collision.gameObject.tag == "RedOrb")
         {
             red = true;
+            OrbTouched = collision.gameObject;
         }
         if (collision.gameObject.tag == "GreenOrb")
         {
             green = true;
+            OrbTouched = collision.gameObject;
         }
         if (collision.gameObject.tag == "BlackOrb")
         {
             black = true;
+            OrbTouched = collision.gameObject;
         }
     }
 
     protected void OnTriggerEnter2D(Collider2D collision)
     {
         if (!enabled) { return; }
+        if (collision.gameObject.tag == "TriggerOrb")
+        {
+            triggerorb = true;
+            OrbTouched = collision.gameObject;
+        }
         if (collision.gameObject.tag == "PortalGravity")
         {
             grav = true;
@@ -239,6 +248,11 @@ public abstract class PlayerController : MonoBehaviour
             }
 
             teleB = tb.position - t.position;
+
+            float distAX = transform.position.x - t.position.x;
+            float offsetBX = distAX * ((Mathf.Abs((tb.rotation.eulerAngles.z - t.rotation.eulerAngles.z)) % 180)/90f);
+            teleB.x -= offsetBX;
+
             teleB.z = 0;
         }
         if (collision.gameObject.tag == "YellowPad")
