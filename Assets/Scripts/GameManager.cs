@@ -63,6 +63,8 @@ public class GameManager : MonoBehaviour
     private SpiderController spidercontroller;
     private AutoSpiderController autospidercontroller;
 
+    private CopterController coptercontroller;
+
     private Checkpoint_Controller checkpointcontroller;
 
     private IconController iconcontroller;
@@ -125,6 +127,8 @@ public class GameManager : MonoBehaviour
 
         spidercontroller = player.GetComponent<SpiderController>();
         autospidercontroller = player.GetComponent<AutoSpiderController>();
+
+        coptercontroller = player.GetComponent<CopterController>();
 
         //------------------------------------------------------------------------------------------------
         playercontroller = cubecontroller;
@@ -511,6 +515,11 @@ public class GameManager : MonoBehaviour
             playercontroller = autospidercontroller;
             return playercontroller;
         }
+        else if (coptercontroller.isActiveAndEnabled)
+        {
+            playercontroller = coptercontroller;
+            return playercontroller;
+        }
         else
         {
             return playercontroller;
@@ -574,7 +583,7 @@ public class GameManager : MonoBehaviour
                 //speed = checkpointcontroller.getSpeed();
             }
 
-            if (mode.Equals("cube")) { playercontroller = cubecontroller; }
+            /*if (mode.Equals("cube")) { playercontroller = cubecontroller; }
             else if (mode.Equals("auto")) { playercontroller = autocontroller; }
             else if (mode.Equals("ship")) { playercontroller = shipcontroller; }
             else if (mode.Equals("auto_ship")) { playercontroller = autoshipcontroller; }
@@ -585,7 +594,24 @@ public class GameManager : MonoBehaviour
             else if (mode.Equals("ball")) { playercontroller = ballcontroller; }
             else if (mode.Equals("auto_ball")) { playercontroller = autoballcontroller; }
             else if (mode.Equals("spider")) { playercontroller = spidercontroller; }
-            else if (mode.Equals("auto_spider")) { playercontroller = autospidercontroller; }
+            else if (mode.Equals("auto_spider")) { playercontroller = autospidercontroller; }*/
+
+            switch(mode)
+            {
+                case "cube": playercontroller = cubecontroller; break;
+                case "auto": playercontroller = autocontroller; break;
+                case "ship": playercontroller = shipcontroller; break;
+                case "auto_ship": playercontroller = autoshipcontroller; break;
+                case "ufo": playercontroller = ufocontroller; break;
+                case "auto_ufo": playercontroller = autoufocontroller; break;
+                case "wave": playercontroller = wavecontroller; break;
+                case "auto_wave": playercontroller = autowavecontroller; break;
+                case "ball": playercontroller = ballcontroller; break;
+                case "auto_ball": playercontroller = autoballcontroller; break;
+                case "spider": playercontroller = spidercontroller; break;
+                case "auto_spider": playercontroller = autospidercontroller; break;
+                case "copter": playercontroller = coptercontroller; break;
+            }
 
             playercontroller.setAble(false);
             playercontroller.setColliders();

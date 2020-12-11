@@ -5,7 +5,7 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class ControllerTrigger : MonoBehaviour
 {
-    public enum Mode { cube, auto, ship, auto_ship, ufo, auto_ufo, wave, auto_wave, ball, auto_ball, spider, auto_spider }
+    public enum Mode { cube, auto, ship, auto_ship, ufo, auto_ufo, wave, auto_wave, ball, auto_ball, spider, auto_spider, copter, auto_copter }
     public Mode mode;
 
     private GameManager gamemanager;
@@ -15,7 +15,7 @@ public class ControllerTrigger : MonoBehaviour
     public bool startmusic = false;
     public bool restartmusic = false;
 
-    public GameObject texture, cube_portal, ship_portal, ufo_portal, wave_portal, ball_portal, spider_portal;
+    public GameObject texture, cube_portal, ship_portal, ufo_portal, wave_portal, ball_portal, spider_portal, copter_portal;
 
     // Start is called before the first frame update
     void Awake()
@@ -32,6 +32,7 @@ public class ControllerTrigger : MonoBehaviour
             else if (mode.ToString().Equals("wave") || mode.ToString().Equals("auto_wave")) { wave_portal.SetActive(true); }
             else if (mode.ToString().Equals("ball") || mode.ToString().Equals("auto_ball")) { ball_portal.SetActive(true); }
             else if (mode.ToString().Equals("spider") || mode.ToString().Equals("auto_spider")) { spider_portal.SetActive(true); }
+            else if (mode.ToString().Equals("copter") || mode.ToString().Equals("auto_copter")) { copter_portal.SetActive(true); }
         }
     }
 
@@ -68,6 +69,7 @@ public class ControllerTrigger : MonoBehaviour
                 wave_portal.SetActive(false);
                 ball_portal.SetActive(false);
                 spider_portal.SetActive(false);
+                copter_portal.SetActive(false);
             }
             else if (mode.ToString().Equals("ship") || mode.ToString().Equals("auto_ship"))
             {
@@ -77,6 +79,7 @@ public class ControllerTrigger : MonoBehaviour
                 wave_portal.SetActive(false);
                 ball_portal.SetActive(false);
                 spider_portal.SetActive(false);
+                copter_portal.SetActive(false);
             }
             else if (mode.ToString().Equals("ufo") || mode.ToString().Equals("auto_ufo"))
             {
@@ -86,6 +89,7 @@ public class ControllerTrigger : MonoBehaviour
                 wave_portal.SetActive(false);
                 ball_portal.SetActive(false);
                 spider_portal.SetActive(false);
+                copter_portal.SetActive(false);
             }
             else if (mode.ToString().Equals("wave") || mode.ToString().Equals("auto_wave"))
             {
@@ -95,6 +99,7 @@ public class ControllerTrigger : MonoBehaviour
                 ufo_portal.SetActive(false);
                 ball_portal.SetActive(false);
                 spider_portal.SetActive(false);
+                copter_portal.SetActive(false);
             }
             else if (mode.ToString().Equals("ball") || mode.ToString().Equals("auto_ball"))
             {
@@ -104,10 +109,22 @@ public class ControllerTrigger : MonoBehaviour
                 ufo_portal.SetActive(false);
                 wave_portal.SetActive(false);
                 spider_portal.SetActive(false);
+                copter_portal.SetActive(false);
             }
             else if (mode.ToString().Equals("spider") || mode.ToString().Equals("auto_spider"))
             {
                 spider_portal.SetActive(true);
+                cube_portal.SetActive(false);
+                ship_portal.SetActive(false);
+                ufo_portal.SetActive(false);
+                wave_portal.SetActive(false);
+                ball_portal.SetActive(false);
+                copter_portal.SetActive(false);
+            }
+            else if (mode.ToString().Equals("copter") || mode.ToString().Equals("auto_copter"))
+            {
+                copter_portal.SetActive(true);
+                spider_portal.SetActive(false);
                 cube_portal.SetActive(false);
                 ship_portal.SetActive(false);
                 ufo_portal.SetActive(false);
@@ -123,6 +140,7 @@ public class ControllerTrigger : MonoBehaviour
             ufo_portal.SetActive(false);
             wave_portal.SetActive(false);
             ball_portal.SetActive(false);
+            copter_portal.SetActive(false);
         }
     }
 #endif

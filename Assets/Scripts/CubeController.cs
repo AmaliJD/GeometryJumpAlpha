@@ -112,7 +112,7 @@ public class CubeController : PlayerController
             // CHECK IF GROUNDED
             if (reversed)
             {
-                grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.up, .51f, groundLayer) && checkGrounded
+                grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2(mini ? .45f : .95f, .1f), 0f, Vector2.up, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(crouch_collider, groundLayer));
                 regate = -1;
                 grounded_particles.gravityModifier = -Mathf.Abs(grounded_particles.gravityModifier);
@@ -120,7 +120,7 @@ public class CubeController : PlayerController
             }
             else
             {//.9
-                grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.down, .51f, groundLayer) && checkGrounded
+                grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2(mini ? .45f : .95f, .1f), 0f, Vector2.down, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(crouch_collider, groundLayer));
                 regate = 1;
                 grounded_particles.gravityModifier = Mathf.Abs(grounded_particles.gravityModifier);
