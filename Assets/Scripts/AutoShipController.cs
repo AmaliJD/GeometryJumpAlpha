@@ -54,7 +54,7 @@ public class AutoShipController : PlayerController
         flame_stream.Play();
 
         player_body.freezeRotation = true;
-        transform.rotation = new Quaternion(0, 0, 0, 0);
+        transform.rotation = Quaternion.Euler(0,0,0);
         upright = true;
 
         maxSpeed = 12;
@@ -63,7 +63,7 @@ public class AutoShipController : PlayerController
         grav_scale = player_body.gravityScale;
 
         grounded_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
-        ground_impact_particles.gameObject.transform.localPosition = new Vector3(-.52f, 0);
+        ground_impact_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
 
         grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
         ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
@@ -83,6 +83,7 @@ public class AutoShipController : PlayerController
 
     public override void ChangeSize()
     {
+        int rev = reversed ? -1 : 1;
         if (mini)
         {
             //player_body.gravityScale = 3.5f;
@@ -92,7 +93,7 @@ public class AutoShipController : PlayerController
             ground_impact_particles.transform.localScale = new Vector2(.47f, .47f);
 
             maxSpeed = 15;
-            transform.localScale = new Vector2(.47f, .47f);
+            transform.localScale = new Vector2(.47f, rev * .47f);
             jumpForce = 7f;
         }
         else
@@ -104,7 +105,7 @@ public class AutoShipController : PlayerController
             ground_impact_particles.transform.localScale = new Vector2(1f, 1f);
 
             maxSpeed = 12;
-            transform.localScale = new Vector2(1.05f, 1.05f);
+            transform.localScale = new Vector2(1.05f, rev * 1.05f);
             jumpForce = 10f;
         }
 
@@ -636,6 +637,44 @@ public class AutoShipController : PlayerController
                     player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
                 }
                 player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
+                grav_scale = player_body.gravityScale;
+            }
+        }
+        else if (gravC)
+        {
+            gravC = false;
+
+            if (reversed)
+            {
+                reversed = false;
+                jumpForce = posJump;
+                trail.emitting = true;
+                if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
+                }
+                else
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
+                }
+                player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
+                grav_scale = player_body.gravityScale;
+            }
+            else if (!reversed)
+            {
+                reversed = true;
+                jumpForce = -posJump;
+                trail.emitting = true;
+                if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
+                }
+                else
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
+                }
+
+                player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
                 grav_scale = player_body.gravityScale;
             }
         }

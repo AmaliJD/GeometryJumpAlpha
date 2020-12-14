@@ -59,7 +59,7 @@ public class CubeController : PlayerController
         grav_scale = player_body.gravityScale;
 
         grounded_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
-        ground_impact_particles.gameObject.transform.localPosition = new Vector3(-.52f, 0);
+        ground_impact_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
 
         grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
         ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);

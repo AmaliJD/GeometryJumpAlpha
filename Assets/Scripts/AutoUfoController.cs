@@ -16,6 +16,8 @@ public class AutoUfoController : PlayerController
     private float moveX, grav_scale;
     private float smoothing;
 
+    private float time;
+
     private float maxSpeed = 17f;
 
     public override void Awake2()
@@ -52,6 +54,12 @@ public class AutoUfoController : PlayerController
         if (reversed) { player_body.gravityScale *= -1; }
         grav_scale = player_body.gravityScale;
 
+        grounded_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
+        ground_impact_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
+
+        grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+        ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
         Vector3 newAngle = new Vector3(0, 0, 0);
         transform.rotation = Quaternion.Euler(newAngle);
 
@@ -70,14 +78,25 @@ public class AutoUfoController : PlayerController
 
     public override void ChangeSize()
     {
+        int rev = reversed ? -1 : 1;
         if (mini)
         {
-            transform.localScale = new Vector2(.47f, .47f);
-            jumpForce = 8f;
+            grounded_particles.startLifetime = .15f;
+            ground_impact_particles.startLifetime = .15f;
+            grounded_particles.transform.localScale = new Vector2(.47f, .47f);
+            ground_impact_particles.transform.localScale = new Vector2(.47f, .47f);
+
+            transform.localScale = new Vector2(.47f, rev * .47f);
+            jumpForce = 10f;
         }
         else
         {
-            transform.localScale = new Vector2(1f, 1f);
+            grounded_particles.startLifetime = .3f;
+            ground_impact_particles.startLifetime = .3f;
+            grounded_particles.transform.localScale = new Vector2(1, 1f);
+            ground_impact_particles.transform.localScale = new Vector2(1f, 1f);
+
+            transform.localScale = new Vector2(1.05f, rev * 1.05f);
             jumpForce = 12.5f;
         }
 
@@ -98,12 +117,24 @@ public class AutoUfoController : PlayerController
                 grounded = /*Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.up, .51f, groundLayer) &&*/ checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(ufo_collider, groundLayer));
                 regate = -1;
+
+                grounded_particles.gravityModifier = -Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = -Mathf.Abs(ground_impact_particles.gravityModifier);
+
+                grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 180);
+                ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 180);
             }
             else
             {//.9
                 grounded = /*Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.down, .51f, groundLayer) &&*/ checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(ufo_collider, groundLayer));
                 regate = 1;
+
+                grounded_particles.gravityModifier = Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = Mathf.Abs(ground_impact_particles.gravityModifier);
+
+                grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+                ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
             }
 
             // IF GROUNDED --> TURN OFF TRAIL
@@ -128,6 +159,32 @@ public class AutoUfoController : PlayerController
 
             // Movement Speed
             moveX = speed;
+
+            // Grounded Particles
+            if (grounded && (Mathf.Abs(player_body.velocity.x) > .2f || jump))
+            {
+                if (!grounded_particles.isPlaying)
+                {
+                    grounded_particles.Play();
+                }
+            }
+            else
+            {
+                grounded_particles.Stop();
+            }
+
+            /*if ((prev_grounded && !grounded) || (!prev_grounded && grounded && prev_velocity > 10f))
+            {
+                ground_impact_particles.Play();
+            }*/
+            if (!grounded && (reversed ? player_body.velocity.y < 0 : player_body.velocity.y > 0))
+            {
+                ground_impact_particles.Play();
+            }
+            else
+            {
+                ground_impact_particles.Stop();
+            }
 
             // JUMP!
             if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space"))
@@ -182,6 +239,8 @@ public class AutoUfoController : PlayerController
             // ... flip the player.
             negate = 1;
             upright = !upright;
+            //transform.rotation = Quaternion.Euler(0, 0, 0);
+
             Flip();
         }
         // Otherwise if the input is moving the player left and the player is facing right...
@@ -190,6 +249,8 @@ public class AutoUfoController : PlayerController
             // ... flip the player.
             negate = -1;
             upright = !upright;
+            //transform.rotation = Quaternion.Euler(0, 0, 180);
+
             Flip();
         }
 
@@ -229,7 +290,7 @@ public class AutoUfoController : PlayerController
         if (reversed) { norm = 5f; rev = 10f; }
 
         if(grounded)
-        {
+        {/*
             if(transform.rotation.z > 0 && transform.rotation.z <= 180)
             {
                 Vector3 newAngle = new Vector3(0, 0, transform.rotation.z - 1);
@@ -239,7 +300,9 @@ public class AutoUfoController : PlayerController
             {
                 Vector3 newAngle = new Vector3(0, 0, transform.rotation.z + 1);
                 transform.rotation = Quaternion.Euler(newAngle);
-            }
+            }*/
+            player_body.freezeRotation = true;
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, 0, 0), .5f);
         }
         else
         {
@@ -301,6 +364,30 @@ public class AutoUfoController : PlayerController
 
     public override void Jump()
     {
+        if (maxSpeed != 17)
+        {
+            maxSpeed = Mathf.Lerp(maxSpeed, 17, time);
+            time += 1f * Time.deltaTime;
+
+            if (time > 1.0f)
+            {
+                time = 0.0f;
+            }
+        }
+
+        if (teleorb && jump)
+        {
+            teleorb = false;
+            player_body.transform.position += teleOrb_translate;
+        }
+
+        if (triggerorb && jump)
+        {
+            triggerorb = false;
+            SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
+            StartCoroutine(spawn.Begin());
+        }
+
         if (yellow && jump)
         {
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
@@ -310,11 +397,15 @@ public class AutoUfoController : PlayerController
 
             jump = false;
             yellow = false;
+
+            maxSpeed = Mathf.Abs(jumpForce) * 1.3f;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.3f);
             trail.emitting = true;
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            time = 0;
         }
         else if (pink && jump)
         {
@@ -326,10 +417,14 @@ public class AutoUfoController : PlayerController
             jump = false;
             pink = false;
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .6f);
+
+            maxSpeed = 17;
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .8f);
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            time = 0;
         }
         else if (red && jump)
         {
@@ -341,10 +436,14 @@ public class AutoUfoController : PlayerController
             jump = false;
             red = false;
             trail.emitting = true;
+
+            maxSpeed = Mathf.Abs(jumpForce) * 1.6f;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.6f);
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            time = 0;
         }
         else if (blue && jump)
         {
@@ -356,6 +455,8 @@ public class AutoUfoController : PlayerController
             jump = false;
             blue = false;
             trail.emitting = true;
+
+            maxSpeed = 17;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .4f);
             reversed = !reversed;
             player_body.gravityScale *= -1;
@@ -363,6 +464,8 @@ public class AutoUfoController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            time = 0;
         }
         else if (green && jump)
         {
@@ -384,12 +487,16 @@ public class AutoUfoController : PlayerController
                 jumpForce = posJump;
             }
             trail.emitting = true;
+
+            maxSpeed = Mathf.Abs(jumpForce) * 1.3f;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.3f);
             player_body.gravityScale *= -1;
             grav_scale *= -1;
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            time = 0;
         }
         else if (black && jump)
         {
@@ -401,7 +508,11 @@ public class AutoUfoController : PlayerController
             black = false;
             jump = false;
             trail.emitting = true;
+
+            maxSpeed = 17;
             player_body.velocity = new Vector2(player_body.velocity.x, -jumpForce * 1.2f);
+
+            time = 0;
         }
         else if(jump)
         {
@@ -429,6 +540,17 @@ public class AutoUfoController : PlayerController
 
     public override void Pad()
     {
+        if (maxSpeed != 17)
+        {
+            maxSpeed = Mathf.Lerp(maxSpeed, 17, time);
+            time += 1f * Time.deltaTime;
+
+            if (time > 1.0f)
+            {
+                time = 0.0f;
+            }
+        }
+
         if (yellow_p)
         {
             //yellow_p = false;
@@ -443,10 +565,14 @@ public class AutoUfoController : PlayerController
             //animator.SetBool("Orb", true);
             //jump = false;
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.2f);
+
+            maxSpeed = Mathf.Abs(jumpForce) * 1.4f;
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.4f);
             yellow_p = false;
 
             checkGrounded = true;
+
+            time = 0;
         }
         else if (pink_p)
         {
@@ -460,10 +586,13 @@ public class AutoUfoController : PlayerController
 
             //jump = false;
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .8f);
+
+            maxSpeed = 17;
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .9f);
             pink_p = false;
 
             checkGrounded = true;
+            time = 0;
         }
         else if (red_p)
         {
@@ -476,10 +605,13 @@ public class AutoUfoController : PlayerController
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
 
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.5f);
+            maxSpeed = Mathf.Abs(jumpForce) * 1.9f;
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.9f);
             red_p = false;
 
             checkGrounded = true;
+
+            time = 0;
         }
         else if (blue_p)
         {
@@ -494,12 +626,16 @@ public class AutoUfoController : PlayerController
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(true);
 
             trail.emitting = true;
+
+            maxSpeed = 17;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .4f);
             reversed = !reversed;
             player_body.gravityScale *= -1;
             grav_scale *= -1;
 
             checkGrounded = true;
+
+            time = 0;
         }
     }
 
@@ -538,13 +674,51 @@ public class AutoUfoController : PlayerController
                 trail.emitting = true;
                 if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
                 {
-                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .5f);
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
                 }
                 else
                 {
-                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .75f);
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
                 }
                 player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
+                grav_scale = player_body.gravityScale;
+            }
+        }
+        else if (gravC)
+        {
+            gravC = false;
+
+            if (reversed)
+            {
+                reversed = false;
+                jumpForce = posJump;
+                trail.emitting = true;
+                if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
+                }
+                else
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
+                }
+                player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
+                grav_scale = player_body.gravityScale;
+            }
+            else if (!reversed)
+            {
+                reversed = true;
+                jumpForce = -posJump;
+                trail.emitting = true;
+                if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
+                }
+                else
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
+                }
+
+                player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
                 grav_scale = player_body.gravityScale;
             }
         }
@@ -587,15 +761,17 @@ public class AutoUfoController : PlayerController
 
         if (reversed)
         {
+            upright = false;
             player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
             grav_scale = player_body.gravityScale;
-            transform.rotation = new Quaternion(0, 0, 180, 0);
+            transform.localScale = new Vector2(transform.localScale.x, -Mathf.Abs(transform.localScale.y));
         }
         else
         {
+            upright = true;
             player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
             grav_scale = player_body.gravityScale;
-            transform.rotation = new Quaternion(0, 0, 0, 0);
+            transform.localScale = new Vector2(transform.localScale.x, Mathf.Abs(transform.localScale.y));
         }
 
         player_renderer.SetActive(false);
@@ -614,7 +790,8 @@ public class AutoUfoController : PlayerController
     {
         player_body.transform.position += respawn - transform.position;
         player_collider.enabled = true;
-        Invoke("undead", .5f);
+        //Invoke("undead", .5f);
+        undead();
     }
 
     public void undead()

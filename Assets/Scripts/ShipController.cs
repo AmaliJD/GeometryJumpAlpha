@@ -57,7 +57,7 @@ public class ShipController : PlayerController
         grav_scale = player_body.gravityScale;
 
         grounded_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
-        ground_impact_particles.gameObject.transform.localPosition = new Vector3(-.52f, 0);
+        ground_impact_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
 
         grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
         ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
@@ -155,6 +155,7 @@ public class ShipController : PlayerController
             // Movement Speed
             moveX = Input.GetAxisRaw("Horizontal") * speed;
 
+            // Grounded Particles
             if (grounded_indirection && (Mathf.Abs(player_body.velocity.x) > .2f || jump))
             {
                 if (!grounded_particles.isPlaying)
@@ -704,13 +705,13 @@ public class ShipController : PlayerController
         {
             player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
             grav_scale = player_body.gravityScale;
-            transform.rotation = new Quaternion(0, 0, 180, 0);
+            transform.rotation = Quaternion.Euler(0, 0, 180);
         }
         else
         {
             player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
             grav_scale = player_body.gravityScale;
-            transform.rotation = new Quaternion(0, 0, 0, 0);
+            transform.rotation = Quaternion.Euler(0, 0, 0);
         }
 
         player_renderer.SetActive(false);
