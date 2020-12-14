@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using Cinemachine;
 
 public class AutoBallController : PlayerController
 {
@@ -16,7 +17,7 @@ public class AutoBallController : PlayerController
     private float moveX, grav_scale;
     private float smoothing;
 
-    private float maxSpeed = 15*1.5f;
+    private float maxSpeed = 15*1.6f;
 
     public override void Awake2()
     {
@@ -278,11 +279,25 @@ public class AutoBallController : PlayerController
 
     public override void Jump()
     {
+        if (teleorb && jump)
+        {
+            jump = false;
+            teleorb = false;
+            player_body.transform.position += teleOrb_translate;
+        }
+
+        if (triggerorb && jump)
+        {
+            triggerorb = false;
+            SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
+            StartCoroutine(spawn.Begin());
+        }
+
         if (yellow && jump)
         {
             jump = false;
             yellow = false;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.1f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.2f);
             trail.emitting = true;
 
             if (grav) { grav = false; }
@@ -293,7 +308,7 @@ public class AutoBallController : PlayerController
             jump = false;
             pink = false;
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .8f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .9f);
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
@@ -303,7 +318,7 @@ public class AutoBallController : PlayerController
             jump = false;
             red = false;
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.35f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.4f);
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
@@ -337,7 +352,7 @@ public class AutoBallController : PlayerController
                 jumpForce = posJump;
             }
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.1f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.2f);
             player_body.gravityScale *= -1;
             grav_scale *= -1;
 
@@ -388,7 +403,7 @@ public class AutoBallController : PlayerController
             //animator.SetBool("Orb", true);
             //jump = false;
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.2f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.3f);
             yellow_p = false;
 
             checkGrounded = true;
@@ -480,12 +495,16 @@ public class AutoBallController : PlayerController
         }
         else if (teleA)
         {
+            Vector3 positionDelta = (transform.position + teleB) - transform.position;
             //trail.emitting = false;
             //trail.Clear();
             trail.enabled = true;
             teleA = false;
             player_body.transform.position += teleB;
             //trail.enabled = true;
+
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
         }
     }
 
@@ -713,7 +732,9 @@ public class AutoBallController : PlayerController
     {
         player_body.transform.position += respawn - transform.position;
         player_collider.enabled = true;
-        Invoke("undead", .5f);
+
+        undead();
+        //Invoke("undead", .5f);
     }
 
     public void undead()

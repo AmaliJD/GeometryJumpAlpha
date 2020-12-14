@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using Cinemachine;
 
 public class AutoUfoController : PlayerController
 {
@@ -788,9 +789,14 @@ public class AutoUfoController : PlayerController
 
     public void reposition()
     {
+        Vector3 positionDelta = respawn - transform.position;
         player_body.transform.position += respawn - transform.position;
         player_collider.enabled = true;
         //Invoke("undead", .5f);
+
+        CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+        activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
+
         undead();
     }
 

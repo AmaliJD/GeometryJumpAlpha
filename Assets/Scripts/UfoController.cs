@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using Cinemachine;
 
 public class UfoController : PlayerController
 {
@@ -703,12 +704,16 @@ public class UfoController : PlayerController
         }
         else if (teleA)
         {
+            Vector3 positionDelta = (transform.position + teleB) - transform.position;
             //trail.emitting = false;
             //trail.Clear();
             trail.enabled = true;
             teleA = false;
             player_body.transform.position += teleB;
             //trail.enabled = true;
+
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
         }
     }
 
@@ -767,9 +772,14 @@ public class UfoController : PlayerController
 
     public void reposition()
     {
+        Vector3 positionDelta = respawn - transform.position;
         player_body.transform.position += respawn - transform.position;
         player_collider.enabled = true;
         //Invoke("undead", .5f);
+
+        CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+        activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
+
         undead();
     }
 

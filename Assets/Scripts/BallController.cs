@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using Cinemachine;
 
 public class BallController : PlayerController
 {
@@ -17,7 +18,7 @@ public class BallController : PlayerController
     private float moveX, grav_scale;
     private float smoothing;
 
-    private float maxSpeed = 15 * 1.5f;
+    private float maxSpeed = 15 * 1.6f;
 
     public override void Awake2()
     {
@@ -63,12 +64,12 @@ public class BallController : PlayerController
         if (mini)
         {
             transform.localScale = new Vector2(.47f, .47f);
-            jumpForce = 8f;
+            jumpForce = 13f;
         }
         else
         {
             transform.localScale = new Vector2(1f, 1f);
-            jumpForce = 12.5f;
+            jumpForce = 15f;
         }
 
         posJump = jumpForce;
@@ -85,13 +86,13 @@ public class BallController : PlayerController
             // CHECK IF GROUNDED
             if (reversed)
             {
-                grounded = /*Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.up, .51f, groundLayer) &&*/ checkGrounded
+                grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.up, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(circle_collider, groundLayer));
                 regate = -1;
             }
             else
             {//.9
-                grounded = /*Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.down, .51f, groundLayer) &&*/ checkGrounded
+                grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.down, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(circle_collider, groundLayer));
                 regate = 1;
             }
@@ -194,7 +195,7 @@ public class BallController : PlayerController
         }
         else
         {
-            player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 1.5f);
+            player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 1.1f);
         }
 
         /*
@@ -304,11 +305,25 @@ public class BallController : PlayerController
 
     public override void Jump()
     {
+        if (teleorb && jump)
+        {
+            jump = false;
+            teleorb = false;
+            player_body.transform.position += teleOrb_translate;
+        }
+
+        if (triggerorb && jump)
+        {
+            triggerorb = false;
+            SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
+            StartCoroutine(spawn.Begin());
+        }
+
         if (yellow && jump)
         {
             jump = false;
             yellow = false;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.1f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.2f);
             trail.emitting = true;
 
             if (grav) { grav = false; }
@@ -319,7 +334,7 @@ public class BallController : PlayerController
             jump = false;
             pink = false;
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .8f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .9f);
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
@@ -329,7 +344,7 @@ public class BallController : PlayerController
             jump = false;
             red = false;
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.35f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.4f);
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
@@ -363,7 +378,7 @@ public class BallController : PlayerController
                 jumpForce = posJump;
             }
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.1f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.2f);
             player_body.gravityScale *= -1;
             grav_scale *= -1;
 
@@ -414,7 +429,7 @@ public class BallController : PlayerController
             //animator.SetBool("Orb", true);
             //jump = false;
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.2f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.3f);
             yellow_p = false;
 
             checkGrounded = true;
@@ -506,12 +521,16 @@ public class BallController : PlayerController
         }
         else if (teleA)
         {
+            Vector3 positionDelta = (transform.position + teleB) - transform.position;
             //trail.emitting = false;
             //trail.Clear();
             trail.enabled = true;
             teleA = false;
             player_body.transform.position += teleB;
             //trail.enabled = true;
+
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
         }
     }
 
