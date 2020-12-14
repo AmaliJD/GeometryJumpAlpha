@@ -8,6 +8,7 @@ public class CubeController : PlayerController
 
     public TrailRenderer trail;
 
+    public GameObject copter;
     public GameObject jetpack;
     public GameObject ship;
     public GameObject ufo;
@@ -57,10 +58,17 @@ public class CubeController : PlayerController
         if (reversed) { player_body.gravityScale *= -1; }
         grav_scale = player_body.gravityScale;
 
+        grounded_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
+        ground_impact_particles.gameObject.transform.localPosition = new Vector3(-.52f, 0);
+
+        grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+        ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
         ChangeSize();
 
         icon.transform.localScale = new Vector3(1f, 1f, 1f);
         icon.transform.localPosition = new Vector3(0, 0, 0);
+        copter.SetActive(false);
         jetpack.SetActive(false);
         ship.SetActive(false);
         ufo.SetActive(false);
@@ -84,16 +92,25 @@ public class CubeController : PlayerController
 
     public override void ChangeSize()
     {
+        int rev = reversed ? -1 : 1;
         if (mini)
         {
+            grounded_particles.startLifetime = .15f;
+            ground_impact_particles.startLifetime = .15f;
+            grounded_particles.transform.localScale = new Vector2(.47f, .47f);
+            ground_impact_particles.transform.localScale = new Vector2(.47f, .47f);
             transform.localScale = new Vector2(.47f, .47f);
-            transform.position = transform.position - new Vector3(0, .29f, 0);
+            transform.position = transform.position - new Vector3(0, rev * .29f, 0);
             jumpForce = 16.5f;
         }
         else
         {
+            grounded_particles.startLifetime = .3f;
+            ground_impact_particles.startLifetime = .3f;
+            grounded_particles.transform.localScale = new Vector2(1, 1f);
+            ground_impact_particles.transform.localScale = new Vector2(1f, 1f);
             transform.localScale = new Vector2(1.05f, 1.05f);
-            transform.position = transform.position + new Vector3(0, .29f, 0);
+            transform.position = transform.position + new Vector3(0, rev * .29f, 0);
             jumpForce = 21f;
         }
 
@@ -161,6 +178,7 @@ public class CubeController : PlayerController
             // Movement Speed
             moveX = Input.GetAxisRaw("Horizontal") * speed;
 
+            // Grounded Particles
             if(grounded && (Mathf.Abs(player_body.velocity.x) > .1f || jump))
             {
                 if (!grounded_particles.isPlaying)
@@ -218,9 +236,10 @@ public class CubeController : PlayerController
             }
             else
             {
-                headHit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, hitDist, groundLayer);
+                headHit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), -Vector2.up, hitDist, groundLayer);
             }
-            Debug.DrawLine(transform.position - new Vector3(-1, .2f, 0), transform.position + new Vector3(1, hitDist, 0), Color.red);
+            int rev = reversed ? -1 : 1;
+            Debug.DrawLine(transform.position - new Vector3(-1, rev * .2f, 0), transform.position + new Vector3(1, rev * hitDist, 0), Color.red);
             //Debug.Log("headHit: " + headHit.distance);
 
             // CROUCH

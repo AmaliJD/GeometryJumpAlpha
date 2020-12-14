@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using Cinemachine;
 
 public class AutoShipController : PlayerController
 {
@@ -36,7 +37,7 @@ public class AutoShipController : PlayerController
         setRespawn(transform.position, reversed, mini);
         setRepawnSpeed(1f);
 
-        eyes = GameObject.Find("Icon_Eyes");
+        //eyes = GameObject.Find("Icon_Eyes");
         //icon = eyes.transform.parent.gameObject;
         //setAnimation();
     }
@@ -56,9 +57,16 @@ public class AutoShipController : PlayerController
         transform.rotation = new Quaternion(0, 0, 0, 0);
         upright = true;
 
+        maxSpeed = 12;
         player_body.gravityScale = 3.3f;
         if (reversed) { player_body.gravityScale *= -1; }
         grav_scale = player_body.gravityScale;
+
+        grounded_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
+        ground_impact_particles.gameObject.transform.localPosition = new Vector3(-.52f, 0);
+
+        grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+        ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
         icon.transform.localScale = new Vector3(.65f, .65f, 1f);
         icon.transform.localPosition = new Vector3(.08f, .17f, 0);
@@ -77,13 +85,27 @@ public class AutoShipController : PlayerController
     {
         if (mini)
         {
+            //player_body.gravityScale = 3.5f;
+            grounded_particles.startLifetime = .15f;
+            ground_impact_particles.startLifetime = .15f;
+            grounded_particles.transform.localScale = new Vector2(.47f, .47f);
+            ground_impact_particles.transform.localScale = new Vector2(.47f, .47f);
+
+            maxSpeed = 15;
             transform.localScale = new Vector2(.47f, .47f);
-            jumpForce = 8f;
+            jumpForce = 7f;
         }
         else
         {
-            transform.localScale = new Vector2(1f, 1f);
-            jumpForce = 12.5f;
+            //player_body.gravityScale = 3.3f;
+            grounded_particles.startLifetime = .3f;
+            ground_impact_particles.startLifetime = .3f;
+            grounded_particles.transform.localScale = new Vector2(1, 1f);
+            ground_impact_particles.transform.localScale = new Vector2(1f, 1f);
+
+            maxSpeed = 12;
+            transform.localScale = new Vector2(1.05f, 1.05f);
+            jumpForce = 10f;
         }
 
         posJump = jumpForce;
@@ -99,14 +121,22 @@ public class AutoShipController : PlayerController
 
             // CHECK IF GROUNDED
             grounded = checkGrounded && Physics2D.IsTouchingLayers(ship_collider, groundLayer);
-            
+
+            bool grounded_indirection = Physics2D.BoxCast(player_body.transform.position, new Vector2(mini ? .45f : .95f, .1f), 0f, reversed ? Vector2.up : Vector2.down, .51f, groundLayer);
+
             if (reversed)
             {
                 regate = -1;
+
+                grounded_particles.gravityModifier = -Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = -Mathf.Abs(ground_impact_particles.gravityModifier);
             }
             else
             {//.9
                 regate = 1;
+
+                grounded_particles.gravityModifier = Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = Mathf.Abs(ground_impact_particles.gravityModifier);
             }
 
             // IF GROUNDED --> TURN OFF TRAIL
@@ -132,13 +162,32 @@ public class AutoShipController : PlayerController
             // Movement Speed
             moveX = speed;
 
-            // JUMP!
-            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space"))
+            if (grounded_indirection && (Mathf.Abs(player_body.velocity.x) > .2f || jump))
             {
-                if (!grounded || yellow || pink || red || green || blue || black)
+                if (!grounded_particles.isPlaying)
+                {
+                    grounded_particles.Play();
+                }
+            }
+            else
+            {
+                grounded_particles.Stop();
+            }
+
+            if ((prev_grounded && !grounded_indirection) || (!prev_grounded && grounded_indirection && prev_velocity > 10f))
+            {
+                ground_impact_particles.Play();
+            }
+
+            // JUMP!
+            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
+            {
+                if (!grounded || yellow_j || pink_j || red_j || green_j || blue_j || black_j || triggerorb_j || teleorb_j)
                 {
                     isjumping = true;
                 }
+                if (triggerorb) { triggerorb_j = true; }
+                if (teleorb) { teleorb_j = true; }
                 if (yellow) { yellow_j = true; }
                 if (red) { red_j = true;}
                 if (pink) { pink_j = true; }
@@ -151,7 +200,7 @@ public class AutoShipController : PlayerController
             }
 
             // RELEASE JUMP
-            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space"))
+            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
                 isjumping = false;
                 jump = false;
@@ -244,22 +293,24 @@ public class AutoShipController : PlayerController
         if (grounded)
         {
             player_body.freezeRotation = true;
-            transform.rotation = new Quaternion(0, 0, 0, 0);
-            transform.rotation = Quaternion.Lerp(transform.rotation, new Quaternion(0, 0, 0, 0), .5f);
+            //transform.rotation = new Quaternion(0, 0, 0, 0);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0,0,0), .5f);
         }
         else if (player_body.velocity.y >= 0)
         {
             player_body.freezeRotation = false;
             //Vector3 newAngle = new Vector3(0, 0, player_body.velocity.y / .25f);
             Vector3 newAngle = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan(player_body.velocity.y / player_body.velocity.x));
-            transform.rotation = Quaternion.Euler(newAngle);
+            //transform.rotation = Quaternion.Euler(newAngle);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(newAngle), mini ? 1f : .3f);
         }
         else
         {
             player_body.freezeRotation = false;
             //Vector3 newAngle = new Vector3(0, 0, 360 + (player_body.velocity.y / .25f));
             Vector3 newAngle = new Vector3(0, 0, 360 + (Mathf.Rad2Deg * Mathf.Atan(player_body.velocity.y / player_body.velocity.x)));
-            transform.rotation = Quaternion.Euler(newAngle);
+            //transform.rotation = Quaternion.Euler(newAngle);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(newAngle), mini ? 1f : .3f);
         }
     }
 
@@ -310,15 +361,30 @@ public class AutoShipController : PlayerController
     {
         trail.emitting = true;
 
-        if(maxSpeed != 12)
+        if(maxSpeed != (mini ? 15 : 12))
         {
-            maxSpeed = Mathf.Lerp(maxSpeed, 12, time);
+            maxSpeed = Mathf.Lerp(maxSpeed, (mini ? 15 : 12), time);
             time += 1f * Time.deltaTime;
 
             if (time > 1.0f)
             {
                 time = 0.0f;
             }
+        }
+
+        if (teleorb_j && jump)
+        {
+            teleorb_j = false;
+            teleorb = false;
+            player_body.transform.position += teleOrb_translate;
+        }
+
+        if (triggerorb_j && jump)
+        {
+            triggerorb_j = false;
+            triggerorb = false;
+            SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
+            StartCoroutine(spawn.Begin());
         }
 
         if (yellow_j)
@@ -361,8 +427,8 @@ public class AutoShipController : PlayerController
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
 
-            maxSpeed = 12f;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .5f);
+            maxSpeed = (mini ? 15 : 12);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce);
             time = 0;
         }
         else if (blue_j)
@@ -379,7 +445,7 @@ public class AutoShipController : PlayerController
 
             reversed = !reversed;
 
-            maxSpeed = 12f;
+            maxSpeed = (mini ? 15 : 12);
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .7f);
 
             player_body.gravityScale *= -1;
@@ -442,7 +508,7 @@ public class AutoShipController : PlayerController
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(true);
-            player_body.AddForce(new Vector2(0, 23f * grav_scale));
+            player_body.AddForce(new Vector2(0, 24f * grav_scale));
         }
     }
 
@@ -458,9 +524,9 @@ public class AutoShipController : PlayerController
 
     public override void Pad()
     {
-        if(maxSpeed != 12)
+        if(maxSpeed != (mini ? 15 : 12))
         {
-            maxSpeed = Mathf.Lerp(maxSpeed, 12, time);
+            maxSpeed = Mathf.Lerp(maxSpeed, (mini ? 15 : 12), time);
             time += 1f * Time.deltaTime;
 
             if (time > 1.0f)
@@ -504,8 +570,8 @@ public class AutoShipController : PlayerController
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
 
-            maxSpeed = 12f;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .5f);
+            maxSpeed = (mini ? 15 : 12);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce);
             time = 0;
         }
         else if (blue_p)
@@ -563,11 +629,11 @@ public class AutoShipController : PlayerController
                 trail.emitting = true;
                 if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
                 {
-                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .5f);
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
                 }
                 else
                 {
-                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .75f);
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
                 }
                 player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
                 grav_scale = player_body.gravityScale;
@@ -604,6 +670,10 @@ public class AutoShipController : PlayerController
         able = false;
         check_death = false;
         if (restartmusic) { bgmusic.Stop(); }
+
+        grounded_particles.Stop();
+        ground_impact_particles.Stop();
+
         player_collider.enabled = false;
         ship_collider.enabled = false;
         StopAllCoroutines();
@@ -622,13 +692,15 @@ public class AutoShipController : PlayerController
         {
             player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
             grav_scale = player_body.gravityScale;
-            transform.rotation = new Quaternion(0, 0, 180, 0);
+            //upright = false;
+            //transform.rotation = new Quaternion(0, 0, 180, 0);
         }
         else
         {
             player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
             grav_scale = player_body.gravityScale;
-            transform.rotation = new Quaternion(0, 0, 0, 0);
+            //upright = true;
+            //transform.rotation = new Quaternion(0, 0, 0, 0);
         }
 
         player_renderer.SetActive(false);
@@ -645,17 +717,22 @@ public class AutoShipController : PlayerController
 
     public void reposition()
     {
-        //player_body.transform.position += respawn - transform.position;
-        transform.position = new Vector3(respawn.x, respawn.y, transform.position.z);
+        Vector3 positionDelta = respawn - transform.position;
+        transform.position = respawn;
         player_collider.enabled = true;
-        Invoke("undead", .5f);
+
+        CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+        activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
+
+        //Invoke("undead", .5f);
+        undead();
     }
 
     public void undead()
     {
         if (!enabled)
         {
-            Debug.Log("KMY SORRY");
+            Debug.Log("KMS SORRY");
             jump = false;
             dead = true;
             player_renderer.SetActive(true);
@@ -725,7 +802,7 @@ public class AutoShipController : PlayerController
         jump = false;
 
         player_collider.isTrigger = false;
-        player_collider.enabled = false;
+        player_collider.enabled = true;
         ship_collider.enabled = false;
     }
     public override void setColliders()

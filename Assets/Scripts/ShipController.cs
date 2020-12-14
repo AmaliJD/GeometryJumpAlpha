@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using Cinemachine;
 
 public class ShipController : PlayerController
 {
@@ -19,7 +20,7 @@ public class ShipController : PlayerController
 
     private float time;
 
-    private float maxSpeed = 6f;
+    private float maxSpeed = 12f;
 
     public override void Awake2()
     {
@@ -31,6 +32,8 @@ public class ShipController : PlayerController
         player_collider = GetComponent<Collider2D>();
 
         grav_scale = player_body.gravityScale;
+        setRespawn(transform.position, reversed, mini);
+        setRepawnSpeed(1f);
         //icon = eyes.transform.parent.gameObject;
         //setAnimation();
     }
@@ -53,12 +56,18 @@ public class ShipController : PlayerController
         if (reversed) { player_body.gravityScale *= -1; }
         grav_scale = player_body.gravityScale;
 
+        grounded_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
+        ground_impact_particles.gameObject.transform.localPosition = new Vector3(-.52f, 0);
+
+        grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+        ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
         icon.transform.localScale = new Vector3(1f, 1f, 1f);
         icon.transform.localPosition = new Vector3(0f, 0f, 0);
         jetpack.SetActive(true);
         icon.SetActive(true);
 
-        eyes = GameObject.Find("Icon_Eyes");
+        //eyes = GameObject.Find("Icon_Eyes");
         trail1.transform.localPosition = new Vector3(-.5f, -.35f, 0);
 
         eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
@@ -70,13 +79,23 @@ public class ShipController : PlayerController
     {
         if (mini)
         {
+            grounded_particles.startLifetime = .15f;
+            ground_impact_particles.startLifetime = .15f;
+            grounded_particles.transform.localScale = new Vector2(.47f, .47f);
+            ground_impact_particles.transform.localScale = new Vector2(.47f, .47f);
+
             transform.localScale = new Vector2(.47f, .47f);
-            jumpForce = 8f;
+            jumpForce = 7f;
         }
         else
         {
-            transform.localScale = new Vector2(1f, 1f);
-            jumpForce = 12.5f;
+            grounded_particles.startLifetime = .3f;
+            ground_impact_particles.startLifetime = .3f;
+            grounded_particles.transform.localScale = new Vector2(1, 1f);
+            ground_impact_particles.transform.localScale = new Vector2(1f, 1f);
+
+            transform.localScale = new Vector2(1.05f, 1.05f);
+            jumpForce = 10f;
         }
 
         posJump = jumpForce;
@@ -91,15 +110,26 @@ public class ShipController : PlayerController
             //grounded = Physics2D.Raycast(player_body.transform.position, Vector2.down, .51f, groundLayer);
 
             // CHECK IF GROUNDED
-            grounded = checkGrounded && Physics2D.IsTouchingLayers(player_collider, groundLayer);
+            //grounded = checkGrounded && Physics2D.IsTouchingLayers(player_collider, groundLayer);
+            grounded = (Physics2D.BoxCast(player_body.transform.position, new Vector2(mini ? .45f : .95f, .1f), 0f, Vector2.up, .51f, groundLayer) ||
+                Physics2D.BoxCast(player_body.transform.position, new Vector2(mini ? .45f : .95f, .1f), 0f, Vector2.down, .51f, groundLayer))
+                && checkGrounded && (Physics2D.IsTouchingLayers(player_collider, groundLayer));
+
+            bool grounded_indirection = Physics2D.BoxCast(player_body.transform.position, new Vector2(mini ? .45f : .95f, .1f), 0f, reversed ? Vector2.up : Vector2.down, .51f, groundLayer);
 
             if (reversed)
             {
                 regate = -1;
+
+                grounded_particles.gravityModifier = -Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = -Mathf.Abs(ground_impact_particles.gravityModifier);
             }
             else
             {//.9
                 regate = 1;
+
+                grounded_particles.gravityModifier = Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = Mathf.Abs(ground_impact_particles.gravityModifier);
             }
 
             // IF GROUNDED --> TURN OFF TRAIL
@@ -125,16 +155,35 @@ public class ShipController : PlayerController
             // Movement Speed
             moveX = Input.GetAxisRaw("Horizontal") * speed;
 
-            // JUMP!
-            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space"))
+            if (grounded_indirection && (Mathf.Abs(player_body.velocity.x) > .2f || jump))
             {
+                if (!grounded_particles.isPlaying)
+                {
+                    grounded_particles.Play();
+                }
+            }
+            else
+            {
+                grounded_particles.Stop();
+            }
+
+            if ((prev_grounded && !grounded_indirection) || (!prev_grounded && grounded_indirection && prev_velocity > 10f))
+            {
+                ground_impact_particles.Play();
+            }
+
+            // JUMP!
+            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
+            {
+                if (triggerorb) { triggerorb_j = true; }
+                if (teleorb) { teleorb_j = true; }
                 if (yellow) { yellow_j = true; }
                 if (red) { red_j = true; }
                 if (pink) { pink_j = true; }
                 if (blue) { blue_j = true; }
                 if (green) { green_j = true; }
                 if (black) { black_j = true; }
-                if (yellow_j || pink_j || red_j || green_j || blue_j || black_j)
+                if (yellow_j || pink_j || red_j || green_j || blue_j || black_j || teleorb_j || triggerorb_j)
                 {
                     isjumping = true;
                 }
@@ -145,7 +194,7 @@ public class ShipController : PlayerController
             }
 
             // RELEASE JUMP
-            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space"))
+            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
                 isjumping = false;
                 jump = false;
@@ -182,6 +231,8 @@ public class ShipController : PlayerController
         if (able)
         {
             Move();
+
+            transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), Mathf.Abs(transform.localScale.y));
         }
     }
 
@@ -193,7 +244,9 @@ public class ShipController : PlayerController
             // ... flip the player.
             negate = 1;
             upright = !upright;
-            Flip();
+
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+            //Flip();
         }
         // Otherwise if the input is moving the player left and the player is facing right...
         else if (reversed && upright)
@@ -201,7 +254,9 @@ public class ShipController : PlayerController
             // ... flip the player.
             negate = -1;
             upright = !upright;
-            Flip();
+
+            transform.rotation = Quaternion.Euler(0, 0, 180);
+            //Flip();
         }
 
         // movement controls
@@ -209,13 +264,13 @@ public class ShipController : PlayerController
         //player_body.velocity = targetVelocity;
 
         
-        if (Mathf.Abs(targetVelocity.x) > Mathf.Abs(player_body.velocity.x))
+        if (!grounded)//Mathf.Abs(targetVelocity.x) > Mathf.Abs(player_body.velocity.x))
         {
-            player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 4f);
+            player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 6f);
         }
         else
         {
-            player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * .4f);
+            player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 1f);
         }
 
         //Rotate();
@@ -264,43 +319,7 @@ public class ShipController : PlayerController
     {
         int rev = 1;
         if (reversed) { rev = -1; }
-        eyes.transform.localPosition = Vector3.Lerp(eyes.transform.localPosition, new Vector3((moveX / 800), rev * (player_body.velocity.y / 250), 0), .4f);
-
-        if (!grounded)
-        {
-            return;
-        }
-        else
-        {
-            if ((int)Mathf.Abs(transform.rotation.eulerAngles.z / 90) == 0)
-            {
-                eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Normal").gameObject.SetActive(true);
-            }
-            else if ((int)Mathf.Abs(transform.rotation.eulerAngles.z / 90) == 1)
-            {
-                eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Squint").gameObject.SetActive(true);
-            }
-            else if ((int)Mathf.Abs(transform.rotation.eulerAngles.z / 90) == 2)
-            {
-                eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Squint").gameObject.SetActive(true);
-            }
-            else if ((int)Mathf.Abs(transform.rotation.eulerAngles.z / 90) == 3)
-            {
-                eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Irked").gameObject.SetActive(true);
-            }
-        }
+        eyes.transform.localPosition = Vector3.Lerp(eyes.transform.localPosition, new Vector3(rev * (moveX / 800), rev * Input.GetAxisRaw("Vertical") * (player_body.velocity.y / 150), 0), .4f);
     }
 
     public override void Jump()
@@ -317,6 +336,21 @@ public class ShipController : PlayerController
             {
                 time = 0.0f;
             }
+        }
+
+        if (teleorb_j && jump)
+        {
+            teleorb_j = false;
+            teleorb = false;
+            player_body.transform.position += teleOrb_translate;
+        }
+
+        if (triggerorb_j && jump)
+        {
+            triggerorb_j = false;
+            triggerorb = false;
+            SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
+            StartCoroutine(spawn.Begin());
         }
 
         if (yellow_j)
@@ -360,7 +394,7 @@ public class ShipController : PlayerController
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
 
             maxSpeed = 12f;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .5f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce);
             time = 0;
         }
         else if (blue_j)
@@ -440,7 +474,7 @@ public class ShipController : PlayerController
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(true);
-            player_body.AddForce(new Vector2(0, 20f * grav_scale));
+            player_body.AddForce(new Vector2(0, 24f * grav_scale));
         }
     }
 
@@ -503,7 +537,7 @@ public class ShipController : PlayerController
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
 
             maxSpeed = 12f;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .5f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce);
             time = 0;
         }
         else if (blue_p)
@@ -563,25 +597,69 @@ public class ShipController : PlayerController
                 trail2.emitting = true;
                 if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
                 {
-                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .5f);
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
                 }
                 else
                 {
-                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .75f);
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
                 }
                 player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
                 grav_scale = player_body.gravityScale;
             }
         }
+        else if (gravC)
+        {
+            gravC = false;
+
+            if (reversed)
+            {
+                reversed = false;
+                jumpForce = posJump;
+                trail1.emitting = true;
+                trail2.emitting = true;
+                if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
+                }
+                else
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
+                }
+                player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
+                grav_scale = player_body.gravityScale;
+            }
+            else if (!reversed)
+            {
+                reversed = true;
+                jumpForce = -posJump;
+                trail1.emitting = true;
+                trail2.emitting = true;
+                if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
+                }
+                else
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
+                }
+
+                player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
+                grav_scale = player_body.gravityScale;
+            }
+        }
         else if (teleA)
         {
+            Vector3 positionDelta = (transform.position + teleB) - transform.position;
             //trail.emitting = false;
             //trail.Clear();
             trail1.enabled = true;
             trail2.emitting = true;
             teleA = false;
-            player_body.transform.position += teleB;
+            transform.position += teleB;
             //trail.enabled = true;
+
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
         }
     }
 
@@ -604,6 +682,10 @@ public class ShipController : PlayerController
     {
         able = false;
         if (restartmusic) { bgmusic.Stop(); }
+
+        grounded_particles.Stop();
+        ground_impact_particles.Stop();
+
         player_collider.enabled = false;
         StopAllCoroutines();
         player_body.velocity = Vector2.zero;
@@ -635,6 +717,7 @@ public class ShipController : PlayerController
         //player_renderer.enabled = false;
         //death_animation.GetComponent<SpriteRenderer>().enabled = true;
         death_particles.Play();
+        death_sfx.PlayOneShot(death_sfx.clip, 1f);
         player_body.gravityScale = 0;
 
         Invoke("reposition", 1f);
@@ -644,9 +727,16 @@ public class ShipController : PlayerController
 
     public void reposition()
     {
-        player_body.transform.position += respawn - transform.position;
+        Vector3 positionDelta = respawn - transform.position;
+        transform.position = respawn;
+        player_body.velocity = Vector3.zero;
         player_collider.enabled = true;
-        Invoke("undead", .5f);
+
+        CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+        activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
+
+        //Invoke("undead", .5f);
+        undead();
     }
 
     public void undead()
@@ -661,8 +751,8 @@ public class ShipController : PlayerController
         bgmusic.volume = 1;
         if (restartmusic) { bgmusic.Play(); }
 
-        Vector2 targetVelocity = new Vector2(speed * Time.fixedDeltaTime * 10f, player_body.velocity.y);
-        player_body.velocity = targetVelocity;
+        //Vector2 targetVelocity = new Vector2(speed * Time.fixedDeltaTime * 10f, player_body.velocity.y);
+        //player_body.velocity = targetVelocity;
 
         dead = false;
         able = true;

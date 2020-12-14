@@ -85,9 +85,14 @@ public class GameManager : MonoBehaviour
 
     //PLAYROOM
     public SpriteRenderer Background;
+    public TrailRenderer editorTrail;
 
     private void Awake()
     {
+        //PLAYROOM
+        editorTrail.emitting = false;
+        //
+
         Resources.UnloadUnusedAssets();
         Screen.SetResolution(Screen.resolutions[Screen.resolutions.Length - 1].width, Screen.resolutions[Screen.resolutions.Length - 1].height, true);
         Screen.fullScreen = true;
@@ -296,6 +301,7 @@ public class GameManager : MonoBehaviour
         }*/
 
         // PLAYROOM
+        
         if (Input.GetKeyDown("c"))
         {
             playercontroller.Respawn();
@@ -342,6 +348,11 @@ public class GameManager : MonoBehaviour
             Color.RGBToHSV(Background.color, out h, out s, out v);
 
             Background.color = Color.HSVToRGB(h+.01f, s, v);
+        }
+        if (Input.GetKeyDown("e"))
+        {
+            editorTrail.Clear();
+            editorTrail.emitting = !editorTrail.emitting;
         }
 
 

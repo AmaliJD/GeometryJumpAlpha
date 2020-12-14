@@ -433,6 +433,7 @@ public class CopterController : PlayerController
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
 
             reversed = !reversed;
+            goingUp = !goingUp;
 
             maxSpeed = 15f;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .7f);
@@ -455,6 +456,7 @@ public class CopterController : PlayerController
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
 
             reversed = !reversed;
+            goingUp = !goingUp;
 
             if (reversed)
             {
@@ -579,6 +581,7 @@ public class CopterController : PlayerController
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
 
             reversed = !reversed;
+            goingUp = !goingUp;
 
             maxSpeed = Mathf.Abs(jumpForce) * 1.2f;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.2f);
@@ -598,6 +601,7 @@ public class CopterController : PlayerController
             if (!reversed)
             {
                 reversed = true;
+                goingUp = !goingUp;
                 jumpForce = -posJump;
                 //trailUp.emitting = true;
                 //trailDown.emitting = true;
@@ -621,6 +625,7 @@ public class CopterController : PlayerController
             if (reversed)
             {
                 reversed = false;
+                goingUp = !goingUp;
                 jumpForce = posJump;
                 //trailUp.emitting = true;
                 //trailDown.emitting = true;

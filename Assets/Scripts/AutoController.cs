@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using Cinemachine;
 
 public class AutoController : PlayerController
 {
@@ -31,6 +32,9 @@ public class AutoController : PlayerController
         grav_scale = player_body.gravityScale;
 
         circle_collider.enabled = false;
+
+        setRespawn(transform.position, reversed, mini);
+        setRepawnSpeed(1f);
         //setAnimation();
     }
 
@@ -69,12 +73,22 @@ public class AutoController : PlayerController
     {
         if (mini)
         {
+            grounded_particles.startLifetime = .15f;
+            ground_impact_particles.startLifetime = .15f;
+            grounded_particles.transform.localScale = new Vector2(.47f, .47f);
+            ground_impact_particles.transform.localScale = new Vector2(.47f, .47f);
             transform.localScale = new Vector2(.47f, .47f);
+            transform.position = transform.position - new Vector3(0, .29f, 0);
             jumpForce = 15f;
         }
         else
         {
-            transform.localScale = new Vector2(1f, 1f);
+            grounded_particles.startLifetime = .3f;
+            ground_impact_particles.startLifetime = .3f;
+            grounded_particles.transform.localScale = new Vector2(1f, 1f);
+            ground_impact_particles.transform.localScale = new Vector2(1f, 1f);
+            transform.localScale = new Vector2(1.05f, 1.05f);
+            transform.position = transform.position + new Vector3(0, .29f, 0);
             jumpForce = 19.2f;
         }
 
@@ -97,12 +111,18 @@ public class AutoController : PlayerController
                 grounded = !Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.down, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(circle_collider, groundLayer));
                 regate = -1;
+
+                grounded_particles.gravityModifier = -Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = -Mathf.Abs(ground_impact_particles.gravityModifier);
             }
             else
             {//.9
                 grounded = !Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.up, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(circle_collider, groundLayer));
                 regate = 1;
+
+                grounded_particles.gravityModifier = Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = Mathf.Abs(ground_impact_particles.gravityModifier);
             }
 
             // IF GROUNDED --> TURN OFF TRAIL
@@ -127,6 +147,28 @@ public class AutoController : PlayerController
 
             // Movement Speed
             moveX = speed;
+
+            // Grounded Particles
+            if (grounded)
+            {
+                if (!grounded_particles.isPlaying)
+                {
+                    grounded_particles.Play();
+                }
+            }
+            else
+            {
+                if (grounded_particles.isPlaying)
+                {
+                    grounded_particles.Stop();
+                }
+                
+            }
+
+            if ((prev_grounded && !grounded) || (!prev_grounded && grounded && prev_velocity > 10f))
+            {
+                ground_impact_particles.Play();
+            }
 
             // JUMP!
             if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
@@ -281,6 +323,44 @@ public class AutoController : PlayerController
                 transform.eulerAngles = Vector3.Lerp(transform.eulerAngles,
                     new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - difference), .7f);
             }
+        }
+
+        int rev = reversed ? -1 : 1;
+        if((int)transform.rotation.eulerAngles.z == 270)
+        {
+            //Debug.Log("270 : " + transform.rotation.eulerAngles.z);
+            grounded_particles.gameObject.transform.localPosition = new Vector3(rev * .52f, 0, 0);
+            ground_impact_particles.gameObject.transform.localPosition = new Vector3(rev * .52f, 0, 0);
+
+            grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, !reversed ? 90 : 270);
+            ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, !reversed ? 90 : 270);
+        }
+        else if ((int)transform.rotation.eulerAngles.z == 180)
+        {
+            //Debug.Log("180 : " + transform.rotation.eulerAngles.z);
+            grounded_particles.gameObject.transform.localPosition = new Vector3(0, rev * .52f, 0);
+            ground_impact_particles.gameObject.transform.localPosition = new Vector3(0, rev * .52f, 0);
+
+            grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, !reversed ? 180 : 0);
+            ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, !reversed ? 180 : 0);
+        }
+        else if((int)transform.rotation.eulerAngles.z == 90)
+        {
+            //Debug.Log("90 : " + transform.rotation.eulerAngles.z);
+            grounded_particles.gameObject.transform.localPosition = new Vector3(rev * -.52f, 0, 0);
+            ground_impact_particles.gameObject.transform.localPosition = new Vector3(rev * -.52f, 0, 0);
+
+            grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, !reversed ? 270 : 90);
+            ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, !reversed ? 270 : 90);
+        }
+        else if((int)transform.rotation.eulerAngles.z == 0 || (int)transform.rotation.eulerAngles.z == 360)
+        {
+            //sDebug.Log("0 : " + transform.rotation.eulerAngles.z);
+            grounded_particles.gameObject.transform.localPosition = new Vector3(0, rev * -.52f, 0);
+            ground_impact_particles.gameObject.transform.localPosition = new Vector3(0, rev * -.52f, 0);
+
+            grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, !reversed ? 0 : 180);
+            ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, !reversed ? 0 : 180);
         }
     }
 
@@ -709,9 +789,15 @@ public class AutoController : PlayerController
 
     public void reposition()
     {
-        player_body.transform.position += respawn - transform.position;
+        Vector3 positionDelta = respawn - transform.position;
+        transform.position = respawn;
         player_collider.enabled = true;
-        Invoke("undead", .5f);
+
+        CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+        activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
+
+        //Invoke("undead", .5f);
+        undead();
     }
 
     public void undead()

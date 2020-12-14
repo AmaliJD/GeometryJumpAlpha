@@ -8,10 +8,10 @@ public abstract class PlayerController : MonoBehaviour
     // The different 'protected' variables are separated based on how they functioned in their original scripts
 
     // SHARED "PRIVATE" VARIABLES
-    protected GameObject eyes;
-    protected GameObject icon;
+    protected static GameObject eyes;
+    protected static GameObject icon;
 
-    protected Rigidbody2D player_body;
+    protected static Rigidbody2D player_body;
     protected Animator Cube_Anim;
 
     protected AudioSource bgmusic;
@@ -252,6 +252,10 @@ public abstract class PlayerController : MonoBehaviour
             float distAX = transform.position.x - t.position.x;
             float offsetBX = distAX * ((Mathf.Abs((tb.rotation.eulerAngles.z - t.rotation.eulerAngles.z)) % 180)/90f);
             teleB.x -= offsetBX;
+
+            float distAY = transform.position.y - t.position.y;
+            float offsetBY = distAY * ((Mathf.Abs((tb.rotation.eulerAngles.z - t.rotation.eulerAngles.z)) % 180) / 90f);
+            teleB.y -= offsetBY;
 
             teleB.z = 0;
         }

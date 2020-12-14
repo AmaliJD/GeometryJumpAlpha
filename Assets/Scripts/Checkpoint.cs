@@ -13,6 +13,9 @@ public class Checkpoint : MonoBehaviour
     public enum Speed { x0, x1, x2, x3, x4 }
     public Speed speed;
 
+    //public enum Mode { X, cube, auto, ship, auto_ship, ufo, auto_ufo, wave, auto_wave, ball, auto_ball, spider, auto_spider, copter, auto_copter }
+    //public Mode mode;
+
     private PlayerController player;
     private GameManager gamemanager;
     private Checkpoint_Controller check;
