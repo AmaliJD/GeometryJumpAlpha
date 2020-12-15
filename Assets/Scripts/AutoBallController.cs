@@ -380,7 +380,7 @@ public class AutoBallController : PlayerController
             jump = false;
             pink = false;
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .9f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce);
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
