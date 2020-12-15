@@ -19,6 +19,8 @@ public class AutoBallController : PlayerController
 
     private float maxSpeed = 15*1.6f;
 
+    private bool orbJumped = false;
+
     public override void Awake2()
     {
         speed = getSpeed();
@@ -49,6 +51,14 @@ public class AutoBallController : PlayerController
         if (reversed) { player_body.gravityScale *= -1; }
         grav_scale = player_body.gravityScale;
 
+        grounded_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
+        ground_impact_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
+
+        grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+        ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+        ChangeSize();
+
         icon.transform.localScale = new Vector3(1f, 1f, 1f);
         icon.transform.localPosition = new Vector3(0, 0, 0);
         ball.SetActive(true);
@@ -60,13 +70,23 @@ public class AutoBallController : PlayerController
     {
         if (mini)
         {
+            grounded_particles.startLifetime = .15f;
+            ground_impact_particles.startLifetime = .15f;
+            grounded_particles.transform.localScale = new Vector2(.47f, .47f);
+            ground_impact_particles.transform.localScale = new Vector2(.47f, .47f);
+
             transform.localScale = new Vector2(.47f, .47f);
-            jumpForce = 8f;
+            jumpForce = 13f;
         }
         else
         {
-            transform.localScale = new Vector2(1f, 1f);
-            jumpForce = 12.5f;
+            grounded_particles.startLifetime = .3f;
+            ground_impact_particles.startLifetime = .3f;
+            grounded_particles.transform.localScale = new Vector2(1, 1f);
+            ground_impact_particles.transform.localScale = new Vector2(1f, 1f);
+
+            transform.localScale = new Vector2(1.05f, 1.05f);
+            jumpForce = 15f;
         }
 
         posJump = jumpForce;
@@ -86,12 +106,24 @@ public class AutoBallController : PlayerController
                 grounded = /*Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.up, .51f, groundLayer) &&*/ checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(circle_collider, groundLayer));
                 regate = -1;
+
+                grounded_particles.gravityModifier = -Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = -Mathf.Abs(ground_impact_particles.gravityModifier);
+
+                grounded_particles.gameObject.transform.rotation = Quaternion.Euler(0, 0, 180);
+                ground_impact_particles.gameObject.transform.rotation = Quaternion.Euler(0, 0, 180);
             }
             else
             {//.9
                 grounded = /*Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.down, .51f, groundLayer) &&*/ checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(circle_collider, groundLayer));
                 regate = 1;
+
+                grounded_particles.gravityModifier = Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = Mathf.Abs(ground_impact_particles.gravityModifier);
+
+                grounded_particles.gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+                ground_impact_particles.gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
             }
 
             // IF GROUNDED --> TURN OFF TRAIL
@@ -116,6 +148,24 @@ public class AutoBallController : PlayerController
 
             // Movement Speed
             moveX = speed;
+
+            // Grounded Particles
+            if (grounded && (Mathf.Abs(player_body.velocity.x) > .2f || jump))
+            {
+                if (!grounded_particles.isPlaying)
+                {
+                    grounded_particles.Play();
+                }
+            }
+            else
+            {
+                grounded_particles.Stop();
+            }
+
+            if ((prev_grounded && !grounded) || (!prev_grounded && grounded && prev_velocity > 10f))
+            {
+                ground_impact_particles.Play();
+            }
 
             // JUMP!
             if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space"))
@@ -213,25 +263,45 @@ public class AutoBallController : PlayerController
 
     public void Rotate()
     {
-        float step = -speed/6f;
+        float step = -speed/ (mini ? 4f : 6f);
+
+        if (grounded) { orbJumped = false; }
 
         if (reversed)
         {
-            step = speed/6f;
+            step = speed/ (mini ? 4f : 6f);
         }
 
         //Debug.Log(grounded);
 
-        if (grounded)
+        if (grounded || !orbJumped)
         {
             Vector3 newAngle = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + step);
             transform.rotation = Quaternion.Euler(newAngle);
         }
         else
         {
-            Vector3 newAngle = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - step*.7f);
-            transform.rotation = Quaternion.Euler(newAngle);
+            //Vector3 newAngle = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - rev * step*.7f);
+            //transform.rotation = Quaternion.Euler(newAngle);
+
+            if (Mathf.Abs(player_body.velocity.x) > 0.02f)
+            {
+                Vector3 newAngle = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - step * .7f);
+                transform.rotation = Quaternion.Euler(newAngle);
+            }
+            else
+            {
+                Vector3 newAngle = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - (speed * .2f));
+                transform.rotation = Quaternion.Euler(newAngle);
+            }
         }
+
+        int rev = reversed ? -1 : 1;
+        float cos = rev * -Mathf.Cos(Mathf.Deg2Rad * transform.localRotation.eulerAngles.z);
+        float sin = rev * -Mathf.Sin(Mathf.Deg2Rad * transform.localRotation.eulerAngles.z);
+
+        grounded_particles.gameObject.transform.localPosition = new Vector3(sin * .52f, cos * .52f, 0);
+        ground_impact_particles.gameObject.transform.localPosition = new Vector3(sin * .52f, cos * .52f, 0);
     }
 
     /*public void Eyes()
@@ -302,6 +372,8 @@ public class AutoBallController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            orbJumped = true;
         }
         else if (pink && jump)
         {
@@ -312,6 +384,8 @@ public class AutoBallController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            orbJumped = true;
         }
         else if (red && jump)
         {
@@ -322,6 +396,8 @@ public class AutoBallController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            orbJumped = true;
         }
         else if (blue && jump)
         {
@@ -358,6 +434,8 @@ public class AutoBallController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            orbJumped = true;
         }
         else if (black && jump)
         {
@@ -379,6 +457,8 @@ public class AutoBallController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            orbJumped = true;
         }
     }
 
@@ -692,6 +772,10 @@ public class AutoBallController : PlayerController
     {
         able = false;
         if (restartmusic) { bgmusic.Stop(); }
+
+        grounded_particles.Stop();
+        ground_impact_particles.Stop();
+
         player_collider.enabled = false;
         circle_collider.enabled = false;
         StopAllCoroutines();
@@ -730,8 +814,12 @@ public class AutoBallController : PlayerController
 
     public void reposition()
     {
+        Vector3 positionDelta = respawn - transform.position;
         player_body.transform.position += respawn - transform.position;
         player_collider.enabled = true;
+
+        CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+        activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
 
         undead();
         //Invoke("undead", .5f);

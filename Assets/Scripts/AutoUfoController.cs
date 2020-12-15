@@ -64,6 +64,8 @@ public class AutoUfoController : PlayerController
         Vector3 newAngle = new Vector3(0, 0, 0);
         transform.rotation = Quaternion.Euler(newAngle);
 
+        ChangeSize();
+
         icon.transform.localScale = new Vector3(.65f, .65f, 1f);
         icon.transform.localPosition = new Vector3(0, .2f, 0);
         ufo.SetActive(true);
@@ -749,6 +751,10 @@ public class AutoUfoController : PlayerController
     {
         able = false;
         if (restartmusic) { bgmusic.Stop(); }
+
+        grounded_particles.Stop();
+        ground_impact_particles.Stop();
+
         player_collider.enabled = false;
         ufo_collider.enabled = false;
         StopAllCoroutines();

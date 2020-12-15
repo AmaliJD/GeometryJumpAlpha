@@ -50,7 +50,7 @@ public class ShipController : PlayerController
         trail1.gameObject.SetActive(true);
 
         player_body.freezeRotation = true;
-        transform.rotation = new Quaternion(0, 0, 0, 0);
+        transform.rotation = Quaternion.Euler(0, 0, 0);
 
         player_body.gravityScale = 2.7f;
         if (reversed) { player_body.gravityScale *= -1; }
@@ -61,6 +61,8 @@ public class ShipController : PlayerController
 
         grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
         ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+        ChangeSize();
 
         icon.transform.localScale = new Vector3(1f, 1f, 1f);
         icon.transform.localPosition = new Vector3(0f, 0f, 0);

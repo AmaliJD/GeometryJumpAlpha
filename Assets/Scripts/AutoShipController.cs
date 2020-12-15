@@ -68,6 +68,8 @@ public class AutoShipController : PlayerController
         grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
         ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
+        ChangeSize();
+
         icon.transform.localScale = new Vector3(.65f, .65f, 1f);
         icon.transform.localPosition = new Vector3(.08f, .17f, 0);
         ship.SetActive(true);

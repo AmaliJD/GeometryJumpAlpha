@@ -20,6 +20,8 @@ public class BallController : PlayerController
 
     private float maxSpeed = 15 * 1.6f;
 
+    private bool orbJumped = false;
+
     public override void Awake2()
     {
         speed = getSpeed();
@@ -52,6 +54,14 @@ public class BallController : PlayerController
         if (reversed) { player_body.gravityScale *= -1; }
         grav_scale = player_body.gravityScale;
 
+        grounded_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
+        ground_impact_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
+
+        grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+        ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+        ChangeSize();
+
         icon.transform.localScale = new Vector3(1f, 1f, 1f);
         icon.transform.localPosition = new Vector3(0, 0, 0);
         ball.SetActive(true);
@@ -63,12 +73,22 @@ public class BallController : PlayerController
     {
         if (mini)
         {
+            grounded_particles.startLifetime = .15f;
+            ground_impact_particles.startLifetime = .15f;
+            grounded_particles.transform.localScale = new Vector2(.47f, .47f);
+            ground_impact_particles.transform.localScale = new Vector2(.47f, .47f);
+
             transform.localScale = new Vector2(.47f, .47f);
             jumpForce = 13f;
         }
         else
         {
-            transform.localScale = new Vector2(1f, 1f);
+            grounded_particles.startLifetime = .3f;
+            ground_impact_particles.startLifetime = .3f;
+            grounded_particles.transform.localScale = new Vector2(1, 1f);
+            ground_impact_particles.transform.localScale = new Vector2(1f, 1f);
+
+            transform.localScale = new Vector2(1.05f, 1.05f);
             jumpForce = 15f;
         }
 
@@ -89,12 +109,24 @@ public class BallController : PlayerController
                 grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.up, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(circle_collider, groundLayer));
                 regate = -1;
+
+                grounded_particles.gravityModifier = -Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = -Mathf.Abs(ground_impact_particles.gravityModifier);
+
+                grounded_particles.gameObject.transform.rotation = Quaternion.Euler(0, 0, 180);
+                ground_impact_particles.gameObject.transform.rotation = Quaternion.Euler(0, 0, 180);
             }
             else
             {//.9
                 grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.down, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(circle_collider, groundLayer));
                 regate = 1;
+
+                grounded_particles.gravityModifier = Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = Mathf.Abs(ground_impact_particles.gravityModifier);
+
+                grounded_particles.gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+                ground_impact_particles.gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
             }
 
             // IF GROUNDED --> TURN OFF TRAIL
@@ -119,6 +151,24 @@ public class BallController : PlayerController
 
             // Movement Speed
             moveX = Input.GetAxisRaw("Horizontal") * speed;
+
+            // Grounded Particles
+            if (grounded && (Mathf.Abs(player_body.velocity.x) > .2f || jump))
+            {
+                if (!grounded_particles.isPlaying)
+                {
+                    grounded_particles.Play();
+                }
+            }
+            else
+            {
+                grounded_particles.Stop();
+            }
+
+            if ((prev_grounded && !grounded) || (!prev_grounded && grounded && prev_velocity > 10f))
+            {
+                ground_impact_particles.Play();
+            }
 
             // JUMP!
             if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space"))
@@ -191,11 +241,11 @@ public class BallController : PlayerController
 
         if (Mathf.Abs(targetVelocity.x) > Mathf.Abs(player_body.velocity.x) || !grounded)
         {
-            player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * .7f);
+            player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * .7f); //.7
         }
         else
         {
-            player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 1.1f);
+            player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 1.1f); //1.1
         }
 
         /*
@@ -233,21 +283,22 @@ public class BallController : PlayerController
             step = player_body.velocity.x / 6f;
         }*/
 
-        float step = -player_body.velocity.x * .9f;
+        float step = -player_body.velocity.x * (mini ? 1.5f : .9f);
+        if (grounded) { orbJumped = false; }
 
         if (reversed)
         {
-            step = player_body.velocity.x * .9f;
+            step = player_body.velocity.x * (mini ? 1.5f : .9f);
         }
 
-        if (grounded)
+        if (grounded || !orbJumped)
         {
             Vector3 newAngle = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + step);
             transform.rotation = Quaternion.Euler(newAngle);
         }
         else
         {
-            if(Mathf.Abs(player_body.velocity.x) > 0.02f)
+            if (Mathf.Abs(player_body.velocity.x) > 0.02f)
             {
                 Vector3 newAngle = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - step * .7f);
                 transform.rotation = Quaternion.Euler(newAngle);
@@ -258,6 +309,15 @@ public class BallController : PlayerController
                 transform.rotation = Quaternion.Euler(newAngle);
             }
         }
+        
+        int rev = reversed ? -1 : 1;
+        float cos = rev*-Mathf.Cos(Mathf.Deg2Rad * transform.localRotation.eulerAngles.z);
+        float sin = rev*-Mathf.Sin(Mathf.Deg2Rad * transform.localRotation.eulerAngles.z);
+
+        grounded_particles.gameObject.transform.localPosition = new Vector3(sin*.52f, cos*.52f, 0);
+        ground_impact_particles.gameObject.transform.localPosition = new Vector3(sin*.52f, cos*.52f, 0);
+
+        //Debug.Log("Rot: " + transform.localRotation.eulerAngles.z + "\tSin: " + sin * .52f + "\tCos: " + cos * .52f);
     }
 
     /*public void Eyes()
@@ -328,6 +388,8 @@ public class BallController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            orbJumped = true;
         }
         else if (pink && jump)
         {
@@ -338,6 +400,8 @@ public class BallController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            orbJumped = true;
         }
         else if (red && jump)
         {
@@ -348,6 +412,8 @@ public class BallController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            orbJumped = true;
         }
         else if (blue && jump)
         {
@@ -384,6 +450,8 @@ public class BallController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            orbJumped = true;
         }
         else if (black && jump)
         {
@@ -405,6 +473,8 @@ public class BallController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            orbJumped = true;
         }
     }
 
@@ -433,6 +503,7 @@ public class BallController : PlayerController
             yellow_p = false;
 
             checkGrounded = true;
+            orbJumped = true;
         }
         else if (pink_p)
         {
@@ -445,6 +516,7 @@ public class BallController : PlayerController
             pink_p = false;
 
             checkGrounded = true;
+            orbJumped = true;
         }
         else if (red_p)
         {
@@ -456,6 +528,7 @@ public class BallController : PlayerController
             red_p = false;
 
             checkGrounded = true;
+            orbJumped = true;
         }
         else if (blue_p)
         {
@@ -485,13 +558,18 @@ public class BallController : PlayerController
                 reversed = true;
                 jumpForce = -posJump;
                 trail.emitting = true;
-                if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+                /*if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
                 {
                     player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
                 }
                 else
                 {
                     player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
+                }*/
+
+                if (player_body.velocity.y <= -10f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, -10f);
                 }
 
                 player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
@@ -507,15 +585,72 @@ public class BallController : PlayerController
                 reversed = false;
                 jumpForce = posJump;
                 trail.emitting = true;
-                if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+                /*if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
                 {
-                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .5f);
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
                 }
                 else
                 {
-                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .75f);
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
+                }*/
+
+                if (player_body.velocity.y >= 10f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, 10f);
                 }
+
                 player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
+                grav_scale = player_body.gravityScale;
+            }
+        }
+        else if (gravC)
+        {
+            gravC = false;
+            fromGround = false;
+            released = false;
+
+            if (reversed)
+            {
+                reversed = false;
+                jumpForce = posJump;
+                trail.emitting = true;
+                /*if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
+                }
+                else
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
+                }*/
+
+                if (player_body.velocity.y >= 10f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, 10f);
+                }
+
+                player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
+                grav_scale = player_body.gravityScale;
+            }
+            else if (!reversed)
+            {
+                reversed = true;
+                jumpForce = -posJump;
+                trail.emitting = true;
+                /*if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
+                }
+                else
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
+                }*/
+
+                if (player_body.velocity.y <= -10f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, -10f);
+                }
+
+                player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
                 grav_scale = player_body.gravityScale;
             }
         }
@@ -553,6 +688,10 @@ public class BallController : PlayerController
     {
         able = false;
         if (restartmusic) { bgmusic.Stop(); }
+
+        grounded_particles.Stop();
+        ground_impact_particles.Stop();
+
         player_collider.enabled = false;
         circle_collider.enabled = false;
         StopAllCoroutines();
@@ -590,9 +729,15 @@ public class BallController : PlayerController
 
     public void reposition()
     {
+        Vector3 positionDelta = respawn - transform.position;
         player_body.transform.position += respawn - transform.position;
         player_collider.enabled = true;
-        Invoke("undead", .5f);
+
+        CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+        activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
+
+        undead();
+        //Invoke("undead", .5f);
     }
 
     public void undead()

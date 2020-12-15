@@ -732,6 +732,10 @@ public class UfoController : PlayerController
     {
         able = false;
         if (restartmusic) { bgmusic.Stop(); }
+
+        grounded_particles.Stop();
+        ground_impact_particles.Stop();
+
         player_collider.enabled = false;
         ufo_collider.enabled = false;
         StopAllCoroutines();
