@@ -171,7 +171,7 @@ public class BallController : PlayerController
             }
 
             // JUMP!
-            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space"))
+            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
             {
                 if (!grounded || yellow || pink || red || green || blue || black)
                 {
@@ -182,7 +182,7 @@ public class BallController : PlayerController
             }
 
             // RELEASE JUMP
-            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space"))
+            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
                 isjumping = false;
                 jump = false;
@@ -260,8 +260,8 @@ public class BallController : PlayerController
 
         Rotate();
         //Eyes();
-        Jump();     // check if jumping
         Pad();      // check if hit pad
+        Jump();     // check if jumping
         Portal();   // check if on portal
 
         // IF GROUNDED --> TURN OFF TRAIL
@@ -495,6 +495,7 @@ public class BallController : PlayerController
             //yellow_p = false;
             checkGrounded = false;
             grounded = false;
+            jump = false;
 
             //animator.SetBool("Orb", true);
             //jump = false;
@@ -509,6 +510,7 @@ public class BallController : PlayerController
         {
             checkGrounded = false;
             grounded = false;
+            jump = false;
 
             //jump = false;
             trail.emitting = true;
@@ -522,6 +524,7 @@ public class BallController : PlayerController
         {
             checkGrounded = false;
             grounded = false;
+            jump = false;
 
             trail.emitting = true;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.6f);
@@ -536,6 +539,7 @@ public class BallController : PlayerController
             checkGrounded = false;
             blue_p = false;
             grounded = false;
+            jump = false;
 
             trail.emitting = true;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .4f);
@@ -720,6 +724,7 @@ public class BallController : PlayerController
         //player_renderer.enabled = false;
         //death_animation.GetComponent<SpriteRenderer>().enabled = true;
         death_particles.Play();
+        death_sfx.PlayOneShot(death_sfx.clip, 1f);
         player_body.gravityScale = 0;
 
         Invoke("reposition", 1f);

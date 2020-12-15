@@ -9,6 +9,8 @@ public class AutoSpiderController : PlayerController
 
     public TrailRenderer trail, spider_trail;
 
+    public PulseTrigger pulse_trigger_p1, pulse_trigger_p2;
+
     public Transform Spider_Anim;
     public GameObject spider;
 
@@ -54,6 +56,8 @@ public class AutoSpiderController : PlayerController
         if (reversed) { player_body.gravityScale *= -1; }
         grav_scale = player_body.gravityScale;
 
+        ChangeSize();
+
         icon.transform.localScale = new Vector3(1f, 1f, 1f);
         icon.transform.localPosition = new Vector3(0, 0, 0);
         spider.SetActive(true);
@@ -77,7 +81,7 @@ public class AutoSpiderController : PlayerController
         }
         else
         {
-            transform.localScale = new Vector2(1f, 1f);
+            transform.localScale = new Vector2(1.05f, 1.05f);
             jumpForce = 12.5f;
         }
 
@@ -128,9 +132,10 @@ public class AutoSpiderController : PlayerController
 
             // Movement Speed
             moveX = speed;
+            upright = !reversed;
 
             // JUMP!
-            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space"))
+            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
             {
                 if (!grounded || yellow || pink || red || green || blue || black)
                 {
@@ -141,7 +146,7 @@ public class AutoSpiderController : PlayerController
             }
 
             // RELEASE JUMP
-            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space"))
+            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
                 isjumping = false;
                 jump = false;
@@ -178,7 +183,7 @@ public class AutoSpiderController : PlayerController
     public override void Move()
     {
         // If the input is moving the player right and the player is facing left...
-        if (!reversed && !upright)
+        /*if (!reversed && !upright)
         {
             // ... flip the player.
             negate = 1;
@@ -192,7 +197,8 @@ public class AutoSpiderController : PlayerController
             negate = -1;
             upright = !upright;
             Flip();
-        }
+        }*/
+        transform.localScale = new Vector3(transform.localScale.x, Mathf.Abs(transform.localScale.y) * (upright ? 1 : -1), transform.localScale.z);
 
         // movement controls
         Vector2 targetVelocity = new Vector2(moveX * Time.fixedDeltaTime * 10f, player_body.velocity.y);
@@ -210,8 +216,8 @@ public class AutoSpiderController : PlayerController
 
         //Rotate();
         //Eyes();
-        Jump();     // check if jumping
         Pad();      // check if hit pad
+        Jump();     // check if jumping
         Portal();   // check if on portal
 
         // IF GROUNDED --> TURN OFF TRAIL
@@ -223,7 +229,7 @@ public class AutoSpiderController : PlayerController
             Spider_Anim.GetComponent<Animator>().ResetTrigger("jump");
             Spider_Anim.GetComponent<Animator>().ResetTrigger("stop");
             Spider_Anim.GetComponent<Animator>().SetTrigger("run");
-            Spider_Anim.GetComponent<Animator>().speed = speed / 60;
+            Spider_Anim.GetComponent<Animator>().speed = (speed / 60) * (mini ? 1.5f : 1);
         }
 
         spider_trail.transform.localPosition = new Vector3(Mathf.Abs(moveX) / 100, 0, 0);
@@ -457,6 +463,9 @@ public class AutoSpiderController : PlayerController
                 spider_trail.emitting = true;
             }
 
+            pulse_trigger_p1.Enter();
+            pulse_trigger_p2.Enter();
+
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
         }
@@ -479,6 +488,7 @@ public class AutoSpiderController : PlayerController
             //yellow_p = false;
             checkGrounded = false;
             grounded = false;
+            jump = false;
 
             //animator.SetBool("Orb", true);
             //jump = false;
@@ -499,6 +509,7 @@ public class AutoSpiderController : PlayerController
         {
             checkGrounded = false;
             grounded = false;
+            jump = false;
 
             //jump = false;
             trail.emitting = true;
@@ -518,6 +529,7 @@ public class AutoSpiderController : PlayerController
         {
             checkGrounded = false;
             grounded = false;
+            jump = false;
 
             trail.emitting = true;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.6f);
@@ -534,7 +546,7 @@ public class AutoSpiderController : PlayerController
         }
         else if (blue_p)
         {
-
+            jump = false;
             checkGrounded = false;
             blue_p = false;
             grounded = false;
@@ -668,13 +680,11 @@ public class AutoSpiderController : PlayerController
         {
             player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
             grav_scale = player_body.gravityScale;
-            transform.rotation = new Quaternion(0, 0, 180, 0);
         }
         else
         {
             player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
             grav_scale = player_body.gravityScale;
-            transform.rotation = new Quaternion(0, 0, 0, 0);
         }
 
         player_renderer.SetActive(false);
@@ -693,7 +703,10 @@ public class AutoSpiderController : PlayerController
     {
         player_body.transform.position += respawn - transform.position;
         player_collider.enabled = true;
-        Invoke("undead", .5f);
+
+        undead();
+
+        //Invoke("undead", .5f);
     }
 
     public void undead()

@@ -8,6 +8,8 @@ public class SpiderController : PlayerController
     public BoxCollider2D spider_collider;
     public TrailRenderer trail, spider_trail;
 
+    public PulseTrigger pulse_trigger_p1, pulse_trigger_p2;
+
     public Transform Spider_Anim;
     public GameObject spider;
 
@@ -47,8 +49,8 @@ public class SpiderController : PlayerController
     public override void setAnimation()
     {
         player_collider.isTrigger = true;
-        upright = true;
-        facingright = true;
+        //upright = true;
+        //facingright = player_body.velocity.x >= 0 ? !reversed : reversed;
 
         player_body.freezeRotation = true;
         player_body.gravityScale = 8f;
@@ -57,7 +59,9 @@ public class SpiderController : PlayerController
 
         Vector3 newAngle = new Vector3(0, 0, 0);
         transform.rotation = Quaternion.Euler(newAngle);
-        transform.localScale = new Vector3(1f, 1f, 1f);
+        //transform.localScale = new Vector3(1f, 1f, 1f);
+
+        ChangeSize();
 
         icon.transform.localScale = new Vector3(1f, 1f, 1f);
         icon.transform.localPosition = new Vector3(0, 0, 0);
@@ -75,14 +79,17 @@ public class SpiderController : PlayerController
     }
     public override void ChangeSize()
     {
+        int rev = reversed ? -1 : 1;
         if (mini)
         {
-            transform.localScale = new Vector2(.47f, .47f);
+            transform.localScale = new Vector2(.47f, rev * .47f);
+            transform.position = transform.position + -new Vector3(0, rev * .29f, 0);
             jumpForce = 8f;
         }
         else
         {
-            transform.localScale = new Vector2(1f, 1f);
+            transform.localScale = new Vector2(1.05f, rev * 1.05f);
+            transform.position = transform.position + new Vector3(0, rev * .29f, 0);
             jumpForce = 12.5f;
         }
 
@@ -111,6 +118,8 @@ public class SpiderController : PlayerController
                 regate = 1;
             }
 
+            //facingright = player_body.velocity.x >= 0 ? !reversed : reversed;
+
             // IF GROUNDED --> TURN OFF TRAIL
             /*
             if (grounded && (!red_p && !yellow_p && !blue_p && !pink_p))
@@ -134,8 +143,12 @@ public class SpiderController : PlayerController
             // Movement Speed
             moveX = Input.GetAxisRaw("Horizontal") * speed;
 
+            if (moveX > 0) { facingright = true; }
+            else if (moveX < 0) { facingright = false; }
+            upright = !reversed;
+
             // JUMP!
-            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space"))
+            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
             {
                 if (!grounded || yellow || pink || red || green || blue || black)
                 {
@@ -146,7 +159,7 @@ public class SpiderController : PlayerController
             }
 
             // RELEASE JUMP
-            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space"))
+            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
                 isjumping = false;
                 jump = false;
@@ -183,11 +196,11 @@ public class SpiderController : PlayerController
     public override void Move()
     {
         // If the input is moving the player right and the player is facing left...
-        if (!reversed && !upright)
+       /* if (!reversed && !upright)
         {
             // ... flip the player.
             negate = 1;
-            upright = !upright;
+            //upright = !upright;
             FlipY();
         }
         // Otherwise if the input is moving the player left and the player is facing right...
@@ -197,21 +210,23 @@ public class SpiderController : PlayerController
             negate = -1;
             upright = !upright;
             FlipY();
-        }
+        }*/
 
-        if (moveX > 0 && !facingright)
+        /*if (moveX > 0 && !facingright)
         {
             // ... flip the player.
-            facingright = !facingright;
+            facingright = true;
             FlipX();
         }
         // Otherwise if the input is moving the player left and the player is facing right...
         else if (moveX < 0 && facingright)
         {
             // ... flip the player.
-            facingright = !facingright;
+            facingright = false;
             FlipX();
-        }
+        }*/
+        transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * (facingright ? 1 : -1), Mathf.Abs(transform.localScale.y) * (upright ? 1 : -1), transform.localScale.z);
+
 
         // movement controls
         Vector2 targetVelocity = new Vector2(moveX * Time.fixedDeltaTime * 10f, player_body.velocity.y);
@@ -229,8 +244,8 @@ public class SpiderController : PlayerController
 
         //Rotate();
         //Eyes();
-        Jump();     // check if jumping
         Pad();      // check if hit pad
+        Jump();     // check if jumping
         Portal();   // check if on portal
 
         // IF GROUNDED --> TURN OFF TRAIL
@@ -248,7 +263,7 @@ public class SpiderController : PlayerController
                 Spider_Anim.GetComponent<Animator>().Play("stop", -1, 0f);
 
                 spider_trail.textureMode = LineTextureMode.RepeatPerSegment;
-                spider_trail.time = .3f;
+                spider_trail.time = .5f;
             }
             else
             {
@@ -256,14 +271,14 @@ public class SpiderController : PlayerController
                 Spider_Anim.GetComponent<Animator>().ResetTrigger("jump");
                 Spider_Anim.GetComponent<Animator>().ResetTrigger("stop");
                 Spider_Anim.GetComponent<Animator>().SetTrigger("run");
-                Spider_Anim.GetComponent<Animator>().speed = Mathf.Abs(moveX) / 60;
+                Spider_Anim.GetComponent<Animator>().speed = (Mathf.Abs(moveX) / 60) * (mini ? 1.5f : 1);
 
-                spider_trail.time = .15f;
+                spider_trail.time = .2f; //.15
                 spider_trail.textureMode = LineTextureMode.RepeatPerSegment;
             }
         }
 
-        spider_trail.transform.localPosition = new Vector3(Mathf.Abs(moveX) / 100, 0, 0);
+        spider_trail.transform.localPosition = new Vector3(/*Mathf.Abs(moveX) / 200*/0, 0, 0);
     }
 
     //private bool resetRotation = true;
@@ -472,7 +487,7 @@ public class SpiderController : PlayerController
                 player_body.velocity = new Vector2(player_body.velocity.x, 0);
                 spider_trail.emitting = true;
 
-                Debug.Log(deathhit.distance);
+                //Debug.Log(deathhit.distance);
                 reversed = !reversed;
                 player_body.gravityScale *= -1;
                 grav_scale *= -1;
@@ -483,7 +498,7 @@ public class SpiderController : PlayerController
                 player_body.velocity = new Vector2(player_body.velocity.x, 0);
                 spider_trail.emitting = true;
 
-                Debug.Log(groundhit.distance);
+                //Debug.Log(groundhit.distance);
                 reversed = !reversed;
                 player_body.gravityScale *= -1;
                 grav_scale *= -1;
@@ -493,6 +508,9 @@ public class SpiderController : PlayerController
             {
                 spider_trail.emitting = true;
             }
+
+            pulse_trigger_p1.Enter();
+            pulse_trigger_p2.Enter();
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
@@ -516,6 +534,7 @@ public class SpiderController : PlayerController
             //yellow_p = false;
             checkGrounded = false;
             grounded = false;
+            jump = false;
 
             //animator.SetBool("Orb", true);
             //jump = false;
@@ -536,6 +555,7 @@ public class SpiderController : PlayerController
         {
             checkGrounded = false;
             grounded = false;
+            jump = false;
 
             //jump = false;
             trail.emitting = true;
@@ -555,6 +575,7 @@ public class SpiderController : PlayerController
         {
             checkGrounded = false;
             grounded = false;
+            jump = false;
 
             trail.emitting = true;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.6f);
@@ -571,7 +592,7 @@ public class SpiderController : PlayerController
         }
         else if (blue_p)
         {
-
+            jump = false;
             checkGrounded = false;
             blue_p = false;
             grounded = false;
@@ -717,13 +738,11 @@ public class SpiderController : PlayerController
         {
             player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
             grav_scale = player_body.gravityScale;
-            transform.rotation = new Quaternion(0, 0, 180, 0);
         }
         else
         {
             player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
             grav_scale = player_body.gravityScale;
-            transform.rotation = new Quaternion(0, 0, 0, 0);
         }
 
         player_renderer.SetActive(false);
@@ -748,7 +767,10 @@ public class SpiderController : PlayerController
     {
         player_body.transform.position += respawn - transform.position;
         player_collider.enabled = true;
-        Invoke("undead", .5f);
+
+        undead();
+
+        //Invoke("undead", .5f);
     }
 
     public void undead()
@@ -826,6 +848,6 @@ public class SpiderController : PlayerController
 
     public override string getMode()
     {
-        return "auto";
+        return "spider";
     }
 }

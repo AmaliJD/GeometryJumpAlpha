@@ -49,8 +49,42 @@ public class PulseTrigger : MonoBehaviour
         // hide trigger's texture
         gameObject.transform.GetChild(0).gameObject.SetActive(false);
         parent = gameObject.transform.parent.gameObject.GetComponent<StopColorChange>();
-
+        /*
         // if copy color
+        if (copy && copy_color != null)
+        {
+            new_color = copy_color.channelcolor;
+            Debug.Log(new_color == copy_color.channelcolor);
+        }
+
+        float h = 0, s = 0, v = 0, a = new_color.a;
+        Color.RGBToHSV(new_color, out h, out s, out v);
+
+        h += (hue / 360);
+        s += sat;
+        v += val;
+        a += alpha;
+
+        if (h > 1) { h -= 1; }
+        else if (h < 0) { h += 1; }
+
+        if (s > 1) { s = 1; }
+        else if (s < 0) { s = 0; }
+
+        if (v > 1) { v = 1; }
+        else if (v < 0) { v = 0; }
+
+        if (a > 1) { a = 1; }
+        else if (a < 0) { a = 0; }
+
+        new_color = Color.HSVToRGB(h, s, v);
+        new_color.a = a;
+
+        duration *= 10;*/
+    }
+
+    private void Start()
+    {
         if (copy && copy_color != null)
         {
             new_color = copy_color.channelcolor;
@@ -81,7 +115,6 @@ public class PulseTrigger : MonoBehaviour
 
         duration *= 10;
     }
-
 
     private void updateColor()
     {
@@ -131,7 +164,8 @@ public class PulseTrigger : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
-            StopAllCoroutines();
+            Enter();
+            /*StopAllCoroutines();
 
             parent.Send(channel_id);
             parent.setActiveTrigger(gameObject, channel_id);
@@ -144,11 +178,29 @@ public class PulseTrigger : MonoBehaviour
             {
                 StartCoroutine(ChangeColor(i));
                 i++;
-            }
+            }*/
         }
     }
 
-    private IEnumerator ChangeColor(int index)
+    public void Enter()
+    {
+        StopAllCoroutines();
+
+        parent.Send(channel_id);
+        parent.setActiveTrigger(gameObject, channel_id);
+
+        updateColor();
+
+        if (channelmode) { StartCoroutine(ChangeColor(0)); return; }
+        int i = 0;
+        foreach (GameObject obj in objects)
+        {
+            StartCoroutine(ChangeColor(i));
+            i++;
+        }
+    }
+
+    public IEnumerator ChangeColor(int index)
     {
         finished = false;
         float time = 0;

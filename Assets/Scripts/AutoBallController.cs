@@ -168,7 +168,7 @@ public class AutoBallController : PlayerController
             }
 
             // JUMP!
-            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space"))
+            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
             {
                 if (!grounded || yellow || pink || red || green || blue || black)
                 {
@@ -179,7 +179,7 @@ public class AutoBallController : PlayerController
             }
 
             // RELEASE JUMP
-            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space"))
+            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
                 isjumping = false;
                 jump = false;
@@ -248,8 +248,8 @@ public class AutoBallController : PlayerController
 
         Rotate();
         //Eyes();
-        Jump();     // check if jumping
         Pad();      // check if hit pad
+        Jump();     // check if jumping
         Portal();   // check if on portal
 
         // IF GROUNDED --> TURN OFF TRAIL
@@ -479,6 +479,7 @@ public class AutoBallController : PlayerController
             //yellow_p = false;
             checkGrounded = false;
             grounded = false;
+            jump = false;
 
             //animator.SetBool("Orb", true);
             //jump = false;
@@ -492,6 +493,7 @@ public class AutoBallController : PlayerController
         {
             checkGrounded = false;
             grounded = false;
+            jump = false;
 
             //jump = false;
             trail.emitting = true;
@@ -504,6 +506,7 @@ public class AutoBallController : PlayerController
         {
             checkGrounded = false;
             grounded = false;
+            jump = false;
 
             trail.emitting = true;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.6f);
@@ -513,7 +516,7 @@ public class AutoBallController : PlayerController
         }
         else if (blue_p)
         {
-
+            jump = false;
             checkGrounded = false;
             blue_p = false;
             grounded = false;
