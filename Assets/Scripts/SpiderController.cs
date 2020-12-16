@@ -19,6 +19,7 @@ public class SpiderController : PlayerController
 
     private float moveX, grav_scale;
     private float smoothing;
+    private float time = 0;
 
     private float maxSpeed = 17 * 1.6f;
 
@@ -83,12 +84,22 @@ public class SpiderController : PlayerController
         int rev = reversed ? -1 : 1;
         if (mini)
         {
+            grounded_particles.startLifetime = .15f;
+            ground_impact_particles.startLifetime = .15f;
+            grounded_particles.transform.localScale = new Vector2(.47f, .47f);
+            ground_impact_particles.transform.localScale = new Vector2(.47f, .47f);
+
             transform.localScale = new Vector2(.47f, rev * .47f);
             transform.position = transform.position + -new Vector3(0, rev * .29f, 0);
             jumpForce = 14f;
         }
         else
         {
+            grounded_particles.startLifetime = .3f;
+            ground_impact_particles.startLifetime = .3f;
+            grounded_particles.transform.localScale = new Vector2(1, 1f);
+            ground_impact_particles.transform.localScale = new Vector2(1f, 1f);
+
             transform.localScale = new Vector2(1.05f, rev * 1.05f);
             transform.position = transform.position + new Vector3(0, rev * .29f, 0);
             jumpForce = 17f;
@@ -108,15 +119,27 @@ public class SpiderController : PlayerController
             // CHECK IF GROUNDED
             if (reversed)
             {
-                grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2(.5f, .1f), 0f, Vector2.up, .51f, groundLayer) && checkGrounded
+                grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2((mini ? .2f : .5f), .1f), 0f, Vector2.up, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(spider_collider, groundLayer));
                 regate = -1;
+
+                grounded_particles.gravityModifier = -Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = -Mathf.Abs(ground_impact_particles.gravityModifier);
+
+                grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 180);
+                ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 180);
             }
             else
             {//.9
-                grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2(.5f, .1f), 0f, Vector2.down, .51f, groundLayer) && checkGrounded
+                grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2((mini ? .2f : .5f), .1f), 0f, Vector2.down, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(spider_collider, groundLayer));
                 regate = 1;
+
+                grounded_particles.gravityModifier = Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = Mathf.Abs(ground_impact_particles.gravityModifier);
+
+                grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+                ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
             }
 
             //facingright = player_body.velocity.x >= 0 ? !reversed : reversed;
@@ -159,11 +182,39 @@ public class SpiderController : PlayerController
                 jump = true;
             }
 
+            // Grounded Particles
+            if (grounded && (Mathf.Abs(player_body.velocity.x) > .1f || jump))
+            {
+                if (!grounded_particles.isPlaying)
+                {
+                    grounded_particles.Play();
+                }
+            }
+            else
+            {
+                grounded_particles.Stop();
+            }
+
+            if (!prev_grounded && grounded)
+            {
+                ground_impact_particles.Play();
+            }
+
             // RELEASE JUMP
             if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
                 isjumping = false;
                 jump = false;
+            }
+
+            // CROUCH
+            if (Input.GetAxisRaw("Vertical") < 0 || Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.LeftShift) || Input.GetMouseButton(1) || headHit.distance > 0)
+            {
+                crouch = true;
+            }
+            else
+            {
+                crouch = false;
             }
 
             // CHANGE JUMP DIRECTION WHEN REVERSED
@@ -182,6 +233,9 @@ public class SpiderController : PlayerController
                 dead = false;
                 Respawn();
             }
+
+            if (time > .03f) { spider_trail.emitting = false; }
+            time += Time.deltaTime;
         }
     }
 
@@ -230,6 +284,8 @@ public class SpiderController : PlayerController
 
 
         // movement controls
+        if (crouch && Mathf.Abs(player_body.velocity.x) > 0) { moveX /= 3; }
+
         Vector2 targetVelocity = new Vector2(moveX * Time.fixedDeltaTime * 10f, player_body.velocity.y);
         player_body.velocity = targetVelocity;
 
@@ -261,7 +317,8 @@ public class SpiderController : PlayerController
                 Spider_Anim.GetComponent<Animator>().ResetTrigger("jump");
                 Spider_Anim.GetComponent<Animator>().ResetTrigger("run");
                 Spider_Anim.GetComponent<Animator>().SetTrigger("stop");
-                Spider_Anim.GetComponent<Animator>().Play("stop", -1, 0f);
+                //Spider_Anim.GetComponent<Animator>().Play("idle", -1, 0f);
+                Spider_Anim.GetComponent<Animator>().speed = 1;
 
                 spider_trail.textureMode = LineTextureMode.RepeatPerSegment;
                 spider_trail.time = .5f;
@@ -272,7 +329,8 @@ public class SpiderController : PlayerController
                 Spider_Anim.GetComponent<Animator>().ResetTrigger("jump");
                 Spider_Anim.GetComponent<Animator>().ResetTrigger("stop");
                 Spider_Anim.GetComponent<Animator>().SetTrigger("run");
-                Spider_Anim.GetComponent<Animator>().speed = (Mathf.Abs(moveX) / 60) * (mini ? 1.5f : 1);
+                //Spider_Anim.GetComponent<Animator>().Play("run");
+                Spider_Anim.GetComponent<Animator>().speed = (Mathf.Abs(moveX) / 50) * (mini ? 1.5f : 1);
 
                 spider_trail.time = .2f; //.15
                 spider_trail.textureMode = LineTextureMode.RepeatPerSegment;
@@ -418,6 +476,7 @@ public class SpiderController : PlayerController
             Spider_Anim.GetComponent<Animator>().ResetTrigger("jump");
             Spider_Anim.GetComponent<Animator>().ResetTrigger("stop");
             Spider_Anim.GetComponent<Animator>().SetTrigger("curl");
+            Spider_Anim.GetComponent<Animator>().Play("curl", -1, 0f);
             Spider_Anim.GetComponent<Animator>().speed = 2;
 
             if (grav) { grav = false; }
@@ -446,6 +505,7 @@ public class SpiderController : PlayerController
             Spider_Anim.GetComponent<Animator>().ResetTrigger("jump");
             Spider_Anim.GetComponent<Animator>().ResetTrigger("stop");
             Spider_Anim.GetComponent<Animator>().SetTrigger("curl");
+            Spider_Anim.GetComponent<Animator>().Play("curl", -1, 0f);
             Spider_Anim.GetComponent<Animator>().speed = 2;
 
             if (grav) { grav = false; }
@@ -462,6 +522,7 @@ public class SpiderController : PlayerController
             Spider_Anim.GetComponent<Animator>().ResetTrigger("jump");
             Spider_Anim.GetComponent<Animator>().ResetTrigger("stop");
             Spider_Anim.GetComponent<Animator>().SetTrigger("curl");
+            Spider_Anim.GetComponent<Animator>().Play("curl", -1, 0f);
             Spider_Anim.GetComponent<Animator>().speed = 2;
         }
         else if (grounded && jump && (!yellow_p && !red_p && !pink_p && !blue_p))
@@ -474,18 +535,18 @@ public class SpiderController : PlayerController
 
             if (!reversed)
             {
-                groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + 0), Vector2.up, 120, groundLayer);
-                deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + 0), Vector2.up, 120, deathLayer);
+                groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, groundLayer);
+                deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, deathLayer);
             }
             else
             {
-                groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - 0), -Vector2.up, 120, groundLayer);
-                deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - 0), -Vector2.up, 120, deathLayer);
+                groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, groundLayer);
+                deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, deathLayer);
             }
 
             //bool head = grounded && Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, rev * Vector2.up, .01f, groundLayer);
 
-            if (deathhit.collider != null)
+            if (deathhit.collider != null && deathhit.distance < groundhit.distance)
             {
                 player_body.velocity = new Vector2(player_body.velocity.x, 0);
                 spider_trail.emitting = true;
@@ -494,29 +555,33 @@ public class SpiderController : PlayerController
                 reversed = !reversed;
                 player_body.gravityScale *= -1;
                 grav_scale *= -1;
-                transform.position = new Vector2(transform.position.x, transform.position.y + rev * (deathhit.distance - .5f));
+                transform.position = new Vector2(transform.position.x, transform.position.y + rev * (deathhit.distance - (mini ? .1f : .3f)));
             }
             else if (groundhit.collider != null)
             {
                 player_body.velocity = new Vector2(player_body.velocity.x, 0);
                 spider_trail.emitting = true;
 
-                Debug.Log(groundhit.distance - .5f);
+                //Debug.Log(groundhit.distance - .5f);
                 reversed = !reversed;
                 player_body.gravityScale *= -1;
                 grav_scale *= -1;
-                transform.position = new Vector2(transform.position.x, transform.position.y + rev * (groundhit.distance - .5f));
+                transform.position = new Vector2(transform.position.x, transform.position.y + rev * (groundhit.distance - (mini ? .1f : .3f)));
             }
             else
             {
                 spider_trail.emitting = true;
             }
 
+            //Debug.DrawLine(transform.position + new Vector3(1, 0, 0), transform.position + new Vector3(1, rev * (groundhit.distance - .5f), 0), Color.red);
+
             pulse_trigger_p1.Enter();
             pulse_trigger_p2.Enter();
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            time = 0;
         }
     }
 
@@ -772,6 +837,10 @@ public class SpiderController : PlayerController
     {
         able = false;
         if (restartmusic) { bgmusic.Stop(); }
+
+        grounded_particles.Stop();
+        ground_impact_particles.Stop();
+
         player_collider.enabled = false;
         spider_collider.enabled = false;
         StopAllCoroutines();

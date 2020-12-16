@@ -23,6 +23,7 @@ public class IconController : MonoBehaviour
 
         float R1 = Random.Range(0f, 360f);
         float R2 = Random.Range(.3f * 360f, .7f * 360f);
+        int V = Random.Range(0, 20);
 
         h += (R1 / 360);
         h2 = h;
@@ -34,7 +35,7 @@ public class IconController : MonoBehaviour
         if (h2 > 1) { h2 -= 1; }
         else if (h2 < 0) { h2 += 1; }
 
-        p1 = Color.HSVToRGB(h, s, v);
+        p1 = Color.HSVToRGB(h, s, V == 19 ? 0 : v);
         p1.a = a;
 
         p2 = Color.HSVToRGB(h2, s, v);
@@ -42,6 +43,8 @@ public class IconController : MonoBehaviour
 
         playercolor1.Set(p1);
         playercolor2.Set(p2);
+
+        if(V == 19) { p1 = Color.HSVToRGB(h2, s, v); }
 
         death_effect.startColor = p1;
 
