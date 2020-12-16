@@ -61,7 +61,7 @@ public class AutoSpiderController : PlayerController
         ChangeSize();
 
         icon.transform.localScale = new Vector3(1f, 1f, 1f);
-        icon.transform.localPosition = new Vector3(0, 0, 0);
+        icon.transform.localPosition = new Vector3(-.1f, 0, 0);
         spider.SetActive(true);
         icon.SetActive(false);
 
@@ -79,12 +79,22 @@ public class AutoSpiderController : PlayerController
         int rev = reversed ? -1 : 1;
         if (mini)
         {
+            grounded_particles.startLifetime = .15f;
+            ground_impact_particles.startLifetime = .15f;
+            grounded_particles.transform.localScale = new Vector2(.47f, .47f);
+            ground_impact_particles.transform.localScale = new Vector2(.47f, .47f);
+
             transform.localScale = new Vector2(.47f, rev * .47f);
             transform.position = transform.position + -new Vector3(0, rev * .29f, 0);
             jumpForce = 14f;
         }
         else
         {
+            grounded_particles.startLifetime = .3f;
+            ground_impact_particles.startLifetime = .3f;
+            grounded_particles.transform.localScale = new Vector2(1, 1f);
+            ground_impact_particles.transform.localScale = new Vector2(1f, 1f);
+
             transform.localScale = new Vector2(1.05f, rev * 1.05f);
             transform.position = transform.position + new Vector3(0, rev * .29f, 0);
             jumpForce = 17f;
@@ -107,12 +117,24 @@ public class AutoSpiderController : PlayerController
                 grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2((mini ? .2f : .5f), .1f), 0f, Vector2.up, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(spider_collider, groundLayer));
                 regate = -1;
+
+                grounded_particles.gravityModifier = -Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = -Mathf.Abs(ground_impact_particles.gravityModifier);
+
+                grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 180);
+                ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 180);
             }
             else
             {//.9
                 grounded = Physics2D.BoxCast(player_body.transform.position, new Vector2((mini ? .2f : .5f), .1f), 0f, Vector2.down, .51f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(spider_collider, groundLayer));
                 regate = 1;
+
+                grounded_particles.gravityModifier = Mathf.Abs(grounded_particles.gravityModifier);
+                ground_impact_particles.gravityModifier = Mathf.Abs(ground_impact_particles.gravityModifier);
+
+                grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+                ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
             }
 
             // IF GROUNDED --> TURN OFF TRAIL
@@ -148,6 +170,24 @@ public class AutoSpiderController : PlayerController
                 }
 
                 jump = true;
+            }
+
+            // Grounded Particles
+            if (grounded && (Mathf.Abs(player_body.velocity.x) > .1f || jump))
+            {
+                if (!grounded_particles.isPlaying)
+                {
+                    grounded_particles.Play();
+                }
+            }
+            else
+            {
+                grounded_particles.Stop();
+            }
+
+            if (!prev_grounded && grounded)
+            {
+                ground_impact_particles.Play();
             }
 
             // RELEASE JUMP
@@ -241,7 +281,8 @@ public class AutoSpiderController : PlayerController
             Spider_Anim.GetComponent<Animator>().speed = (speed / 50) * (mini ? 1.5f : 1);
         }
 
-        spider_trail.transform.localPosition = new Vector3(Mathf.Abs(moveX) / 100, 0, 0);
+        //spider_trail.transform.localPosition = new Vector3(Mathf.Abs(moveX) / 100, 0, 0);
+        spider_trail.transform.localPosition = new Vector3(0, 0, 0);
 
         check_death = true;
     }
@@ -316,6 +357,25 @@ public class AutoSpiderController : PlayerController
 
     public override void Jump()
     {
+        if (teleorb && jump)
+        {
+            Vector3 positionDelta = (transform.position + teleOrb_translate) - transform.position;
+
+            jump = false;
+            teleorb = false;
+            player_body.transform.position += teleOrb_translate;
+
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
+        }
+
+        if (triggerorb && jump)
+        {
+            triggerorb = false;
+            SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
+            StartCoroutine(spawn.Begin());
+        }
+
         if (yellow && jump)
         {
             jump = false;
@@ -382,7 +442,6 @@ public class AutoSpiderController : PlayerController
             Spider_Anim.GetComponent<Animator>().ResetTrigger("jump");
             Spider_Anim.GetComponent<Animator>().ResetTrigger("stop");
             Spider_Anim.GetComponent<Animator>().SetTrigger("curl");
-            Spider_Anim.GetComponent<Animator>().Play("curl", -1, 0f);
             Spider_Anim.GetComponent<Animator>().speed = 2;
 
             if (grav) { grav = false; }
@@ -411,7 +470,6 @@ public class AutoSpiderController : PlayerController
             Spider_Anim.GetComponent<Animator>().ResetTrigger("jump");
             Spider_Anim.GetComponent<Animator>().ResetTrigger("stop");
             Spider_Anim.GetComponent<Animator>().SetTrigger("curl");
-            Spider_Anim.GetComponent<Animator>().Play("curl", -1, 0f);
             Spider_Anim.GetComponent<Animator>().speed = 2;
 
             if (grav) { grav = false; }
@@ -428,29 +486,36 @@ public class AutoSpiderController : PlayerController
             Spider_Anim.GetComponent<Animator>().ResetTrigger("jump");
             Spider_Anim.GetComponent<Animator>().ResetTrigger("stop");
             Spider_Anim.GetComponent<Animator>().SetTrigger("curl");
-            Spider_Anim.GetComponent<Animator>().Play("curl", -1, 0f);
             Spider_Anim.GetComponent<Animator>().speed = 2;
         }
         else if (grounded && jump)
         {
             jump = false; grounded = false;
 
-            int rev = 1;
+            int rev = 1, back = 1;
             if (reversed) { rev = -1; }
+            if (!facingright) { back = -1; }
             RaycastHit2D groundhit, deathhit;
 
             if (!reversed)
             {
-                groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, groundLayer);
-                deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, deathLayer);
+                //groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, groundLayer);
+                //deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, deathLayer);
+                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0,.2f,0), new Vector2(spider_collider.size.x, .1f), 0f, Vector2.up, 120, groundLayer);
+                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, .2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, Vector2.up, 120, deathLayer);
             }
             else
             {
-                groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, groundLayer);
-                deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, deathLayer);
+                //groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, groundLayer);
+                //deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, deathLayer);
+
+                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, -Vector2.up, 120, groundLayer);
+                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, -Vector2.up, 120, deathLayer);
             }
 
-            if (deathhit.collider != null && deathhit.distance < groundhit.distance)
+            //Debug.Log("D: " + deathhit.distance + "G: " + groundhit.distance);
+
+            if (deathhit.collider != null && (deathhit.distance < groundhit.distance || groundhit.distance == 0))
             {
                 spider_trail.emitting = true;
 
@@ -731,12 +796,16 @@ public class AutoSpiderController : PlayerController
         able = false;
         check_death = false;
         if (restartmusic) { bgmusic.Stop(); }
+
+        grounded_particles.Stop();
+        ground_impact_particles.Stop();
+
         player_collider.enabled = false;
         spider_collider.enabled = false;
         StopAllCoroutines();
         player_body.velocity = Vector2.zero;
         trail.emitting = false;
-        spider_trail.emitting = false;
+        
         jump = false;
         yellow = false; pink = false; red = false; green = false; blue = false; black = false;
         reversed = respawn_rev;
@@ -768,6 +837,7 @@ public class AutoSpiderController : PlayerController
 
     public void reposition()
     {
+        spider_trail.emitting = false;
         Vector3 positionDelta = respawn - transform.position;
         player_body.transform.position += respawn - transform.position;
         player_collider.enabled = true;

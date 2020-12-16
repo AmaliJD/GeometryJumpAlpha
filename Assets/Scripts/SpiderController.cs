@@ -66,7 +66,7 @@ public class SpiderController : PlayerController
         ChangeSize();
 
         icon.transform.localScale = new Vector3(1f, 1f, 1f);
-        icon.transform.localPosition = new Vector3(0, 0, 0);
+        icon.transform.localPosition = new Vector3(-.1f, 0, 0);
         spider.SetActive(true);
         icon.SetActive(false);
 
@@ -410,6 +410,25 @@ public class SpiderController : PlayerController
 
     public override void Jump()
     {
+        if (teleorb && jump)
+        {
+            Vector3 positionDelta = (transform.position + teleOrb_translate) - transform.position;
+
+            jump = false;
+            teleorb = false;
+            player_body.transform.position += teleOrb_translate;
+
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
+        }
+
+        if (triggerorb && jump)
+        {
+            triggerorb = false;
+            SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
+            StartCoroutine(spawn.Begin());
+        }
+
         if (yellow && jump)
         {
             jump = false;
@@ -476,7 +495,6 @@ public class SpiderController : PlayerController
             Spider_Anim.GetComponent<Animator>().ResetTrigger("jump");
             Spider_Anim.GetComponent<Animator>().ResetTrigger("stop");
             Spider_Anim.GetComponent<Animator>().SetTrigger("curl");
-            Spider_Anim.GetComponent<Animator>().Play("curl", -1, 0f);
             Spider_Anim.GetComponent<Animator>().speed = 2;
 
             if (grav) { grav = false; }
@@ -505,7 +523,6 @@ public class SpiderController : PlayerController
             Spider_Anim.GetComponent<Animator>().ResetTrigger("jump");
             Spider_Anim.GetComponent<Animator>().ResetTrigger("stop");
             Spider_Anim.GetComponent<Animator>().SetTrigger("curl");
-            Spider_Anim.GetComponent<Animator>().Play("curl", -1, 0f);
             Spider_Anim.GetComponent<Animator>().speed = 2;
 
             if (grav) { grav = false; }
@@ -522,7 +539,6 @@ public class SpiderController : PlayerController
             Spider_Anim.GetComponent<Animator>().ResetTrigger("jump");
             Spider_Anim.GetComponent<Animator>().ResetTrigger("stop");
             Spider_Anim.GetComponent<Animator>().SetTrigger("curl");
-            Spider_Anim.GetComponent<Animator>().Play("curl", -1, 0f);
             Spider_Anim.GetComponent<Animator>().speed = 2;
         }
         else if (grounded && jump && (!yellow_p && !red_p && !pink_p && !blue_p))
@@ -535,18 +551,22 @@ public class SpiderController : PlayerController
 
             if (!reversed)
             {
-                groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, groundLayer);
-                deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, deathLayer);
+                //groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, groundLayer);
+                //deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, deathLayer);
+                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, .2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, Vector2.up, 120, groundLayer);
+                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, .2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, Vector2.up, 120, deathLayer);
             }
             else
             {
-                groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, groundLayer);
-                deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, deathLayer);
+                //groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, groundLayer);
+                //deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, deathLayer);
+                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, -Vector2.up, 120, groundLayer);
+                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, -Vector2.up, 120, deathLayer);
             }
 
             //bool head = grounded && Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, rev * Vector2.up, .01f, groundLayer);
 
-            if (deathhit.collider != null && deathhit.distance < groundhit.distance)
+            if (deathhit.collider != null && (deathhit.distance < groundhit.distance || groundhit.distance == 0))
             {
                 player_body.velocity = new Vector2(player_body.velocity.x, 0);
                 spider_trail.emitting = true;
@@ -846,7 +866,7 @@ public class SpiderController : PlayerController
         StopAllCoroutines();
         player_body.velocity = Vector2.zero;
         trail.emitting = false;
-        spider_trail.emitting = false;
+        //spider_trail.emitting = false;
         jump = false;
         yellow = false; pink = false; red = false; green = false; blue = false; black = false;
         reversed = respawn_rev;
@@ -884,6 +904,7 @@ public class SpiderController : PlayerController
 
     public void reposition()
     {
+        spider_trail.emitting = false;
         Vector3 positionDelta = respawn - transform.position;
         player_body.transform.position += respawn - transform.position;
         player_collider.enabled = true;
