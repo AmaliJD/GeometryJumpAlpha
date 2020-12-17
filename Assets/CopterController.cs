@@ -825,8 +825,8 @@ public class CopterController : PlayerController
         bgmusic.volume = 1;
         if (restartmusic) { bgmusic.Play(); }
 
-        Vector2 targetVelocity = new Vector2(speed * Time.fixedDeltaTime * 10f, player_body.velocity.y);
-        player_body.velocity = targetVelocity;
+        //Vector2 targetVelocity = new Vector2(speed * Time.fixedDeltaTime * 10f, player_body.velocity.y);
+        //player_body.velocity = targetVelocity;
 
         dead = false;
         able = true;

@@ -121,6 +121,15 @@ public abstract class PlayerController : MonoBehaviour
         Awake2();
     }
 
+    // DO METHODS
+    public void playBGMusic()
+    {
+        if (!bgmusic.isPlaying)
+        {
+            bgmusic.Play();
+        }
+    }
+
     // SET METHODS
     public void setIcons(GameObject i)
     {

@@ -71,6 +71,7 @@ public class AutoController : PlayerController
 
     public override void ChangeSize()
     {
+        bool currMini = transform.localScale.x < .5;
         if (mini)
         {
             grounded_particles.startLifetime = .15f;
@@ -78,7 +79,7 @@ public class AutoController : PlayerController
             grounded_particles.transform.localScale = new Vector2(.47f, .47f);
             ground_impact_particles.transform.localScale = new Vector2(.47f, .47f);
             transform.localScale = new Vector2(.47f, .47f);
-            transform.position = transform.position - new Vector3(0, .29f, 0);
+            transform.position = transform.position - new Vector3(0, (currMini ? 0 : 1) * .29f, 0);
             jumpForce = 15f;
         }
         else
@@ -88,7 +89,7 @@ public class AutoController : PlayerController
             grounded_particles.transform.localScale = new Vector2(1f, 1f);
             ground_impact_particles.transform.localScale = new Vector2(1f, 1f);
             transform.localScale = new Vector2(1.05f, 1.05f);
-            transform.position = transform.position + new Vector3(0, .29f, 0);
+            transform.position = transform.position + new Vector3(0, (!currMini ? 0 : 1) * .29f, 0);
             jumpForce = 19.2f;
         }
 

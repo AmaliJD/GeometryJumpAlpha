@@ -77,6 +77,7 @@ public class AutoSpiderController : PlayerController
     public override void ChangeSize()
     {
         int rev = reversed ? -1 : 1;
+        bool currMini = transform.localScale.x < .5;
         if (mini)
         {
             grounded_particles.startLifetime = .15f;
@@ -85,7 +86,7 @@ public class AutoSpiderController : PlayerController
             ground_impact_particles.transform.localScale = new Vector2(.47f, .47f);
 
             transform.localScale = new Vector2(.47f, rev * .47f);
-            transform.position = transform.position + -new Vector3(0, rev * .29f, 0);
+            transform.position = transform.position + -new Vector3(0, (currMini ? 0 : 1) * rev * .29f, 0);
             jumpForce = 14f;
         }
         else
@@ -96,7 +97,7 @@ public class AutoSpiderController : PlayerController
             ground_impact_particles.transform.localScale = new Vector2(1f, 1f);
 
             transform.localScale = new Vector2(1.05f, rev * 1.05f);
-            transform.position = transform.position + new Vector3(0, rev * .29f, 0);
+            transform.position = transform.position + new Vector3(0, (!currMini ? 0 : 1) * rev * .29f, 0);
             jumpForce = 17f;
         }
 
@@ -523,7 +524,7 @@ public class AutoSpiderController : PlayerController
                 reversed = !reversed;
                 player_body.gravityScale *= -1;
                 grav_scale *= -1;
-                transform.position = new Vector2(transform.position.x, transform.position.y + rev * (deathhit.distance - (mini ? .1f : .3f)));
+                transform.position = new Vector2(transform.position.x, transform.position.y + rev * (deathhit.distance - (mini ? .1f : .4f)));
             }
             else if (groundhit.collider != null)
             {
@@ -533,7 +534,7 @@ public class AutoSpiderController : PlayerController
                 reversed = !reversed;
                 player_body.gravityScale *= -1;
                 grav_scale *= -1;
-                transform.position = new Vector2(transform.position.x, transform.position.y + rev * (groundhit.distance - (mini ? .1f : .3f)));
+                transform.position = new Vector2(transform.position.x, transform.position.y + rev * (groundhit.distance - (mini ? .1f : .4f)));
             }
             else
             {

@@ -140,6 +140,21 @@ public class GameManager : MonoBehaviour
         //------------------------------------------------------------------------------------------------
         playercontroller = cubecontroller;
         checkpointcontroller = FindObjectOfType<Checkpoint_Controller>();
+
+        /*if (bgmusic != null)
+        {
+            Debug.Log("bgmusic already exists");
+            Destroy(bgmusic.gameObject);
+        }
+        else
+        {
+            Debug.Log("bgmusic does not exist");
+            bgmusic = GameObject.Find("BG Music 1").GetComponent<AudioSource>();
+            DontDestroyOnLoad(bgmusic.gameObject);
+        }*/
+        //bgmusic = GameObject.Find("BG Music 1").GetComponent<AudioSource>();
+
+        bgmusic = GameObject.Find("BG Music 1").GetComponent<AudioSource>();
         playercontroller.setBGMusic(bgmusic);
         newbgmusic = bgmusic;
 
@@ -168,6 +183,15 @@ public class GameManager : MonoBehaviour
             cameraList.Add(g.GetComponent<CinemachineVirtualCamera>());
             cameraList[i].gameObject.SetActive(true);
             cameraList[i].Priority = 5;
+        }
+    }
+
+    private void Start()
+    {
+        //playercontroller.playBGMusic();
+        if (!bgmusic.isPlaying)
+        {
+            bgmusic.Play();
         }
     }
 
@@ -355,6 +379,10 @@ public class GameManager : MonoBehaviour
         {
             editorTrail.Clear();
             editorTrail.emitting = !editorTrail.emitting;
+        }
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            bgmusic.Play();
         }
 
 
