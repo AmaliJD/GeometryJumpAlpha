@@ -34,7 +34,7 @@ public abstract class PlayerController : MonoBehaviour
     static public bool restartmusic = false;
 
     static public bool crouch = false, crouched = true;
-    static public bool facingright = true, upright = true, mini = false;
+    static public bool facingright = true, upright = true, mini = false, goingUp;
 
     static public GameObject OrbTouched = null;
     static public bool yellow = false, blue = false, red = false, pink = false, green = false, black = false, teleorb = false, triggerorb = false;

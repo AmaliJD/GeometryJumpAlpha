@@ -64,6 +64,7 @@ public class GameManager : MonoBehaviour
     private AutoSpiderController autospidercontroller;
 
     private CopterController coptercontroller;
+    private AutoCopterController autocoptercontroller;
 
     private Checkpoint_Controller checkpointcontroller;
 
@@ -134,6 +135,7 @@ public class GameManager : MonoBehaviour
         autospidercontroller = player.GetComponent<AutoSpiderController>();
 
         coptercontroller = player.GetComponent<CopterController>();
+        autocoptercontroller = player.GetComponent<AutoCopterController>();
 
         //------------------------------------------------------------------------------------------------
         playercontroller = cubecontroller;
@@ -531,6 +533,11 @@ public class GameManager : MonoBehaviour
             playercontroller = coptercontroller;
             return playercontroller;
         }
+        else if (autocoptercontroller.isActiveAndEnabled)
+        {
+            playercontroller = autocoptercontroller;
+            return playercontroller;
+        }
         else
         {
             return playercontroller;
@@ -621,7 +628,20 @@ public class GameManager : MonoBehaviour
                 case "auto_ball": playercontroller = autoballcontroller; break;
                 case "spider": playercontroller = spidercontroller; break;
                 case "auto_spider": playercontroller = autospidercontroller; break;
-                case "copter": playercontroller = coptercontroller; break;
+                case "copter":
+                    bool gu = false;
+                    if (playercontroller == autocoptercontroller)
+                    {
+                        gu = autocoptercontroller.getGoingUp();
+                    }
+                    playercontroller = coptercontroller; coptercontroller.setGoingUp(gu); break;
+                case "auto_copter":
+                    gu = false;
+                    if (playercontroller == coptercontroller)
+                    {
+                        gu = coptercontroller.getGoingUp();
+                    }
+                    playercontroller = autocoptercontroller; autocoptercontroller.setGoingUp(gu); break;
             }
 
             playercontroller.setAble(false);

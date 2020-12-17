@@ -250,6 +250,7 @@ MonoBehaviour:
   triggers: []
   delay: []
   loop: 0
+  TriggerOrg: 1
 --- !u!1 &955216120532848915
 GameObject:
   m_ObjectHideFlags: 0

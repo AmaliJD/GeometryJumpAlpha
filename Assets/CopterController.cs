@@ -23,7 +23,6 @@ public class CopterController : PlayerController
     private float time;
 
     private float maxSpeed = 15f;
-    private bool goingUp = false;
 
     public override void Awake2()
     {
@@ -49,14 +48,14 @@ public class CopterController : PlayerController
 
     public override void setAnimation()
     {
-        trail.gameObject.SetActive(false);
+        //trail.gameObject.SetActive(false);
 
         player_body.freezeRotation = true;
         transform.rotation = new Quaternion(0, 0, 0, 0);
 
         player_body.gravityScale = 0f; //2.7f
-        goingUp = false;
-        if (reversed) { player_body.gravityScale *= -1; }
+        //goingUp = false;
+        if (reversed) { player_body.gravityScale *= -1;}
         grav_scale = player_body.gravityScale;
 
         grounded_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
@@ -64,6 +63,8 @@ public class CopterController : PlayerController
 
         grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
         ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+        ChangeSize();
 
         icon.transform.localScale = new Vector3(1f, 1f, 1f);
         icon.transform.localPosition = new Vector3(0f, 0f, 0);
@@ -79,6 +80,7 @@ public class CopterController : PlayerController
     }
     public override void ChangeSize()
     {
+        int rev = reversed ? -1 : 1;
         if (mini)
         {
             grounded_particles.startLifetime = .15f;
@@ -86,7 +88,7 @@ public class CopterController : PlayerController
             grounded_particles.transform.localScale = new Vector2(.47f, .47f);
             ground_impact_particles.transform.localScale = new Vector2(.47f, .47f);
 
-            transform.localScale = new Vector2(.47f, .47f);
+            transform.localScale = new Vector2(.47f, rev * .47f);
             jumpForce = 10f;
         }
         else
@@ -96,7 +98,7 @@ public class CopterController : PlayerController
             grounded_particles.transform.localScale = new Vector2(1, 1f);
             ground_impact_particles.transform.localScale = new Vector2(1f, 1f);
 
-            transform.localScale = new Vector2(1.05f, 1.05f);
+            transform.localScale = new Vector2(1.05f, rev * 1.05f);
             jumpForce = 15f;
         }
 
@@ -280,6 +282,8 @@ public class CopterController : PlayerController
             Copter_Anim.GetComponent<Animator>().speed = 1.34f;
             if (windUp.isPlaying) { windUp.Stop(); }
             if (windDown.isPlaying) { windDown.Stop(); }
+
+            trail.emitting = false;
         }
         else
         {
@@ -336,43 +340,7 @@ public class CopterController : PlayerController
     {
         int rev = 1;
         if (reversed) { rev = -1; }
-        eyes.transform.localPosition = Vector3.Lerp(eyes.transform.localPosition, new Vector3((moveX / 800), rev * (player_body.velocity.y / 250), 0), .4f);
-
-        if (!grounded)
-        {
-            return;
-        }
-        else
-        {
-            if ((int)Mathf.Abs(transform.rotation.eulerAngles.z / 90) == 0)
-            {
-                eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Normal").gameObject.SetActive(true);
-            }
-            else if ((int)Mathf.Abs(transform.rotation.eulerAngles.z / 90) == 1)
-            {
-                eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Squint").gameObject.SetActive(true);
-            }
-            else if ((int)Mathf.Abs(transform.rotation.eulerAngles.z / 90) == 2)
-            {
-                eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Squint").gameObject.SetActive(true);
-            }
-            else if ((int)Mathf.Abs(transform.rotation.eulerAngles.z / 90) == 3)
-            {
-                eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
-                eyes.transform.Find("Eyes_Irked").gameObject.SetActive(true);
-            }
-        }
+        eyes.transform.localPosition = Vector3.Lerp(eyes.transform.localPosition, new Vector3((moveX / 800), rev * (player_body.velocity.y / 500), 0), .4f);
     }
 
     public override void Jump()
@@ -418,14 +386,15 @@ public class CopterController : PlayerController
             jump = false;
             //yellow_count++;
             //if (yellow_count >= 0) { yellow_j = false; yellow_count = 0; }
+            trail.emitting = true;
 
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
 
-            maxSpeed = Mathf.Abs(jumpForce) * 1.3f;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.3f);
+            maxSpeed = Mathf.Abs(jumpForce) * 1.5f;
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.5f);
             time = 0;
         }
         else if (red_j)
@@ -434,13 +403,15 @@ public class CopterController : PlayerController
             red_j = false;
             jump = false;
 
+            trail.emitting = true;
+
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
 
-            maxSpeed = Mathf.Abs(jumpForce) * 1.65f;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.65f);
+            maxSpeed = Mathf.Abs(jumpForce) * 1.85f;
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.85f);
             time = 0;
         }
         else if (pink_j)
@@ -449,13 +420,15 @@ public class CopterController : PlayerController
             pink_j = false;
             jump = false;
 
+            trail.emitting = true;
+
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
 
             maxSpeed = 15f;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .5f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1f);
             time = 0;
         }
         else if (blue_j)
@@ -465,6 +438,7 @@ public class CopterController : PlayerController
             jump = false;
             //yellow_count++;
             //if (yellow_count >= 0) { green_j = false; yellow_count = 0; }
+            trail.emitting = true;
 
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
@@ -488,6 +462,7 @@ public class CopterController : PlayerController
             jump = false;
             //yellow_count++;
             //if (yellow_count >= 0) { green_j = false; yellow_count = 0; }
+            trail.emitting = true;
 
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
@@ -506,12 +481,12 @@ public class CopterController : PlayerController
                 jumpForce = posJump;
             }
 
-            maxSpeed = Mathf.Abs(jumpForce) * 1.3f;
+            maxSpeed = Mathf.Abs(jumpForce) * 1.5f;
 
             player_body.gravityScale *= -1;
             grav_scale *= -1;
 
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.3f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.5f);
             time = 0;
         }
         else if (black_j)
@@ -521,6 +496,7 @@ public class CopterController : PlayerController
             jump = false;
             //black_count++;
             //if (black_count >= 5) { black_j = false; black_count = 0; }
+            trail.emitting = true;
 
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
@@ -537,6 +513,7 @@ public class CopterController : PlayerController
         {
             jump = false;
             goingUp = !goingUp;
+            trail.emitting = false;
 
             //player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y + 3f);
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
@@ -546,6 +523,8 @@ public class CopterController : PlayerController
         }
 
         player_body.AddForce(new Vector2(0, goingUp ? 80f : -80f));
+        //int add = goingUp != player_body.velocity.y >= 0 ? (int)(.1f * Mathf.Abs(player_body.velocity.y)) : 0;//prevgoingUp != goingUp ? 20 : 0;
+        //player_body.AddForce(new Vector2(0, goingUp ? 80f + add : -80f - add));
     }
 
     public override bool isJumping()
@@ -574,6 +553,35 @@ public class CopterController : PlayerController
         if (yellow_p)
         {
             yellow_p = false;
+            trail.emitting = true;
+
+            eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
+            eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
+            eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
+            eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
+
+            maxSpeed = Mathf.Abs(jumpForce) * 1.7f;
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.7f);
+            time = 0;
+        }
+        else if (red_p)
+        {
+            red_p = false;
+            trail.emitting = true;
+
+            eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
+            eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
+            eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
+            eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
+
+            maxSpeed = Mathf.Abs(jumpForce) * 2f;
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 2f);
+            time = 0;
+        }
+        else if (pink_p)
+        {
+            pink_p = false;
+            trail.emitting = true;
 
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
@@ -584,35 +592,10 @@ public class CopterController : PlayerController
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.2f);
             time = 0;
         }
-        else if (red_p)
-        {
-            red_p = false;
-
-            eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
-            eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
-            eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
-            eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
-
-            maxSpeed = Mathf.Abs(jumpForce) * 1.55f;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.55f);
-            time = 0;
-        }
-        else if (pink_p)
-        {
-            pink_p = false;
-
-            eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
-            eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
-            eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
-            eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
-
-            maxSpeed = 15f;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .5f);
-            time = 0;
-        }
         else if (blue_p)
         {
             blue_p = false;
+            trail.emitting = true;
 
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
@@ -740,6 +723,7 @@ public class CopterController : PlayerController
         }
         else if (teleA)
         {
+            Vector3 positionDelta = (transform.position + teleB) - transform.position;
             //trail.emitting = false;
             //trail.Clear();
             //trailUp.enabled = true;
@@ -747,6 +731,8 @@ public class CopterController : PlayerController
             teleA = false;
             player_body.transform.position += teleB;
             //trail.enabled = true;
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
         }
     }
 
@@ -803,6 +789,7 @@ public class CopterController : PlayerController
         //player_renderer.enabled = false;
         //death_animation.GetComponent<SpriteRenderer>().enabled = true;
         death_particles.Play();
+        death_sfx.PlayOneShot(death_sfx.clip, 1f);
         player_body.velocity = Vector3.zero;
         player_body.gravityScale = 0;
         goingUp = false;
@@ -897,6 +884,16 @@ public class CopterController : PlayerController
     {
         player_collider.enabled = true;
         //player_collider.isTrigger = true;
+    }
+
+    public void setGoingUp(bool b)
+    {
+        goingUp = b;
+    }
+
+    public bool getGoingUp()
+    {
+        return goingUp;
     }
 
     public override string getMode()
