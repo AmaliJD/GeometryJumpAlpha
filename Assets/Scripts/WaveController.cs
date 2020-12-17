@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using Cinemachine;
 
 public class WaveController : PlayerController
 {
@@ -56,6 +57,9 @@ public class WaveController : PlayerController
         player_body.freezeRotation = true;
         transform.rotation = new Quaternion(0, 0, 0, 0);
 
+        grounded_particles.Stop();
+        ground_impact_particles.Stop();
+
         ChangeSize();
 
         player_body.gravityScale = 0f;
@@ -79,7 +83,7 @@ public class WaveController : PlayerController
         }
         else
         {
-            transform.localScale = new Vector2(1f, 1f);
+            transform.localScale = new Vector2(1.05f, 1.05f);
             jumpForce = 1f;
         }
 
@@ -131,7 +135,7 @@ public class WaveController : PlayerController
             moveY = Input.GetAxisRaw("Vertical") * speed;
 
             // JUMP!
-            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space"))
+            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
             {
                 if (!grounded || yellow || pink || red || green || blue || black)
                 {
@@ -139,15 +143,22 @@ public class WaveController : PlayerController
                 }
                 if (blue) { blue_j = true; }
                 if (green) { green_j = true; }
+                if (triggerorb) { triggerorb_j = true; }
+                if (teleorb) { teleorb_j = true; }
 
                 jump = true;
             }
 
             // RELEASE JUMP
-            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space"))
+            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
                 isjumping = false;
                 jump = false;
+
+                blue_j = false;
+                green_j = false;
+                triggerorb_j = false;
+                teleorb_j = false;
             }
 
             // CHANGE JUMP DIRECTION WHEN REVERSED
@@ -225,19 +236,48 @@ public class WaveController : PlayerController
 
     public void Rotate()
     {
-        if (player_body.velocity.x == 0 && player_body.velocity.y == 0) { }
+        bool grounded_vertical = grounded && Physics2D.Raycast(player_body.transform.position + new Vector3(-.5f, 0, 0), Vector2.right, 1f, groundLayer);
+        bool grounded_horizontal = grounded && Physics2D.Raycast(player_body.transform.position + new Vector3(0, -.5f, 0), Vector2.up, 1f, groundLayer);
+
+        //Debug.Log("H: " + grounded_horizontal + " V: " + grounded_vertical);
+
+        if ((player_body.velocity.x == 0 || grounded_vertical) && (player_body.velocity.y == 0 || grounded_horizontal)) { }
         else if (player_body.velocity.x >= 0)
         {
             Vector3 newAngle = new Vector3(0, 0, (Mathf.Rad2Deg * Mathf.Atan(player_body.velocity.y / player_body.velocity.x)));
-            if (grounded && player_body.velocity.x!=0) { newAngle = new Vector3(0, 0, 0); }
-            transform.rotation = Quaternion.Euler(newAngle);
+            //if (grounded && player_body.velocity.x!=0) { newAngle = new Vector3(0, 0, 0); }
+            if (grounded_horizontal)
+            {
+                //if (player_body.velocity.y > 0) { }
+                //else if (player_body.velocity.y < 0) { }
+                newAngle = new Vector3(0, 0, 0);
+            }
+            else if (grounded_vertical)
+            {
+                if (player_body.velocity.y > 0) { newAngle = new Vector3(0, 0, 90); }
+                else if (player_body.velocity.y < 0) { newAngle = new Vector3(0, 0, -90); }
+            }
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(newAngle), .5f);
         }
         else if (player_body.velocity.x < 0)
         {
             Vector3 newAngle = new Vector3(0, 0, 180 + (Mathf.Rad2Deg * Mathf.Atan(player_body.velocity.y / player_body.velocity.x)));
-            if (grounded && player_body.velocity.x != 0) { newAngle = new Vector3(0, 0, 180); }
-            transform.rotation = Quaternion.Euler(newAngle);
+            //if (grounded && player_body.velocity.x != 0) { newAngle = new Vector3(0, 0, 180); }
+            if (grounded_horizontal)
+            {
+                //if (player_body.velocity.y > 0) { }
+                //else if (player_body.velocity.y < 0) { }
+                newAngle = new Vector3(0, 0, 180);
+            }
+            else if (grounded_vertical)
+            {
+                if (player_body.velocity.y > 0) { newAngle = new Vector3(0, 0, 90); }
+                else if (player_body.velocity.y < 0) { newAngle = new Vector3(0, 0, -90); }
+            }
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(newAngle), .5f);
         }
+
+        //Debug.Log(player_body.velocity.x);
     }
 
     /*public void Eyes()
@@ -286,6 +326,27 @@ public class WaveController : PlayerController
     public override void Jump()
     {
         trail.emitting = true;
+
+        if (teleorb_j)
+        {
+            Vector3 positionDelta = (transform.position + teleOrb_translate) - transform.position;
+
+            jump = false;
+            teleorb_j = false;
+            teleorb = false;
+            player_body.transform.position += teleOrb_translate;
+
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
+        }
+
+        if (triggerorb_j)
+        {
+            triggerorb_j = false;
+            triggerorb = false;
+            SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
+            StartCoroutine(spawn.Begin());
+        }
 
         if (blue_j || green_j)
         {
@@ -347,12 +408,16 @@ public class WaveController : PlayerController
     {
         if (teleA)
         {
+            Vector3 positionDelta = (transform.position + teleB) - transform.position;
             //trail.emitting = false;
             //trail.Clear();
             trail.enabled = true;
             teleA = false;
             player_body.transform.position += teleB;
             //trail.enabled = true;
+
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
         }
     }
 
@@ -414,11 +479,18 @@ public class WaveController : PlayerController
 
     public void reposition()
     {
+        Vector3 positionDelta = respawn - transform.position;
         player_body.transform.position += respawn - transform.position;
         wave_trail.Clear();
         wave_trail2.Clear();
         player_collider.enabled = true;
-        Invoke("undead", .5f);
+
+        CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+        activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
+
+        undead();
+
+        //Invoke("undead", .5f);
     }
 
     public void undead()

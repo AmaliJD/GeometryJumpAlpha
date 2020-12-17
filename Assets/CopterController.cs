@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using Cinemachine;
 
 public class CopterController : PlayerController
 {
@@ -58,6 +59,12 @@ public class CopterController : PlayerController
         if (reversed) { player_body.gravityScale *= -1; }
         grav_scale = player_body.gravityScale;
 
+        grounded_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
+        ground_impact_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
+
+        grounded_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+        ground_impact_particles.gameObject.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
         icon.transform.localScale = new Vector3(1f, 1f, 1f);
         icon.transform.localPosition = new Vector3(0f, 0f, 0);
         copter.SetActive(true);
@@ -74,12 +81,22 @@ public class CopterController : PlayerController
     {
         if (mini)
         {
+            grounded_particles.startLifetime = .15f;
+            ground_impact_particles.startLifetime = .15f;
+            grounded_particles.transform.localScale = new Vector2(.47f, .47f);
+            ground_impact_particles.transform.localScale = new Vector2(.47f, .47f);
+
             transform.localScale = new Vector2(.47f, .47f);
             jumpForce = 10f;
         }
         else
         {
-            transform.localScale = new Vector2(1f, 1f);
+            grounded_particles.startLifetime = .3f;
+            ground_impact_particles.startLifetime = .3f;
+            grounded_particles.transform.localScale = new Vector2(1, 1f);
+            ground_impact_particles.transform.localScale = new Vector2(1f, 1f);
+
+            transform.localScale = new Vector2(1.05f, 1.05f);
             jumpForce = 15f;
         }
 
@@ -157,15 +174,17 @@ public class CopterController : PlayerController
             }
 
             // JUMP!
-            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space"))
+            if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
             {
+                if (triggerorb) { triggerorb_j = true; }
+                if (teleorb) { teleorb_j = true; }
                 if (yellow) { yellow_j = true; }
                 if (red) { red_j = true; }
                 if (pink) { pink_j = true; }
                 if (blue) { blue_j = true; }
                 if (green) { green_j = true; }
                 if (black) { black_j = true; }
-                if (yellow_j || pink_j || red_j || green_j || blue_j || black_j)
+                if (yellow_j || pink_j || red_j || green_j || blue_j || black_j || triggerorb_j || teleorb_j)
                 {
                     isjumping = true;
                 }
@@ -176,7 +195,7 @@ public class CopterController : PlayerController
             }
 
             // RELEASE JUMP
-            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space"))
+            if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
                 isjumping = false;
                 jump = false;
@@ -370,6 +389,26 @@ public class CopterController : PlayerController
             {
                 time = 0.0f;
             }
+        }
+
+        if (teleorb_j && jump)
+        {
+            Vector3 positionDelta = (transform.position + teleOrb_translate) - transform.position;
+
+            teleorb_j = false;
+            teleorb = false;
+            player_body.transform.position += teleOrb_translate;
+
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
+        }
+
+        if (triggerorb_j && jump)
+        {
+            triggerorb_j = false;
+            triggerorb = false;
+            SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
+            StartCoroutine(spawn.Begin());
         }
 
         if (yellow_j)
@@ -603,15 +642,18 @@ public class CopterController : PlayerController
                 reversed = true;
                 goingUp = !goingUp;
                 jumpForce = -posJump;
-                //trailUp.emitting = true;
-                //trailDown.emitting = true;
-                if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+
+                /*if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
                 {
                     player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
                 }
                 else
                 {
                     player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
+                }*/
+                if (player_body.velocity.y <= -10f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, -10f);
                 }
 
                 player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
@@ -627,17 +669,72 @@ public class CopterController : PlayerController
                 reversed = false;
                 goingUp = !goingUp;
                 jumpForce = posJump;
-                //trailUp.emitting = true;
-                //trailDown.emitting = true;
-                if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+
+                /*if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
                 {
-                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .5f);
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
                 }
                 else
                 {
-                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .75f);
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
+                }*/
+
+                if (player_body.velocity.y >= 10f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, 10f);
                 }
+
                 player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
+                grav_scale = player_body.gravityScale;
+            }
+        }
+        else if (gravC)
+        {
+            gravC = false;
+
+            if (reversed)
+            {
+                reversed = false;
+                goingUp = !goingUp;
+                jumpForce = posJump;
+
+                /*if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
+                }
+                else
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
+                }*/
+
+                if (player_body.velocity.y >= 10f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, 10f);
+                }
+
+                player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
+                grav_scale = player_body.gravityScale;
+            }
+            else if (!reversed)
+            {
+                reversed = true;
+                goingUp = !goingUp;
+                jumpForce = -posJump;
+
+                /*if (Mathf.Abs(player_body.velocity.y) > maxSpeed * .6f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .6f);
+                }
+                else
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, player_body.velocity.y * .8f);
+                }*/
+                if (player_body.velocity.y <= -10f)
+                {
+                    player_body.velocity = new Vector2(player_body.velocity.x, -10f);
+                }
+
+                player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
                 grav_scale = player_body.gravityScale;
             }
         }
@@ -672,6 +769,7 @@ public class CopterController : PlayerController
     {
         able = false;
         if (restartmusic) { bgmusic.Stop(); }
+
         player_collider.enabled = false;
         StopAllCoroutines();
         player_body.velocity = Vector2.zero;
@@ -716,9 +814,16 @@ public class CopterController : PlayerController
 
     public void reposition()
     {
+        Vector3 positionDelta = respawn - transform.position;
         player_body.transform.position += respawn - transform.position;
         player_collider.enabled = true;
-        Invoke("undead", .5f);
+
+        CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+        activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
+
+        undead();
+
+        //Invoke("undead", .5f);
     }
 
     public void undead()
