@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Cinemachine;
 
-public class CopterController : PlayerController
+public class AutoCopterController : PlayerController
 {
     public Collider2D player_collider;
 
@@ -55,7 +55,7 @@ public class CopterController : PlayerController
 
         player_body.gravityScale = 0f; //2.7f
         //goingUp = false;
-        if (reversed) { player_body.gravityScale *= -1;}
+        if (reversed) { player_body.gravityScale *= -1; }
         grav_scale = player_body.gravityScale;
 
         grounded_particles.gameObject.transform.localPosition = new Vector3(0, -.52f, 0);
@@ -110,7 +110,7 @@ public class CopterController : PlayerController
         if (able)
         {
             // CHECK IF DEAD
-            dead = /*Physics2D.IsTouchingLayers(player_collider, deathLayer) || */Physics2D.IsTouchingLayers(player_collider, deathLayer);
+            dead = Physics2D.IsTouchingLayers(player_collider, deathLayer) || Mathf.Abs(player_body.velocity.x) <= 0.01f;
             //grounded = Physics2D.Raycast(player_body.transform.position, Vector2.down, .51f, groundLayer);
 
             // CHECK IF GROUNDED
@@ -156,7 +156,7 @@ public class CopterController : PlayerController
 
 
             // Movement Speed
-            moveX = Input.GetAxisRaw("Horizontal") * speed;
+            moveX = speed;
 
             if (grounded && (Mathf.Abs(player_body.velocity.x) > .1f || jump))
             {
@@ -234,6 +234,7 @@ public class CopterController : PlayerController
         if (able)
         {
             Move();
+            Interpolate(1, -1);
         }
     }
 
@@ -258,9 +259,9 @@ public class CopterController : PlayerController
 
         // movement controls
         Vector2 targetVelocity = new Vector2(moveX * Time.fixedDeltaTime * 10f, player_body.velocity.y);
-        //player_body.velocity = targetVelocity;
+        player_body.velocity = targetVelocity;
 
-        bool grounded_temp = checkGrounded && Physics2D.IsTouchingLayers(player_collider, groundLayer);
+        /*bool grounded_temp = checkGrounded && Physics2D.IsTouchingLayers(player_collider, groundLayer);
         if (Mathf.Abs(targetVelocity.x) > Mathf.Abs(player_body.velocity.x))
         {
             player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * (grounded_temp ? 4f : 9f)); //4
@@ -268,7 +269,7 @@ public class CopterController : PlayerController
         else
         {
             player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * (grounded_temp ? .4f : 9f)); //.4
-        }
+        }*/
 
         Rotate();
         Eyes();
@@ -322,7 +323,7 @@ public class CopterController : PlayerController
             player_body.freezeRotation = false;
             //Vector3 angle = new Vector3(0, 0, 15);
             //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(angle), .5f);
-            Vector3 newAngle = new Vector3(0, 0, rev * - player_body.velocity.x);
+            Vector3 newAngle = new Vector3(0, 0, rev * -player_body.velocity.x);
             transform.rotation = Quaternion.Euler(newAngle);
         }
         else
@@ -365,6 +366,7 @@ public class CopterController : PlayerController
 
             teleorb_j = false;
             teleorb = false;
+            jump = false;
             player_body.transform.position += teleOrb_translate;
 
             CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
@@ -375,6 +377,7 @@ public class CopterController : PlayerController
         {
             triggerorb_j = false;
             triggerorb = false;
+            jump = false;
             SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
             StartCoroutine(spawn.Begin());
         }
@@ -384,9 +387,9 @@ public class CopterController : PlayerController
             yellow = false;
             yellow_j = false;
             jump = false;
+            trail.emitting = true;
             //yellow_count++;
             //if (yellow_count >= 0) { yellow_j = false; yellow_count = 0; }
-            trail.emitting = true;
 
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
@@ -402,7 +405,6 @@ public class CopterController : PlayerController
             red = false;
             red_j = false;
             jump = false;
-
             trail.emitting = true;
 
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
@@ -419,7 +421,6 @@ public class CopterController : PlayerController
             pink = false;
             pink_j = false;
             jump = false;
-
             trail.emitting = true;
 
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
@@ -436,9 +437,9 @@ public class CopterController : PlayerController
             blue = false;
             blue_j = false;
             jump = false;
+            trail.emitting = true;
             //yellow_count++;
             //if (yellow_count >= 0) { green_j = false; yellow_count = 0; }
-            trail.emitting = true;
 
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
@@ -460,9 +461,9 @@ public class CopterController : PlayerController
             green = false;
             green_j = false;
             jump = false;
+            trail.emitting = true;
             //yellow_count++;
             //if (yellow_count >= 0) { green_j = false; yellow_count = 0; }
-            trail.emitting = true;
 
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
@@ -494,9 +495,9 @@ public class CopterController : PlayerController
             black = false;
             black_j = false;
             jump = false;
+            trail.emitting = true;
             //black_count++;
             //if (black_count >= 5) { black_j = false; black_count = 0; }
-            trail.emitting = true;
 
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
@@ -508,6 +509,8 @@ public class CopterController : PlayerController
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * -2.4f);
             time = 0;
         }
+
+        //bool prevgoingUp = goingUp;
 
         if (jump)
         {
@@ -825,8 +828,8 @@ public class CopterController : PlayerController
         bgmusic.volume = 1;
         if (restartmusic) { bgmusic.Play(); }
 
-        //Vector2 targetVelocity = new Vector2(speed * Time.fixedDeltaTime * 10f, player_body.velocity.y);
-        //player_body.velocity = targetVelocity;
+        Vector2 targetVelocity = new Vector2(speed * Time.fixedDeltaTime * 10f, player_body.velocity.y);
+        player_body.velocity = targetVelocity;
 
         dead = false;
         able = true;
@@ -898,6 +901,6 @@ public class CopterController : PlayerController
 
     public override string getMode()
     {
-        return "copter";
+        return "auto_copter";
     }
 }

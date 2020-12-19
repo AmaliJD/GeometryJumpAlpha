@@ -234,8 +234,9 @@ public class ShipController : PlayerController
         if (able)
         {
             Move();
+            Interpolate(0, -1);
 
-            transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), Mathf.Abs(transform.localScale.y));
+            //transform.localScale = new Vector2(Mathf.Abs(transform.localScale.x), Mathf.Abs(transform.localScale.y));
         }
     }
 

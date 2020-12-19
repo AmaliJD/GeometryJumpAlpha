@@ -186,6 +186,7 @@ public class WaveController : PlayerController
         if (able)
         {
             Move();
+            Interpolate(0, 0);
         }
     }
 

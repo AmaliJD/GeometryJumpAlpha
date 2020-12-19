@@ -185,6 +185,7 @@ public class AutoWaveController : PlayerController
         if (able)
         {
             Move();
+            Interpolate(0, 0);
         }
     }
 

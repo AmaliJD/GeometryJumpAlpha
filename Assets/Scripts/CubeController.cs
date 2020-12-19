@@ -284,10 +284,10 @@ public class CubeController : PlayerController
 
     void FixedUpdate()
     {
-        // one job and one job only. MOVE
         if(able)
         {
             Move();
+            Interpolate(0, -1);
         }
     }
 
@@ -847,6 +847,7 @@ public class CubeController : PlayerController
             }
 
             yield return null;
+            //yield return new WaitForFixedUpdate();
         }
         transform.RotateAround(transform.position, axis, angle - rotated);
     }
@@ -881,6 +882,7 @@ public class CubeController : PlayerController
             }
 
             yield return null;
+            //yield return new WaitForFixedUpdate();
         }
         transform.RotateAround(transform.position, axis, angle - rotated);
 
@@ -911,6 +913,7 @@ public class CubeController : PlayerController
             }
 
             yield return null;
+            //yield return new WaitForFixedUpdate();
         }
         transform.RotateAround(transform.position, axis, angle - rotated);
     }

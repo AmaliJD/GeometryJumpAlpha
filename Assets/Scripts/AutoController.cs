@@ -109,7 +109,7 @@ public class AutoController : PlayerController
             // CHECK IF GROUNDED
             if (reversed)
             {
-                grounded = !Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.down, .51f, groundLayer) && checkGrounded
+                grounded = !Physics2D.BoxCast(player_body.transform.position, new Vector2(mini ? .45f : .95f, .1f), 0f, Vector2.down, .55f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(circle_collider, groundLayer));
                 regate = -1;
 
@@ -118,7 +118,7 @@ public class AutoController : PlayerController
             }
             else
             {//.9
-                grounded = !Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, Vector2.up, .51f, groundLayer) && checkGrounded
+                grounded = !Physics2D.BoxCast(player_body.transform.position, new Vector2(mini ? .45f : .95f, .1f), 0f, Vector2.up, .55f, groundLayer) && checkGrounded
                         && (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(circle_collider, groundLayer));
                 regate = 1;
 
@@ -233,10 +233,10 @@ public class AutoController : PlayerController
 
     void FixedUpdate()
     {
-        // one job and one job only. MOVE
         if (able)
         {
             Move();
+            Interpolate(0, 0);
         }
     }
 

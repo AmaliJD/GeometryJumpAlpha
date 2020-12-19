@@ -27,6 +27,8 @@ public abstract class PlayerController : MonoBehaviour
     static public bool grounded = false, prev_grounded = false, fromGround = false, checkGrounded = true;
     static public bool dead = false, check_death = false, able = true;
 
+    static public float prev_z_rotation;
+
     static public float prev_velocity = 0;
     static public float negate = 1, regate = 1;
 
@@ -128,6 +130,70 @@ public abstract class PlayerController : MonoBehaviour
         {
             bgmusic.Play();
         }
+    }
+
+    public void Interpolate(short rot, short lin)
+    {
+        if(transform.rotation.z != prev_z_rotation)
+        {
+            switch(rot)
+            {
+                case 0:
+                    if (player_body.interpolation != RigidbodyInterpolation2D.None)
+                        player_body.interpolation = RigidbodyInterpolation2D.None;
+
+                    Debug.Log("None");
+
+                    break;
+
+                case 1:
+                    if (player_body.interpolation != RigidbodyInterpolation2D.Extrapolate)
+                        player_body.interpolation = RigidbodyInterpolation2D.Extrapolate;
+
+                    Debug.Log("Extrapolate");
+
+                    break;
+
+                default:
+                    if (player_body.interpolation != RigidbodyInterpolation2D.Interpolate)
+                        player_body.interpolation = RigidbodyInterpolation2D.Interpolate;
+
+                    Debug.Log("Interpolate");
+
+                    break;
+            }
+        }
+        else
+        {
+            switch (lin)
+            {
+                case 0:
+                    if (player_body.interpolation != RigidbodyInterpolation2D.None)
+                        player_body.interpolation = RigidbodyInterpolation2D.None;
+
+                    Debug.Log("None");
+
+                    break;
+
+                case 1:
+                    if (player_body.interpolation != RigidbodyInterpolation2D.Extrapolate)
+                        player_body.interpolation = RigidbodyInterpolation2D.Extrapolate;
+
+                    Debug.Log("Extrapolate");
+
+                    break;
+
+                default:
+                    if (player_body.interpolation != RigidbodyInterpolation2D.Interpolate)
+                        player_body.interpolation = RigidbodyInterpolation2D.Interpolate;
+
+                    Debug.Log("Interpolate");
+
+                    break;
+            }
+        }
+
+        prev_z_rotation = transform.rotation.z;
     }
 
     // SET METHODS

@@ -232,6 +232,7 @@ public class UfoController : PlayerController
         if (able)
         {
             Move();
+            Interpolate(0, -1);
         }
     }
 

@@ -236,6 +236,7 @@ public class AutoShipController : PlayerController
         if (able)
         {
             Move();
+            Interpolate(0, -1);
         }
     }
 
@@ -292,6 +293,7 @@ public class AutoShipController : PlayerController
     public void Rotate()
     {
         //Debug.Log(Mathf.Abs(transform.rotation.eulerAngles.z % 90) <= .001f);
+        //player_body.interpolation = RigidbodyInterpolation2D.Interpolate;
 
         if (grounded)
         {

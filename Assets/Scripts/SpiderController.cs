@@ -246,6 +246,7 @@ public class SpiderController : PlayerController
         if (able)
         {
             Move();
+            Interpolate(0, -1);
         }
     }
 
@@ -554,20 +555,20 @@ public class SpiderController : PlayerController
             {
                 //groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, groundLayer);
                 //deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, deathLayer);
-                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, .2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, Vector2.up, 120, groundLayer);
-                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, .2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, Vector2.up, 120, deathLayer);
+                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, .2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, Vector2.up, 30, groundLayer);
+                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, .2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, Vector2.up, 30, deathLayer);
             }
             else
             {
                 //groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, groundLayer);
                 //deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, deathLayer);
-                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, -Vector2.up, 120, groundLayer);
-                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, -Vector2.up, 120, deathLayer);
+                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, -Vector2.up, 30, groundLayer);
+                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, -Vector2.up, 30, deathLayer);
             }
 
             //bool head = grounded && Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, rev * Vector2.up, .01f, groundLayer);
 
-            if (deathhit.collider != null && (deathhit.distance < groundhit.distance || groundhit.distance == 0))
+            if (deathhit.collider != null && (deathhit.distance <= groundhit.distance || groundhit.distance == 0))
             {
                 player_body.velocity = new Vector2(player_body.velocity.x, 0);
                 spider_trail.emitting = true;

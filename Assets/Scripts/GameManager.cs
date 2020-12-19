@@ -91,7 +91,8 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         //PLAYROOM
-        editorTrail.emitting = false;
+        //editorTrail.emitting = false;
+        //bgmusic = GameObject.Find("BG Music 1").GetComponent<AudioSource>();
         //
 
         Resources.UnloadUnusedAssets();
@@ -141,20 +142,6 @@ public class GameManager : MonoBehaviour
         playercontroller = cubecontroller;
         checkpointcontroller = FindObjectOfType<Checkpoint_Controller>();
 
-        /*if (bgmusic != null)
-        {
-            Debug.Log("bgmusic already exists");
-            Destroy(bgmusic.gameObject);
-        }
-        else
-        {
-            Debug.Log("bgmusic does not exist");
-            bgmusic = GameObject.Find("BG Music 1").GetComponent<AudioSource>();
-            DontDestroyOnLoad(bgmusic.gameObject);
-        }*/
-        //bgmusic = GameObject.Find("BG Music 1").GetComponent<AudioSource>();
-
-        bgmusic = GameObject.Find("BG Music 1").GetComponent<AudioSource>();
         playercontroller.setBGMusic(bgmusic);
         newbgmusic = bgmusic;
 
@@ -188,11 +175,11 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        //playercontroller.playBGMusic();
-        if (!bgmusic.isPlaying)
+        playercontroller.playBGMusic();
+        /*if (!bgmusic.isPlaying)
         {
             bgmusic.Play();
-        }
+        }*/
     }
 
     public List<CinemachineVirtualCamera> getCameraList()
@@ -327,7 +314,7 @@ public class GameManager : MonoBehaviour
         }*/
 
         // PLAYROOM
-        
+        //*
         if (Input.GetKeyDown("c"))
         {
             playercontroller.Respawn();
@@ -384,7 +371,7 @@ public class GameManager : MonoBehaviour
         {
             bgmusic.Play();
         }
-
+        //*/
 
         if (Input.GetKeyDown("escape"))
         {
@@ -411,6 +398,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+
         /*
         if (shortcuts_enabled)
         {

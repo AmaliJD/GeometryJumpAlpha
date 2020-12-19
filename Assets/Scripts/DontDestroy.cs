@@ -10,14 +10,14 @@ public class DontDestroy : MonoBehaviour
     {
         if (instance != null)
         {
-            Debug.Log("bgmusic already exists");
+            //Debug.Log("bgmusic already exists");
             Destroy(gameObject);
         }
         else
         {
-            Debug.Log("bgmusic does not exist");
+            //Debug.Log("bgmusic does not exist");
             instance = this;
-            GameObject.DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(gameObject);
         }
     }
 }
