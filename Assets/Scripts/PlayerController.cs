@@ -131,6 +131,11 @@ public abstract class PlayerController : MonoBehaviour
         }
     }
 
+    public void forceRespawn()
+    {
+        transform.position = respawn;
+    }
+
     public void Interpolate(short rot, short lin)
     {
         //rot = 0; lin = 0;
@@ -230,7 +235,10 @@ public abstract class PlayerController : MonoBehaviour
     {
         return mini;
     }
-
+    public bool getAble()
+    {
+        return able;
+    }
     public void playSpeedParticles(int s)
     {
         switch(s)

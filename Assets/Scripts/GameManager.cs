@@ -10,9 +10,8 @@ using UnityEngine.Experimental.Rendering.Universal;
 
 public class GameManager : MonoBehaviour
 {
-    //public Text Mana;
-    //public Text Timer;
-    //public Text DevTools;
+    private bool start = false;
+
     public Text ManaCount;
     public Text DiamondCount;
     public Text Timer;
@@ -30,6 +29,8 @@ public class GameManager : MonoBehaviour
     public Button Res1440_Button;
     public Button Res1080_Button;
     public Button Res720_Button;
+
+    public GameObject UIIntroSequence;
 
     public CinemachineBrain main_camera_brain;
     private float aspectratio = 16f / 9f;
@@ -179,7 +180,6 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        playercontroller.playBGMusic();
         /*if (!bgmusic.isPlaying)
         {
             bgmusic.Play();
@@ -270,6 +270,19 @@ public class GameManager : MonoBehaviour
     }
     void Update()
     {
+        if (UIIntroSequence.activeSelf)
+        {
+            playercontroller.forceRespawn();
+            //playercontroller.setAble(false);
+            return;
+        }
+        if (!start)
+        {
+            start = true;
+            playercontroller.playBGMusic();
+            playercontroller.setAble(true);
+        }
+
         if (Input.GetKeyDown("q"))
         {
             resetColorChannels();
