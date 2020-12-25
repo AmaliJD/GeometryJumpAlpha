@@ -186,23 +186,14 @@ public class AutoCopterController : PlayerController
                 if (blue) { blue_j = true; }
                 if (green) { green_j = true; }
                 if (black) { black_j = true; }
-                if (yellow_j || pink_j || red_j || green_j || blue_j || black_j || triggerorb_j || teleorb_j)
-                {
-                    isjumping = true;
-                }
 
                 jump = true;
-                //windUp.Play();
-                //windDown.Play();
             }
 
             // RELEASE JUMP
             if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
-                isjumping = false;
                 jump = false;
-                //windUp.Stop();
-                //windDown.Stop();
             }
 
             // CHANGE JUMP DIRECTION WHEN REVERSED
@@ -348,6 +339,8 @@ public class AutoCopterController : PlayerController
     {
         //trailUp.emitting = true;
         //trailDown.emitting = true;
+        OrbComponent orbscript = new OrbComponent();
+        if (OrbTouched != null) { orbscript = OrbTouched.GetComponent<OrbComponent>(); }
 
         if (maxSpeed != 15)
         {
@@ -367,6 +360,12 @@ public class AutoCopterController : PlayerController
             teleorb_j = false;
             teleorb = false;
             jump = false;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
+
             player_body.transform.position += teleOrb_translate;
 
             CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
@@ -380,6 +379,11 @@ public class AutoCopterController : PlayerController
             jump = false;
             SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
             StartCoroutine(spawn.Begin());
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
 
         if (yellow_j)
@@ -399,6 +403,11 @@ public class AutoCopterController : PlayerController
             maxSpeed = Mathf.Abs(jumpForce) * 1.5f;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.5f);
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (red_j)
         {
@@ -415,6 +424,11 @@ public class AutoCopterController : PlayerController
             maxSpeed = Mathf.Abs(jumpForce) * 1.85f;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.85f);
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (pink_j)
         {
@@ -431,6 +445,11 @@ public class AutoCopterController : PlayerController
             maxSpeed = 15f;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1f);
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (blue_j)
         {
@@ -455,6 +474,11 @@ public class AutoCopterController : PlayerController
             player_body.gravityScale *= -1;
             grav_scale *= -1;
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (green_j)
         {
@@ -489,6 +513,11 @@ public class AutoCopterController : PlayerController
 
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.5f);
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (black_j)
         {
@@ -508,6 +537,11 @@ public class AutoCopterController : PlayerController
             player_body.velocity = new Vector2(player_body.velocity.x, 0f);
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * -2.4f);
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
 
         //bool prevgoingUp = goingUp;
@@ -528,16 +562,6 @@ public class AutoCopterController : PlayerController
         player_body.AddForce(new Vector2(0, goingUp ? 80f : -80f));
         //int add = goingUp != player_body.velocity.y >= 0 ? (int)(.1f * Mathf.Abs(player_body.velocity.y)) : 0;//prevgoingUp != goingUp ? 20 : 0;
         //player_body.AddForce(new Vector2(0, goingUp ? 80f + add : -80f - add));
-    }
-
-    public override bool isJumping()
-    {
-        return isjumping;
-    }
-
-    public override void setIsJumping(bool j)
-    {
-        isjumping = j;
     }
 
     public override void Pad()

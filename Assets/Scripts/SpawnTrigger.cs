@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class SpawnTrigger : MonoBehaviour
 {
+    public enum ExecutionType
+    {
+        Sequential, Parallel
+    };
+    public ExecutionType exe;
+
     public GameObject[] triggers;
     public float[] delay;
     public bool loop;
@@ -16,164 +22,175 @@ public class SpawnTrigger : MonoBehaviour
         if (!TriggerOrg) { gameObject.transform.GetChild(0).gameObject.SetActive(false); }
     }
 
+    public ExecutionType getExeType()
+    {
+        return exe;
+    }
+
     public IEnumerator Begin()
     {
         int i = 0;
 
-        while(i < triggers.Length)
+        if (exe == (ExecutionType)0) //Sequential
         {
-            float d1 = delay[i], time = 0, d2 = 0;
-            GameObject trigger = triggers[i];
-
-            while(time <= d1)
+            while (i < triggers.Length)
             {
-                time += Time.deltaTime;
-                yield return null;
-            }
+                float d1 = delay[i], time = 0, d2 = 0;
+                GameObject trigger = triggers[i];
 
-            switch (trigger.gameObject.tag)
-            {
-                // MOVE TRIGGER
-                case "MoveTrigger":
-                    MoveTrigger move = trigger.GetComponent<MoveTrigger>();
-                    d2 = move.getDuration();
-                    time = 0;
-
-                    //Debug.Log("Trigger " +  i);
-                    StartCoroutine(move.Move());
-
-                    while (time <= d2)
-                    {
-                        time += Time.deltaTime;
-                        yield return null;
-                    }
-                    while (move.getFinished() != true)
-                    {
-                        Debug.Log("Waiting to finish");
-                        yield return null;
-                    }
-
-                    move.StopAllCoroutines();
-                    break;
-
-                // SPAWN TRIGGER
-                case "SpawnTrigger":
-                    SpawnTrigger spawn = trigger.GetComponent<SpawnTrigger>();
-                    spawn.StopAllCoroutines();
-                    StartCoroutine(spawn.Begin());
-                    break;
-
-                // MUSIC TRIGGER
-                case "MusicTrigger":
-                    MusicTrigger music = trigger.GetComponent<MusicTrigger>();
-                    d2 = music.getDuration();
-                    time = 0;
-
-                    // Volume
-                    if (music.mode == MusicTrigger.Mode.volume)
-                    {
-                        StartCoroutine(music.setMusicVolume());
-
-                        while (music.getFinished() != true)
-                        {
-                            Debug.Log("Waiting to finish");
-                            yield return null;
-                        }
-                    }
-
-                    // Change Song
-                    else if (music.mode == MusicTrigger.Mode.music)
-                    {
-                        music.setBGMusic();
-                    }
-
-                    music.StopAllCoroutines();
-                    break;
-
-                // TOGGLE TRIGGER
-                case "ToggleTrigger":
-                    ToggleTrigger toggle = trigger.GetComponent<ToggleTrigger>();
-                    StartCoroutine(toggle.Toggle());
-                    while (toggle.getFinished() != true)
-                    {
-                        Debug.Log("Waiting to finish");
-                        yield return null;
-                    }
-                    break;
-
-                default:
-                    break;
-            }
-
-            /*
-            // Move Trigger
-            if(trigger.GetComponent<MoveTrigger>() != null)
-            {
-                MoveTrigger move = trigger.GetComponent<MoveTrigger>();
-                float d2 = move.getDuration();
-                time = 0;
-
-                //Debug.Log("Trigger " +  i);
-                StartCoroutine(move.Move());
-                
-                while (time <= d2)
+                while (time <= d1)
                 {
                     time += Time.deltaTime;
                     yield return null;
                 }
-                while (move.getFinished() != true)
+
+                switch (trigger.gameObject.tag)
                 {
-                    Debug.Log("Waiting to finish");
-                    yield return null;
+                    // MOVE TRIGGER
+                    case "MoveTrigger":
+                        MoveTrigger move = trigger.GetComponent<MoveTrigger>();
+                        d2 = move.getDuration();
+                        time = 0;
+
+                        //Debug.Log("Trigger " +  i);
+                        StartCoroutine(move.Move());
+
+                        while (time <= d2)
+                        {
+                            time += Time.deltaTime;
+                            yield return null;
+                        }
+                        while (move.getFinished() != true)
+                        {
+                            //Debug.Log("Waiting to finish");
+                            yield return null;
+                        }
+
+                        move.StopAllCoroutines();
+                        break;
+
+                    // SPAWN TRIGGER
+                    case "SpawnTrigger":
+                        SpawnTrigger spawn = trigger.GetComponent<SpawnTrigger>();
+                        spawn.StopAllCoroutines();
+                        StartCoroutine(spawn.Begin());
+                        break;
+
+                    // MUSIC TRIGGER
+                    case "MusicTrigger":
+                        MusicTrigger music = trigger.GetComponent<MusicTrigger>();
+                        d2 = music.getDuration();
+                        time = 0;
+
+                        // Volume
+                        if (music.mode == MusicTrigger.Mode.volume)
+                        {
+                            StartCoroutine(music.setMusicVolume());
+
+                            while (music.getFinished() != true)
+                            {
+                                //Debug.Log("Waiting to finish");
+                                yield return null;
+                            }
+                        }
+
+                        // Change Song
+                        else if (music.mode == MusicTrigger.Mode.music)
+                        {
+                            music.setBGMusic();
+                        }
+
+                        music.StopAllCoroutines();
+                        break;
+
+                    // TOGGLE TRIGGER
+                    case "ToggleTrigger":
+                        ToggleTrigger toggle = trigger.GetComponent<ToggleTrigger>();
+                        StartCoroutine(toggle.Toggle());
+                        while (toggle.getFinished() != true)
+                        {
+                            //Debug.Log("Waiting to finish");
+                            yield return null;
+                        }
+                        break;
+
+                    default:
+                        break;
                 }
 
-                move.StopAllCoroutines();
-            }
+                i++;
 
-            // Spawn Trigger
-            else if (trigger.GetComponent<SpawnTrigger>() != null)
-            {
-                SpawnTrigger spawn = trigger.GetComponent<SpawnTrigger>();
-
-                StartCoroutine(spawn.Begin());
-            }
-
-            // Music
-            else if (trigger.GetComponent<MusicTrigger>() != null)
-            {
-                MusicTrigger music = trigger.GetComponent<MusicTrigger>();
-                float d2 = music.getDuration();
-                time = 0;
-
-                // Volume
-                if(music.mode == MusicTrigger.Mode.volume)
+                if (i == triggers.Length && loop)
                 {
-                    StartCoroutine(music.setMusicVolume());
-
-                    while (music.getFinished() != true)
-                    {
-                        Debug.Log("Waiting to finish");
-                        yield return null;
-                    }
+                    i = 0;
                 }
 
-                // Change Song
-                else if (music.mode == MusicTrigger.Mode.music)
+                yield return null;
+            }
+        }
+
+
+        else if (exe == (ExecutionType)1) //Parallel
+        {
+            float longestDelay = 0, time = 0;
+
+            while (i < triggers.Length)
+            {
+                GameObject trigger = triggers[i];
+
+                switch (trigger.gameObject.tag)
                 {
-                    music.setBGMusic();
+                    // MOVE TRIGGER
+                    case "MoveTrigger":
+                        MoveTrigger move = trigger.GetComponent<MoveTrigger>();
+                        longestDelay = Mathf.Max(move.getDuration(), longestDelay);
+
+                        //Debug.Log("Trigger " +  i);
+                        StartCoroutine(move.Move());
+                        break;
+
+                    // SPAWN TRIGGER
+                    case "SpawnTrigger":
+                        SpawnTrigger spawn = trigger.GetComponent<SpawnTrigger>();
+                        spawn.StopAllCoroutines();
+                        StartCoroutine(spawn.Begin());
+                        break;
+
+                    // MUSIC TRIGGER
+                    case "MusicTrigger":
+                        MusicTrigger music = trigger.GetComponent<MusicTrigger>();
+                        longestDelay = Mathf.Max(music.getDuration(), longestDelay);
+
+                        // Volume
+                        if (music.mode == MusicTrigger.Mode.volume)
+                        {
+                            StartCoroutine(music.setMusicVolume());
+                        }
+
+                        // Change Song
+                        else if (music.mode == MusicTrigger.Mode.music)
+                        {
+                            music.setBGMusic();
+                        }
+                        break;
+
+                    // TOGGLE TRIGGER
+                    case "ToggleTrigger":
+                        ToggleTrigger toggle = trigger.GetComponent<ToggleTrigger>();
+                        StartCoroutine(toggle.Toggle());
+                        break;
+
+                    default:
+                        break;
                 }
 
-                music.StopAllCoroutines();
-            }*/
-
-            i++;
-
-            if(i == triggers.Length && loop)
-            {
-                i = 0;
+                i++;
             }
-
-            yield return null;
+            while (time <= longestDelay)
+            {
+                time += Time.deltaTime;
+                yield return null;
+            }
         }
     }
 
@@ -194,6 +211,7 @@ public class SpawnTrigger : MonoBehaviour
         {
             inuse = true;
             StartCoroutine(Begin());
+            //Activate();
         }
     }
 }

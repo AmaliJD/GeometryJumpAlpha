@@ -165,11 +165,6 @@ public class AutoSpiderController : PlayerController
             // JUMP!
             if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
             {
-                if (!grounded || yellow || pink || red || green || blue || black)
-                {
-                    isjumping = true;
-                }
-
                 jump = true;
             }
 
@@ -194,7 +189,6 @@ public class AutoSpiderController : PlayerController
             // RELEASE JUMP
             if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
-                isjumping = false;
                 jump = false;
             }
 
@@ -359,12 +353,21 @@ public class AutoSpiderController : PlayerController
 
     public override void Jump()
     {
+        OrbComponent orbscript = new OrbComponent();
+        if (OrbTouched != null) { orbscript = OrbTouched.GetComponent<OrbComponent>(); }
+
         if (teleorb && jump)
         {
             Vector3 positionDelta = (transform.position + teleOrb_translate) - transform.position;
 
             jump = false;
             teleorb = false;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
+
             player_body.transform.position += teleOrb_translate;
 
             CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
@@ -376,6 +379,11 @@ public class AutoSpiderController : PlayerController
             triggerorb = false;
             SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
             StartCoroutine(spawn.Begin());
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
 
         if (yellow && jump)
@@ -394,6 +402,11 @@ public class AutoSpiderController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (pink && jump)
         {
@@ -411,6 +424,11 @@ public class AutoSpiderController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (red && jump)
         {
@@ -428,6 +446,11 @@ public class AutoSpiderController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (blue && jump)
         {
@@ -448,6 +471,11 @@ public class AutoSpiderController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (green && jump)
         {
@@ -476,6 +504,11 @@ public class AutoSpiderController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (black && jump)
         {
@@ -489,6 +522,11 @@ public class AutoSpiderController : PlayerController
             Spider_Anim.GetComponent<Animator>().ResetTrigger("stop");
             Spider_Anim.GetComponent<Animator>().SetTrigger("curl");
             Spider_Anim.GetComponent<Animator>().speed = 2;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (grounded && jump)
         {
@@ -503,16 +541,16 @@ public class AutoSpiderController : PlayerController
             {
                 //groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, groundLayer);
                 //deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, deathLayer);
-                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0,.2f,0), new Vector2(spider_collider.size.x, .1f), 0f, Vector2.up, 120, groundLayer);
-                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, .2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, Vector2.up, 120, deathLayer);
+                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0,.2f,0), new Vector2(spider_collider.size.x *.5f, .1f), 0f, Vector2.up, 120, groundLayer);
+                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, .2f, 0), new Vector2(spider_collider.size.x * .5f, .1f), 0f, Vector2.up, 120, deathLayer);
             }
             else
             {
                 //groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, groundLayer);
                 //deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, deathLayer);
 
-                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, -Vector2.up, 120, groundLayer);
-                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, -Vector2.up, 120, deathLayer);
+                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x * .5f, .1f), 0f, -Vector2.up, 120, groundLayer);
+                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x * .5f, .1f), 0f, -Vector2.up, 120, deathLayer);
             }
 
             //Debug.Log("D: " + deathhit.distance + "G: " + groundhit.distance);
@@ -550,16 +588,6 @@ public class AutoSpiderController : PlayerController
 
             time = 0;
         }
-    }
-
-    public override bool isJumping()
-    {
-        return isjumping;
-    }
-
-    public override void setIsJumping(bool j)
-    {
-        isjumping = j;
     }
 
     public override void Pad()

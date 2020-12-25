@@ -208,10 +208,6 @@ public class CubeController : PlayerController
                 released = false;
                 fromGround = ((grounded || time < .07f) && jump);
 
-                if (!fromGround)
-                {
-                    isjumping = true;
-                }
                 if (!reversed && player_body.velocity.y <= 1)
                 {
                     downjump = true;
@@ -229,7 +225,6 @@ public class CubeController : PlayerController
             // RELEASE JUMP
             if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
-                isjumping = false;
                 jump = false;
                 released = true;
             }
@@ -287,7 +282,7 @@ public class CubeController : PlayerController
         if(able)
         {
             Move();
-            Interpolate(0, -1);
+            Interpolate(-1, -1);
         }
     }
 
@@ -383,6 +378,97 @@ public class CubeController : PlayerController
         Jump();     // check if jumping
         Pad();      // check if hit pad
         Portal();   // check if on portal
+        Rotate();
+    }
+
+    private bool launched = false;
+    public void Rotate()
+    {
+        bool touchingGround = (Physics2D.IsTouchingLayers(player_collider, groundLayer) || Physics2D.IsTouchingLayers(crouch_collider, groundLayer));
+        //Debug.Log("Rotation: " + player_body.rotation);
+
+        if(grounded)
+            launched = false;
+
+        if (touchingGround)
+        {
+            player_body.rotation = reversed ? 180 : 0;
+            //transform.rotation = Quaternion.Euler(0, 0, reversed ? 180 : 0);
+        }
+        else if (!grounded && launched)
+        {
+            float step = 12.5f;
+            int rev = reversed ? -1 : 1;
+
+            if(touchingGround)
+                launched = false;
+
+            if (Mathf.Abs(player_body.velocity.x) < 2)
+            {
+                player_body.rotation = Mathf.Lerp(player_body.rotation, reversed ? 180 : 0, .04f);
+            }
+            else
+            {
+                if (player_body.velocity.x >= 0)
+                {
+                    player_body.rotation = Mathf.Lerp(player_body.rotation, player_body.rotation - step * rev, .8f);
+                }
+                else
+                {
+                    player_body.rotation = Mathf.Lerp(player_body.rotation, player_body.rotation + step * rev, .8f);
+                }
+            }
+
+            /*if (Mathf.Abs(player_body.velocity.x) < 2)
+            {
+                if (player_body.velocity.x >= 0)
+                {
+                    player_body.rotation = Mathf.Lerp(player_body.rotation, player_body.rotation - step * rev * player_body.velocity.y / 20f, .2f);
+                }
+                else
+                {
+                    player_body.rotation = Mathf.Lerp(player_body.rotation, player_body.rotation + step * rev * player_body.velocity.y / 20f, .2f);
+                }
+            }
+            else
+            {
+                if (player_body.velocity.x >= 0)
+                {
+                    player_body.rotation = Mathf.Lerp(player_body.rotation, player_body.rotation - step * rev, .8f);
+                }
+                else
+                {
+                    player_body.rotation = Mathf.Lerp(player_body.rotation, player_body.rotation + step * rev, .8f);
+                }
+            }*/
+        }
+        else if(!grounded && !launched)
+        {
+            float step = 12.5f;
+            if(reversed && player_body.rotation != 180)
+            {
+                if(player_body.velocity.x >= 0)
+                {
+                    player_body.rotation = Mathf.Lerp(player_body.rotation, player_body.rotation + step, .8f);
+                }
+                else
+                {
+                    player_body.rotation = Mathf.Lerp(player_body.rotation, player_body.rotation - step, .8f);
+                }
+            }
+            else if (!reversed && player_body.rotation != 0)
+            {
+                if (player_body.velocity.x >= 0)
+                {
+                    player_body.rotation = Mathf.Lerp(player_body.rotation, player_body.rotation - step, .8f);
+                }
+                else
+                {
+                    player_body.rotation = Mathf.Lerp(player_body.rotation, player_body.rotation + step, .8f);
+                }
+            }
+            //player_body.rotation = Mathf.Lerp(player_body.rotation, reversed ? 180 : 0, .5f);
+        }
     }
 
     public void Eyes()
@@ -394,11 +480,24 @@ public class CubeController : PlayerController
 
     public override void Jump()
     {
-        if(teleorb && jump)
+        OrbComponent orbscript = new OrbComponent();
+        if (OrbTouched != null) { orbscript = OrbTouched.GetComponent<OrbComponent>(); }
+
+        if (teleorb && jump)
         {
+            Vector3 positionDelta = (transform.position + teleOrb_translate) - transform.position;
             jump = false;
             teleorb = false;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
+
             player_body.transform.position += teleOrb_translate;
+
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
         }
 
         if(triggerorb && jump)
@@ -406,10 +505,16 @@ public class CubeController : PlayerController
             triggerorb = false;
             SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
             StartCoroutine(spawn.Begin());
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         
         if (yellow && jump)
         {
+            launched = true;
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
@@ -421,13 +526,19 @@ public class CubeController : PlayerController
             yellow = false;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.1f);
             trail.emitting = true;
-            StartCoroutine(RotateArc(Vector3.forward, negate * -30.0f, 0.5f));
+            //StartCoroutine(RotateArc(Vector3.forward, negate * -30.0f, 0.5f));
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if(OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (pink && jump)
         {
+            launched = true;
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
@@ -439,13 +550,19 @@ public class CubeController : PlayerController
             pink = false;
             trail.emitting = true;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .85f);
-            StartCoroutine(RotateArc(Vector3.forward, negate * -25.0f, 0.5f));
+            //StartCoroutine(RotateArc(Vector3.forward, negate * -25.0f, 0.5f));
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (red && jump)
         {
+            launched = true;
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
@@ -456,22 +573,28 @@ public class CubeController : PlayerController
             jump = false;
             red = false;
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.35f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.45f);
 
             if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > .6)
             {
-                StartCoroutine(RotateAround(Vector3.forward, negate * -360.0f, 0.5f));
+                //StartCoroutine(RotateAround(Vector3.forward, negate * -360.0f, 0.5f));
             }
             else
             {
-                StartCoroutine(RotateArc(Vector3.forward, negate * -40.0f, 0.5f));
+                //StartCoroutine(RotateArc(Vector3.forward, negate * -40.0f, 0.5f));
             }
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (blue && jump)
         {
+            launched = false;
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
@@ -487,13 +610,19 @@ public class CubeController : PlayerController
             player_body.gravityScale *= -1;
             grav_scale *= -1;
             grounded = false;
-            StartCoroutine(RotateAround(Vector3.forward, regate * negate * -180.0f, 0.4f));
+            //StartCoroutine(RotateAround(Vector3.forward, regate * negate * -180.0f, 0.4f));
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (green && jump)
         {
+            launched = false;
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
@@ -518,13 +647,19 @@ public class CubeController : PlayerController
             player_body.gravityScale *= -1;
             grav_scale *= -1;
 
-            StartCoroutine(RotateAround(Vector3.forward, regate * negate * 180.0f, 0.5f));
+            //StartCoroutine(RotateAround(Vector3.forward, regate * negate * 180.0f, 0.5f));
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (black && jump)
         {
+            launched = false;
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
@@ -537,9 +672,15 @@ public class CubeController : PlayerController
             downjump = true;
             trail.emitting = true;
             player_body.velocity = new Vector2(player_body.velocity.x, -jumpForce * 1.1f);
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if ((grounded || time < .07f) && jump && downjump)
         {
+            launched = false;
             time = 1;
             Cube_Anim.ResetTrigger("Default");
             Cube_Anim.ResetTrigger("Squash");
@@ -572,20 +713,11 @@ public class CubeController : PlayerController
         }
     }
 
-    public override bool isJumping()
-    {
-        return isjumping;
-    }
-
-    public override void setIsJumping(bool j)
-    {
-        isjumping = j;
-    }
-
     public override void Pad()
     {
         if (yellow_p)
         {
+            launched = true;
             yellow_p = false;
             checkGrounded = false;
             grounded = false;
@@ -603,16 +735,17 @@ public class CubeController : PlayerController
 
             if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > .6)
             {
-                StartCoroutine(RotateAround(Vector3.forward, negate * -360.0f, .7f));
+                //StartCoroutine(RotateAround(Vector3.forward, negate * -360.0f, .7f));
             }
             else
             {
-                StartCoroutine(RotateArc(Vector3.forward, negate * -10.0f, 0.5f));
+                //StartCoroutine(RotateArc(Vector3.forward, negate * -10.0f, 0.5f));
             }
             checkGrounded = true;
         }
         else if (pink_p)
         {
+            launched = true;
             pink_p = false;
             checkGrounded = false;
             grounded = false;
@@ -630,16 +763,17 @@ public class CubeController : PlayerController
 
             if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > .6)
             {
-                StartCoroutine(RotateArc(Vector3.forward, negate * -45f, 0.7f));
+                //StartCoroutine(RotateArc(Vector3.forward, negate * -45f, 0.7f));
             }
             else
             {
-                StartCoroutine(RotateArc(Vector3.forward, negate * -5.0f, 0.5f));
+                //StartCoroutine(RotateArc(Vector3.forward, negate * -5.0f, 0.5f));
             }
             checkGrounded = true;
         }
         else if (red_p)
         {
+            launched = true;
             red_p = false;
             checkGrounded = false;
             grounded = false;
@@ -653,21 +787,22 @@ public class CubeController : PlayerController
             fromGround = false;
             released = false;
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.5f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.6f);
             grounded = false;
 
             if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > .6)
             {
-                StartCoroutine(RotateAround(Vector3.forward, negate * -360.0f, .7f));
+                //StartCoroutine(RotateAround(Vector3.forward, negate * -360.0f, .7f));
             }
             else
             {
-                StartCoroutine(RotateArc(Vector3.forward, negate * -45.0f, .5f));
+                //StartCoroutine(RotateArc(Vector3.forward, negate * -45.0f, .5f));
             }
             checkGrounded = true;
         }
         else if (blue_p)
         {
+            launched = false;
             blue_p = false;
             checkGrounded = false;
             grounded = false;
@@ -685,7 +820,7 @@ public class CubeController : PlayerController
             player_body.gravityScale *= -1;
             grav_scale *= -1;
 
-            StartCoroutine(RotateAround(Vector3.forward, regate * negate * -180.0f, 0.4f));
+            //StartCoroutine(RotateAround(Vector3.forward, regate * negate * -180.0f, 0.4f));
             checkGrounded = true;
         }
     }
@@ -720,7 +855,7 @@ public class CubeController : PlayerController
 
                 player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
                 grav_scale = player_body.gravityScale;
-                StartCoroutine(RotateAround(Vector3.forward, regate * negate * -180.0f, 0.5f));
+                //StartCoroutine(RotateAround(Vector3.forward, regate * negate * -180.0f, 0.5f));
             }
         }
         else if (gravN)
@@ -751,7 +886,7 @@ public class CubeController : PlayerController
 
                 player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
                 grav_scale = player_body.gravityScale;
-                StartCoroutine(RotateAround(Vector3.forward, regate * negate * -180.0f, 0.5f));
+                //StartCoroutine(RotateAround(Vector3.forward, regate * negate * -180.0f, 0.5f));
             }
         }
         else if (gravC)
@@ -781,7 +916,7 @@ public class CubeController : PlayerController
 
                 player_body.gravityScale = Mathf.Abs(player_body.gravityScale);
                 grav_scale = player_body.gravityScale;
-                StartCoroutine(RotateAround(Vector3.forward, regate * negate * -180.0f, 0.5f));
+                //StartCoroutine(RotateAround(Vector3.forward, regate * negate * -180.0f, 0.5f));
             }
             else if (!reversed)
             {
@@ -804,7 +939,7 @@ public class CubeController : PlayerController
 
                 player_body.gravityScale = -Mathf.Abs(player_body.gravityScale);
                 grav_scale = player_body.gravityScale;
-                StartCoroutine(RotateAround(Vector3.forward, regate * negate * -180.0f, 0.5f));
+                //StartCoroutine(RotateAround(Vector3.forward, regate * negate * -180.0f, 0.5f));
             }
         }
         else if (teleA)

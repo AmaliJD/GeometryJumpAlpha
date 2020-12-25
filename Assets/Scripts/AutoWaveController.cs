@@ -136,10 +136,6 @@ public class AutoWaveController : PlayerController
             // JUMP!
             if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
             {
-                if (!grounded || yellow || pink || red || green || blue || black)
-                {
-                    isjumping = true;
-                }
                 if (blue) { blue_j = true; }
                 if (green) { green_j = true; }
                 if (triggerorb) { triggerorb_j = true; }
@@ -151,7 +147,6 @@ public class AutoWaveController : PlayerController
             // RELEASE JUMP
             if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
-                isjumping = false;
                 jump = false;
 
                 blue_j = false;
@@ -308,6 +303,9 @@ public class AutoWaveController : PlayerController
 
     public override void Jump()
     {
+        OrbComponent orbscript = new OrbComponent();
+        if (OrbTouched != null) { orbscript = OrbTouched.GetComponent<OrbComponent>(); }
+
         trail.emitting = true;
 
         if (teleorb_j)
@@ -316,8 +314,13 @@ public class AutoWaveController : PlayerController
 
             teleorb = false;
             teleorb_j = false;
-            player_body.transform.position += teleOrb_translate;
 
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
+
+            player_body.transform.position += teleOrb_translate;
             CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
             activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
         }
@@ -328,6 +331,11 @@ public class AutoWaveController : PlayerController
             triggerorb_j = false;
             SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
             StartCoroutine(spawn.Begin());
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
 
         if (blue_j || green_j)
@@ -348,6 +356,11 @@ public class AutoWaveController : PlayerController
 
             player_body.gravityScale *= -1;
             grav_scale *= -1;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
 
         int rev = 1;
@@ -361,16 +374,6 @@ public class AutoWaveController : PlayerController
         {
             player_body.velocity = new Vector2(player_body.velocity.x, posJump * rev * -player_body.velocity.x);
         }
-    }
-
-    public override bool isJumping()
-    {
-        return isjumping;
-    }
-
-    public override void setIsJumping(bool j)
-    {
-        isjumping = j;
     }
 
     public override void Pad()

@@ -192,18 +192,12 @@ public class AutoUfoController : PlayerController
             // JUMP!
             if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
             {
-                if (!grounded || yellow || pink || red || green || blue || black)
-                {
-                    isjumping = true;
-                }
-
                 jump = true;
             }
 
             // RELEASE JUMP
             if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
-                isjumping = false;
                 jump = false;
             }
 
@@ -368,6 +362,9 @@ public class AutoUfoController : PlayerController
 
     public override void Jump()
     {
+        OrbComponent orbscript = new OrbComponent();
+        if (OrbTouched != null) { orbscript = OrbTouched.GetComponent<OrbComponent>(); }
+
         if (maxSpeed != 17)
         {
             maxSpeed = Mathf.Lerp(maxSpeed, 17, time);
@@ -381,8 +378,17 @@ public class AutoUfoController : PlayerController
 
         if (teleorb && jump)
         {
+            Vector3 positionDelta = (transform.position + teleOrb_translate) - transform.position;
             teleorb = false;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
+
             player_body.transform.position += teleOrb_translate;
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
         }
 
         if (triggerorb && jump)
@@ -390,6 +396,11 @@ public class AutoUfoController : PlayerController
             triggerorb = false;
             SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
             StartCoroutine(spawn.Begin());
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
 
         if (yellow && jump)
@@ -410,6 +421,11 @@ public class AutoUfoController : PlayerController
             if (gravN) { gravN = false; }
 
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (pink && jump)
         {
@@ -429,6 +445,11 @@ public class AutoUfoController : PlayerController
             if (gravN) { gravN = false; }
 
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (red && jump)
         {
@@ -448,6 +469,11 @@ public class AutoUfoController : PlayerController
             if (gravN) { gravN = false; }
 
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (blue && jump)
         {
@@ -470,6 +496,11 @@ public class AutoUfoController : PlayerController
             if (gravN) { gravN = false; }
 
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (green && jump)
         {
@@ -501,6 +532,11 @@ public class AutoUfoController : PlayerController
             if (gravN) { gravN = false; }
 
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (black && jump)
         {
@@ -517,6 +553,11 @@ public class AutoUfoController : PlayerController
             player_body.velocity = new Vector2(player_body.velocity.x, -jumpForce * 1.2f);
 
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if(jump)
         {
@@ -530,16 +571,6 @@ public class AutoUfoController : PlayerController
 
             jump = false;
         }
-    }
-
-    public override bool isJumping()
-    {
-        return isjumping;
-    }
-
-    public override void setIsJumping(bool j)
-    {
-        isjumping = j;
     }
 
     public override void Pad()

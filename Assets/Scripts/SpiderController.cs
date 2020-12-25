@@ -175,11 +175,6 @@ public class SpiderController : PlayerController
             // JUMP!
             if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
             {
-                if (!grounded || yellow || pink || red || green || blue || black)
-                {
-                    isjumping = true;
-                }
-
                 jump = true;
             }
 
@@ -204,7 +199,6 @@ public class SpiderController : PlayerController
             // RELEASE JUMP
             if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
-                isjumping = false;
                 jump = false;
             }
 
@@ -282,8 +276,6 @@ public class SpiderController : PlayerController
             facingright = false;
             FlipX();
         }*/
-        transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * (facingright ? 1 : -1), Mathf.Abs(transform.localScale.y) * (upright ? 1 : -1), transform.localScale.z);
-
 
         // movement controls
         if (crouch && Mathf.Abs(player_body.velocity.x) > 0) { moveX /= 3; }
@@ -306,6 +298,11 @@ public class SpiderController : PlayerController
         Pad();      // check if hit pad
         Jump();     // check if jumping
         Portal();   // check if on portal
+
+        if (moveX > 0) { facingright = true; }
+        else if (moveX < 0) { facingright = false; }
+        upright = !reversed;
+        transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x) * (facingright ? 1 : -1), Mathf.Abs(transform.localScale.y) * (upright ? 1 : -1), transform.localScale.z);
 
         // IF GROUNDED --> TURN OFF TRAIL
         if (grounded && Mathf.Abs(player_body.velocity.y) <= 0.01 && (!red_p && !yellow_p && !blue_p && !pink_p && !gravN && !grav))
@@ -412,12 +409,21 @@ public class SpiderController : PlayerController
 
     public override void Jump()
     {
+        OrbComponent orbscript = new OrbComponent();
+        if (OrbTouched != null) { orbscript = OrbTouched.GetComponent<OrbComponent>(); }
+
         if (teleorb && jump)
         {
             Vector3 positionDelta = (transform.position + teleOrb_translate) - transform.position;
 
             jump = false;
             teleorb = false;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
+
             player_body.transform.position += teleOrb_translate;
 
             CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
@@ -429,6 +435,11 @@ public class SpiderController : PlayerController
             triggerorb = false;
             SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
             StartCoroutine(spawn.Begin());
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
 
         if (yellow && jump)
@@ -447,6 +458,11 @@ public class SpiderController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (pink && jump)
         {
@@ -464,6 +480,11 @@ public class SpiderController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (red && jump)
         {
@@ -481,6 +502,11 @@ public class SpiderController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (blue && jump)
         {
@@ -501,6 +527,11 @@ public class SpiderController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (green && jump)
         {
@@ -529,6 +560,11 @@ public class SpiderController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (black && jump)
         {
@@ -542,6 +578,11 @@ public class SpiderController : PlayerController
             Spider_Anim.GetComponent<Animator>().ResetTrigger("stop");
             Spider_Anim.GetComponent<Animator>().SetTrigger("curl");
             Spider_Anim.GetComponent<Animator>().speed = 2;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (grounded && jump && (!yellow_p && !red_p && !pink_p && !blue_p))
         {
@@ -555,15 +596,15 @@ public class SpiderController : PlayerController
             {
                 //groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, groundLayer);
                 //deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y + .2f), Vector2.up, 120, deathLayer);
-                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, .2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, Vector2.up, 30, groundLayer);
-                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, .2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, Vector2.up, 30, deathLayer);
+                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, .2f, 0), new Vector2(spider_collider.size.x * .5f, .1f), 0f, Vector2.up, 30, groundLayer);
+                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, .2f, 0), new Vector2(spider_collider.size.x * .5f, .1f), 0f, Vector2.up, 30, deathLayer);
             }
             else
             {
                 //groundhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, groundLayer);
                 //deathhit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - .2f), -Vector2.up, 120, deathLayer);
-                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, -Vector2.up, 30, groundLayer);
-                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x, .1f), 0f, -Vector2.up, 30, deathLayer);
+                groundhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x * .5f, .1f), 0f, -Vector2.up, 30, groundLayer);
+                deathhit = Physics2D.BoxCast(player_body.transform.position + new Vector3(0, -.2f, 0), new Vector2(spider_collider.size.x * .5f, .1f), 0f, -Vector2.up, 30, deathLayer);
             }
 
             //bool head = grounded && Physics2D.BoxCast(player_body.transform.position, new Vector2(.95f, .1f), 0f, rev * Vector2.up, .01f, groundLayer);
@@ -577,7 +618,7 @@ public class SpiderController : PlayerController
                 reversed = !reversed;
                 player_body.gravityScale *= -1;
                 grav_scale *= -1;
-                transform.position = new Vector2(transform.position.x, transform.position.y + rev * (deathhit.distance - (mini ? .1f : .4f)));
+                transform.position = new Vector2(transform.position.x, transform.position.y + rev * (deathhit.distance - (mini ? .1f : .3f)));
             }
             else if (groundhit.collider != null)
             {
@@ -588,7 +629,7 @@ public class SpiderController : PlayerController
                 reversed = !reversed;
                 player_body.gravityScale *= -1;
                 grav_scale *= -1;
-                transform.position = new Vector2(transform.position.x, transform.position.y + rev * (groundhit.distance - (mini ? .1f : .4f)));
+                transform.position = new Vector2(transform.position.x, transform.position.y + rev * (groundhit.distance - (mini ? .1f : .3f)));
             }
             else
             {
@@ -605,16 +646,6 @@ public class SpiderController : PlayerController
 
             time = 0;
         }
-    }
-
-    public override bool isJumping()
-    {
-        return isjumping;
-    }
-
-    public override void setIsJumping(bool j)
-    {
-        isjumping = j;
     }
 
     public override void Pad()

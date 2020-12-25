@@ -173,18 +173,12 @@ public class BallController : PlayerController
             // JUMP!
             if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
             {
-                if (!grounded || yellow || pink || red || green || blue || black)
-                {
-                    isjumping = true;
-                }
-
                 jump = true;
             }
 
             // RELEASE JUMP
             if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
-                isjumping = false;
                 jump = false;
             }
 
@@ -212,7 +206,7 @@ public class BallController : PlayerController
         if (able)
         {
             Move();
-            Interpolate(0, 0);
+            Interpolate(-1, -1);
         }
     }
 
@@ -276,14 +270,6 @@ public class BallController : PlayerController
 
     public void Rotate()
     {
-        /*
-        float step = -player_body.velocity.x / 6f;
-
-        if (reversed)
-        {
-            step = player_body.velocity.x / 6f;
-        }*/
-
         float step = -player_body.velocity.x * (mini ? 1.5f : .9f);
         if (grounded) { orbJumped = false; }
 
@@ -293,6 +279,22 @@ public class BallController : PlayerController
         }
 
         if (grounded || !orbJumped)
+        {
+            player_body.rotation = player_body.rotation + step;
+        }
+        else
+        {
+            if (Mathf.Abs(player_body.velocity.x) > 0.02f)
+            {
+                player_body.rotation = player_body.rotation - step * .7f;
+            }
+            else
+            {
+                player_body.rotation = player_body.rotation + step - (speed * .2f);
+            }
+        }
+
+        /*if (grounded || !orbJumped)
         {
             Vector3 newAngle = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + step);
             transform.rotation = Quaternion.Euler(newAngle);
@@ -309,8 +311,8 @@ public class BallController : PlayerController
                 Vector3 newAngle = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - (speed * .2f));
                 transform.rotation = Quaternion.Euler(newAngle);
             }
-        }
-        
+        }*/
+
         int rev = reversed ? -1 : 1;
         float cos = rev*-Mathf.Cos(Mathf.Deg2Rad * transform.localRotation.eulerAngles.z);
         float sin = rev*-Mathf.Sin(Mathf.Deg2Rad * transform.localRotation.eulerAngles.z);
@@ -366,11 +368,23 @@ public class BallController : PlayerController
 
     public override void Jump()
     {
+        OrbComponent orbscript = new OrbComponent();
+        if (OrbTouched != null) { orbscript = OrbTouched.GetComponent<OrbComponent>(); }
+
         if (teleorb && jump)
         {
+            Vector3 positionDelta = (transform.position + teleOrb_translate) - transform.position;
             jump = false;
             teleorb = false;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
+
             player_body.transform.position += teleOrb_translate;
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
         }
 
         if (triggerorb && jump)
@@ -378,6 +392,11 @@ public class BallController : PlayerController
             triggerorb = false;
             SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
             StartCoroutine(spawn.Begin());
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
 
         if (yellow && jump)
@@ -391,6 +410,11 @@ public class BallController : PlayerController
             if (gravN) { gravN = false; }
 
             orbJumped = true;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (pink && jump)
         {
@@ -403,6 +427,11 @@ public class BallController : PlayerController
             if (gravN) { gravN = false; }
 
             orbJumped = true;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (red && jump)
         {
@@ -415,6 +444,11 @@ public class BallController : PlayerController
             if (gravN) { gravN = false; }
 
             orbJumped = true;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (blue && jump)
         {
@@ -429,6 +463,11 @@ public class BallController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (green && jump)
         {
@@ -453,6 +492,11 @@ public class BallController : PlayerController
             if (gravN) { gravN = false; }
 
             orbJumped = true;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (black && jump)
         {
@@ -460,6 +504,11 @@ public class BallController : PlayerController
             jump = false;
             trail.emitting = true;
             player_body.velocity = new Vector2(player_body.velocity.x, -jumpForce * 1.2f);
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (grounded && jump)
         {
@@ -477,16 +526,6 @@ public class BallController : PlayerController
 
             orbJumped = true;
         }
-    }
-
-    public override bool isJumping()
-    {
-        return isjumping;
-    }
-
-    public override void setIsJumping(bool j)
-    {
-        isjumping = j;
     }
 
     public override void Pad()

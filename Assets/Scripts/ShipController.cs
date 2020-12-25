@@ -186,10 +186,6 @@ public class ShipController : PlayerController
                 if (blue) { blue_j = true; }
                 if (green) { green_j = true; }
                 if (black) { black_j = true; }
-                if (yellow_j || pink_j || red_j || green_j || blue_j || black_j || teleorb_j || triggerorb_j)
-                {
-                    isjumping = true;
-                }
 
                 jump = true;
                 flame_burst1.Play();
@@ -199,7 +195,6 @@ public class ShipController : PlayerController
             // RELEASE JUMP
             if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
-                isjumping = false;
                 jump = false;
                 flame_burst1.Stop();
                 flame_burst2.Stop();
@@ -331,6 +326,9 @@ public class ShipController : PlayerController
         trail1.emitting = true;
         trail2.emitting = true;
 
+        OrbComponent orbscript = new OrbComponent();
+        if (OrbTouched != null) { orbscript = OrbTouched.GetComponent<OrbComponent>(); }
+
         if (maxSpeed != 12)
         {
             maxSpeed = Mathf.Lerp(maxSpeed, 12, time);
@@ -344,9 +342,18 @@ public class ShipController : PlayerController
 
         if (teleorb_j && jump)
         {
+            Vector3 positionDelta = (transform.position + teleOrb_translate) - transform.position;
             teleorb_j = false;
             teleorb = false;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
+
             player_body.transform.position += teleOrb_translate;
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
         }
 
         if (triggerorb_j && jump)
@@ -355,6 +362,11 @@ public class ShipController : PlayerController
             triggerorb = false;
             SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
             StartCoroutine(spawn.Begin());
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
 
         if (yellow_j)
@@ -372,6 +384,11 @@ public class ShipController : PlayerController
             maxSpeed = Mathf.Abs(jumpForce) * 1.3f;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.3f);
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (red_j)
         {
@@ -386,6 +403,11 @@ public class ShipController : PlayerController
             maxSpeed = Mathf.Abs(jumpForce) * 1.65f;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.65f);
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (pink_j)
         {
@@ -400,6 +422,11 @@ public class ShipController : PlayerController
             maxSpeed = 12f;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce);
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (blue_j)
         {
@@ -421,6 +448,11 @@ public class ShipController : PlayerController
             player_body.gravityScale *= -1;
             grav_scale *= -1;
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (green_j)
         {
@@ -452,6 +484,11 @@ public class ShipController : PlayerController
 
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.3f);
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (black_j)
         {
@@ -469,6 +506,11 @@ public class ShipController : PlayerController
             player_body.velocity = new Vector2(player_body.velocity.x, 0f);
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * -2.4f);
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
 
         if (jump)
@@ -480,16 +522,6 @@ public class ShipController : PlayerController
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(true);
             player_body.AddForce(new Vector2(0, 24f * grav_scale));
         }
-    }
-
-    public override bool isJumping()
-    {
-        return isjumping;
-    }
-
-    public override void setIsJumping(bool j)
-    {
-        isjumping = j;
     }
 
     public override void Pad()

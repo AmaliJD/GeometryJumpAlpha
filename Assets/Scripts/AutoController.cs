@@ -179,10 +179,6 @@ public class AutoController : PlayerController
                 released = false;
                 fromGround = ((grounded || time < 0.05f) && jump);
 
-                if (!fromGround)
-                {
-                    isjumping = true;
-                }
                 if (!reversed && player_body.velocity.y <= 1)
                 {
                     downjump = true;
@@ -200,7 +196,6 @@ public class AutoController : PlayerController
             // RELEASE JUMP
             if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
-                isjumping = false;
                 jump = false;
                 jump_ground = false;
                 released = true;
@@ -295,7 +290,40 @@ public class AutoController : PlayerController
         //Debug.Log(Mathf.Abs(transform.rotation.eulerAngles.z % 90) <= .001f);
 
         if (grounded && Mathf.Abs(transform.rotation.eulerAngles.z % 90) <= .001f) { return; }
-        
+
+        /*
+        float step = reversed ? 9f : - 9f;
+
+        if (!grounded)
+        {
+            player_body.rotation = player_body.rotation + step;
+        }
+        else
+        {
+            float difference = transform.rotation.eulerAngles.z % 90;
+            if (difference >= 55)
+            {
+                //player_body.rotation = Mathf.Lerp(player_body.rotation, player_body.rotation + (90 - difference), .8f);
+                //player_body.rotation = player_body.rotation + (90 - difference);
+                transform.eulerAngles = Vector3.Lerp(transform.eulerAngles,
+                    new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + (90 - difference)), .8f);
+
+                //transform.eulerAngles = player_body.transform.eulerAngles;
+                //transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z);
+            }
+            else
+            {
+                //player_body.rotation = Mathf.Lerp(player_body.rotation, player_body.rotation - difference, .7f);
+                //player_body.rotation = player_body.rotation - difference;
+                transform.eulerAngles = Vector3.Lerp(transform.eulerAngles,
+                    new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - difference), .7f);
+
+                //transform.eulerAngles = player_body.transform.eulerAngles;
+                //transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z);
+            }
+        }//*/
+
+        //* NO INTERPOLATION
         //Vector3 axis = Vector3.forward;
         float step = -8.1f;
 
@@ -310,6 +338,7 @@ public class AutoController : PlayerController
         {
             Vector3 newAngle = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + step);
             transform.rotation = Quaternion.Euler(newAngle);
+            //player_body.rotation = transform.eulerAngles.z + step;
         }
         else
         {
@@ -324,7 +353,7 @@ public class AutoController : PlayerController
                 transform.eulerAngles = Vector3.Lerp(transform.eulerAngles,
                     new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - difference), .7f);
             }
-        }
+        }//*/
 
         int rev = reversed ? -1 : 1;
         if((int)transform.rotation.eulerAngles.z == 270)
@@ -410,11 +439,36 @@ public class AutoController : PlayerController
 
     public override void Jump()
     {
+        OrbComponent orbscript = new OrbComponent();
+        if (OrbTouched != null) { orbscript = OrbTouched.GetComponent<OrbComponent>(); }
+
         if (teleorb && jump)
         {
+            Vector3 positionDelta = (transform.position + teleOrb_translate) - transform.position;
             jump = false;
             teleorb = false;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
+
             player_body.transform.position += teleOrb_translate;
+
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
+        }
+
+        if (triggerorb && jump)
+        {
+            triggerorb = false;
+            SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
+            StartCoroutine(spawn.Begin());
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
 
         if (yellow && jump)
@@ -433,6 +487,11 @@ public class AutoController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (pink && jump)
         {
@@ -450,6 +509,11 @@ public class AutoController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (red && jump)
         {
@@ -463,10 +527,15 @@ public class AutoController : PlayerController
             jump = false;
             red = false;
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.35f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.4f);
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (blue && jump)
         {
@@ -488,6 +557,11 @@ public class AutoController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (green && jump)
         {
@@ -517,6 +591,11 @@ public class AutoController : PlayerController
 
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (black && jump)
         {
@@ -532,6 +611,11 @@ public class AutoController : PlayerController
             downjump = true;
             trail.emitting = true;
             player_body.velocity = new Vector2(player_body.velocity.x, -jumpForce * 1.1f);
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if ((grounded || time < 0.05f) && jump_ground)
         {
@@ -553,16 +637,6 @@ public class AutoController : PlayerController
             released = false;
             fromGround = false;
         }*/
-    }
-
-    public override bool isJumping()
-    {
-        return isjumping;
-    }
-
-    public override void setIsJumping(bool j)
-    {
-        isjumping = j;
     }
 
     public override void Pad()

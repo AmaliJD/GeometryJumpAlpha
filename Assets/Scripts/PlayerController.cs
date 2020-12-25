@@ -23,7 +23,7 @@ public abstract class PlayerController : MonoBehaviour
     protected RaycastHit2D headHit;
 
     // SHARED STATIC VARIABLES
-    static public bool jump = false, isjumping = false, jump_ground = false, reversed = false, downjump = false, released = false;
+    static public bool jump = false, jump_ground = false, reversed = false, downjump = false, released = false;
     static public bool grounded = false, prev_grounded = false, fromGround = false, checkGrounded = true;
     static public bool dead = false, check_death = false, able = true;
 
@@ -50,7 +50,6 @@ public abstract class PlayerController : MonoBehaviour
     public void resetStaticVariables()
     {
         jump = false;
-        isjumping = false;
         jump_ground = false;
         reversed = false;
         downjump = false;
@@ -134,6 +133,8 @@ public abstract class PlayerController : MonoBehaviour
 
     public void Interpolate(short rot, short lin)
     {
+        //rot = 0; lin = 0;
+
         if(transform.rotation.z != prev_z_rotation)
         {
             switch(rot)
@@ -142,7 +143,7 @@ public abstract class PlayerController : MonoBehaviour
                     if (player_body.interpolation != RigidbodyInterpolation2D.None)
                         player_body.interpolation = RigidbodyInterpolation2D.None;
 
-                    Debug.Log("None");
+                    //Debug.Log("None");
 
                     break;
 
@@ -150,7 +151,7 @@ public abstract class PlayerController : MonoBehaviour
                     if (player_body.interpolation != RigidbodyInterpolation2D.Extrapolate)
                         player_body.interpolation = RigidbodyInterpolation2D.Extrapolate;
 
-                    Debug.Log("Extrapolate");
+                    //Debug.Log("Extrapolate");
 
                     break;
 
@@ -158,7 +159,7 @@ public abstract class PlayerController : MonoBehaviour
                     if (player_body.interpolation != RigidbodyInterpolation2D.Interpolate)
                         player_body.interpolation = RigidbodyInterpolation2D.Interpolate;
 
-                    Debug.Log("Interpolate");
+                    //Debug.Log("Interpolate");
 
                     break;
             }
@@ -171,7 +172,7 @@ public abstract class PlayerController : MonoBehaviour
                     if (player_body.interpolation != RigidbodyInterpolation2D.None)
                         player_body.interpolation = RigidbodyInterpolation2D.None;
 
-                    Debug.Log("None");
+                    //Debug.Log("None");
 
                     break;
 
@@ -179,7 +180,7 @@ public abstract class PlayerController : MonoBehaviour
                     if (player_body.interpolation != RigidbodyInterpolation2D.Extrapolate)
                         player_body.interpolation = RigidbodyInterpolation2D.Extrapolate;
 
-                    Debug.Log("Extrapolate");
+                    //Debug.Log("Extrapolate");
 
                     break;
 
@@ -187,7 +188,7 @@ public abstract class PlayerController : MonoBehaviour
                     if (player_body.interpolation != RigidbodyInterpolation2D.Interpolate)
                         player_body.interpolation = RigidbodyInterpolation2D.Interpolate;
 
-                    Debug.Log("Interpolate");
+                    //Debug.Log("Interpolate");
 
                     break;
             }
@@ -444,8 +445,6 @@ public abstract class PlayerController : MonoBehaviour
     public abstract void Jump();
     public abstract void Pad();
     public abstract void Portal();
-    public abstract bool isJumping();
-    public abstract void setIsJumping(bool j);
     public abstract void Flip();
     public abstract void Respawn();
     public abstract void setRespawn(Vector3 pos, bool rev, bool min);

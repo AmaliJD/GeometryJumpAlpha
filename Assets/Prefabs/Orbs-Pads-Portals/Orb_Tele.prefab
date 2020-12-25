@@ -339,8 +339,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 300
-  pulse: {fileID: 3288254412218724754}
-  ring: {fileID: 3288254412726134470}
+  pulse: {fileID: 5103076500955625531}
+  ring: {fileID: 5103076499967006201}
   TeleportTo: {fileID: 8587006503976209663}
   sfx: {fileID: 0}
 --- !u!58 &4685488560264882554
@@ -759,8 +759,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: -300
-  pulse: {fileID: 5103076500955625531}
-  ring: {fileID: 5103076499967006201}
+  pulse: {fileID: 3288254412218724754}
+  ring: {fileID: 3288254412726134470}
   TeleportTo: {fileID: 3288254412329595938}
   sfx: {fileID: 0}
 --- !u!58 &406246460219999498

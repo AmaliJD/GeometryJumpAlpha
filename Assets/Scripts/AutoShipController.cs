@@ -185,10 +185,6 @@ public class AutoShipController : PlayerController
             // JUMP!
             if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
             {
-                if (!grounded || yellow_j || pink_j || red_j || green_j || blue_j || black_j || triggerorb_j || teleorb_j)
-                {
-                    isjumping = true;
-                }
                 if (triggerorb) { triggerorb_j = true; }
                 if (teleorb) { teleorb_j = true; }
                 if (yellow) { yellow_j = true; }
@@ -205,7 +201,6 @@ public class AutoShipController : PlayerController
             // RELEASE JUMP
             if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
-                isjumping = false;
                 jump = false;
 
                 flame_spray.Stop();
@@ -236,7 +231,7 @@ public class AutoShipController : PlayerController
         if (able)
         {
             Move();
-            Interpolate(0, -1);
+            Interpolate(0, 0);
         }
     }
 
@@ -292,14 +287,12 @@ public class AutoShipController : PlayerController
 
     public void Rotate()
     {
-        //Debug.Log(Mathf.Abs(transform.rotation.eulerAngles.z % 90) <= .001f);
-        //player_body.interpolation = RigidbodyInterpolation2D.Interpolate;
-
         if (grounded)
         {
             player_body.freezeRotation = true;
             //transform.rotation = new Quaternion(0, 0, 0, 0);
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0,0,0), .5f);
+            player_body.rotation = Mathf.Lerp(player_body.rotation, 0, .5f);
         }
         else if (player_body.velocity.y >= 0)
         {
@@ -366,7 +359,10 @@ public class AutoShipController : PlayerController
     {
         trail.emitting = true;
 
-        if(maxSpeed != (mini ? 15 : 12))
+        OrbComponent orbscript = new OrbComponent();
+        if (OrbTouched != null) { orbscript = OrbTouched.GetComponent<OrbComponent>(); }
+
+        if (maxSpeed != (mini ? 15 : 12))
         {
             maxSpeed = Mathf.Lerp(maxSpeed, (mini ? 15 : 12), time);
             time += 1f * Time.deltaTime;
@@ -379,9 +375,18 @@ public class AutoShipController : PlayerController
 
         if (teleorb_j && jump)
         {
+            Vector3 positionDelta = (transform.position + teleOrb_translate) - transform.position;
             teleorb_j = false;
             teleorb = false;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
+
             player_body.transform.position += teleOrb_translate;
+            CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
+            activeCamera.GetCinemachineComponent<CinemachineFramingTransposer>().OnTargetObjectWarped(activeCamera.Follow, positionDelta);
         }
 
         if (triggerorb_j && jump)
@@ -390,6 +395,11 @@ public class AutoShipController : PlayerController
             triggerorb = false;
             SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
             StartCoroutine(spawn.Begin());
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
 
         if (yellow_j)
@@ -407,6 +417,11 @@ public class AutoShipController : PlayerController
             maxSpeed = Mathf.Abs(jumpForce) * 1.3f;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.3f);
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (red_j)
         {
@@ -421,6 +436,11 @@ public class AutoShipController : PlayerController
             maxSpeed = Mathf.Abs(jumpForce) * 1.65f;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.65f);
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (pink_j)
         {
@@ -435,6 +455,11 @@ public class AutoShipController : PlayerController
             maxSpeed = (mini ? 15 : 12);
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce);
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (blue_j)
         {
@@ -456,6 +481,11 @@ public class AutoShipController : PlayerController
             player_body.gravityScale *= -1;
             grav_scale *= -1;
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (green_j)
         {
@@ -487,6 +517,11 @@ public class AutoShipController : PlayerController
 
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.3f);
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         else if (black_j)
         {
@@ -504,6 +539,11 @@ public class AutoShipController : PlayerController
             player_body.velocity = new Vector2(player_body.velocity.x, 0f);
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * -2.4f);
             time = 0;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
 
         if (jump)
@@ -515,16 +555,6 @@ public class AutoShipController : PlayerController
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(true);
             player_body.AddForce(new Vector2(0, 24f * grav_scale));
         }
-    }
-
-    public override bool isJumping()
-    {
-        return isjumping;
-    }
-
-    public override void setIsJumping(bool j)
-    {
-        isjumping = j;
     }
 
     public override void Pad()

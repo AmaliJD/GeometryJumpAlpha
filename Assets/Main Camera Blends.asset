@@ -13,6 +13,17 @@ MonoBehaviour:
   m_Name: Main Camera Blends
   m_EditorClassIdentifier: 
   m_CustomBlends:
+  - m_From: CM vcam2
+    m_To: CM vcam1
+    m_Blend:
+      m_Style: 1
+      m_Time: 2
+      m_CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
   - m_From: CM vcam3
     m_To: CM vcam2
     m_Blend:
@@ -101,7 +112,29 @@ MonoBehaviour:
         m_PreInfinity: 0
         m_PostInfinity: 0
         m_RotationOrder: 0
-  - m_From: CM vcam9
+  - m_From: CM vcam4
+    m_To: CM vcam5
+    m_Blend:
+      m_Style: 2
+      m_Time: 1
+      m_CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - m_From: CM vcam6
+    m_To: CM vcam5
+    m_Blend:
+      m_Style: 2
+      m_Time: 1
+      m_CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - m_From: '**ANY CAMERA**'
     m_To: CM vcam5
     m_Blend:
       m_Style: 1
@@ -138,7 +171,7 @@ MonoBehaviour:
     m_To: CM vcam11
     m_Blend:
       m_Style: 2
-      m_Time: 0.17
+      m_Time: 0.2
       m_CustomCurve:
         serializedVersion: 2
         m_Curve:
@@ -190,6 +223,28 @@ MonoBehaviour:
     m_Blend:
       m_Style: 1
       m_Time: 1.5
+      m_CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - m_From: CM vcam17
+    m_To: CM vcam16
+    m_Blend:
+      m_Style: 1
+      m_Time: 2
+      m_CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - m_From: CM vcam16
+    m_To: CM vcam17
+    m_Blend:
+      m_Style: 1
+      m_Time: 1
       m_CustomCurve:
         serializedVersion: 2
         m_Curve: []

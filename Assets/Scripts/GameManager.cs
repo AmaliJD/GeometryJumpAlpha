@@ -10,9 +10,13 @@ using UnityEngine.Experimental.Rendering.Universal;
 
 public class GameManager : MonoBehaviour
 {
-    public Text Mana;
+    //public Text Mana;
+    //public Text Timer;
+    //public Text DevTools;
+    public Text ManaCount;
+    public Text DiamondCount;
     public Text Timer;
-    public Text DevTools;
+    public Text FPS;
     public GameObject Pause_Menu;
     public GameObject Menu1;
     public GameObject Menu2;
@@ -91,8 +95,8 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         //PLAYROOM
-        //editorTrail.emitting = false;
-        //bgmusic = GameObject.Find("BG Music 1").GetComponent<AudioSource>();
+        editorTrail.emitting = false;
+        bgmusic = GameObject.Find("BG Music 1").GetComponent<AudioSource>();
         //
 
         Resources.UnloadUnusedAssets();
@@ -116,7 +120,7 @@ public class GameManager : MonoBehaviour
         effects = GameObject.Find("EFFECTS");
         globallight = GameObject.Find("Global Light");
 
-        DevTools.color = Color.clear;
+        //DevTools.color = Color.clear;
         cubecontroller = player.GetComponent<CubeController>();
         autocontroller = player.GetComponent<AutoController>();
 
@@ -461,8 +465,11 @@ public class GameManager : MonoBehaviour
             if (milli == 1000) { m++; };
             if (sec == 60) { s++; };
 
-            Mana.text = "Mana: " + mana_count;
-            Timer.text = "Time: " + min + " : " + sec + " : " + milli + "\nFPS: " + Mathf.RoundToInt((1/deltaTime)) + "\nTime Scale: " + Time.timeScale;
+            ManaCount.text = "x" + mana_count;
+            DiamondCount.text = "x" + diamond_count;
+            Timer.text = "Time: " + min + " : " + (sec < 10 ? "0" : "") + sec + " : " + (milli < 100 ? "0" : "") + (milli < 10 ? "0" : "") + milli;
+            FPS.text = Mathf.RoundToInt((1 / deltaTime)) + " FPS\n" + Time.timeScale + "x speed";
+            //Timer.text = "Time: " + min + " : " + sec + " : " + milli + "\nFPS: " + Mathf.RoundToInt((1/deltaTime)) + "\nTime Scale: " + Time.timeScale;
 
             time += Time.deltaTime;
         }

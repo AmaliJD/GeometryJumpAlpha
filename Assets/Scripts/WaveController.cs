@@ -137,10 +137,6 @@ public class WaveController : PlayerController
             // JUMP!
             if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
             {
-                if (!grounded || yellow || pink || red || green || blue || black)
-                {
-                    isjumping = true;
-                }
                 if (blue) { blue_j = true; }
                 if (green) { green_j = true; }
                 if (triggerorb) { triggerorb_j = true; }
@@ -152,7 +148,6 @@ public class WaveController : PlayerController
             // RELEASE JUMP
             if (Input.GetButtonUp("Jump") || Input.GetKeyUp("space") || Input.GetMouseButtonUp(0))
             {
-                isjumping = false;
                 jump = false;
 
                 blue_j = false;
@@ -240,8 +235,6 @@ public class WaveController : PlayerController
         bool grounded_vertical = grounded && Physics2D.Raycast(player_body.transform.position + new Vector3(-.5f, 0, 0), Vector2.right, 1f, groundLayer);
         bool grounded_horizontal = grounded && Physics2D.Raycast(player_body.transform.position + new Vector3(0, -.5f, 0), Vector2.up, 1f, groundLayer);
 
-        //Debug.Log("H: " + grounded_horizontal + " V: " + grounded_vertical);
-
         if ((player_body.velocity.x == 0 || grounded_vertical) && (player_body.velocity.y == 0 || grounded_horizontal)) { }
         else if (player_body.velocity.x >= 0)
         {
@@ -277,8 +270,6 @@ public class WaveController : PlayerController
             }
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(newAngle), .5f);
         }
-
-        //Debug.Log(player_body.velocity.x);
     }
 
     /*public void Eyes()
@@ -326,6 +317,9 @@ public class WaveController : PlayerController
 
     public override void Jump()
     {
+        OrbComponent orbscript = new OrbComponent();
+        if (OrbTouched != null) { orbscript = OrbTouched.GetComponent<OrbComponent>(); }
+
         trail.emitting = true;
 
         if (teleorb_j)
@@ -335,6 +329,12 @@ public class WaveController : PlayerController
             jump = false;
             teleorb_j = false;
             teleorb = false;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
+
             player_body.transform.position += teleOrb_translate;
 
             CinemachineVirtualCamera activeCamera = gamemanager.getActiveCamera();
@@ -347,6 +347,11 @@ public class WaveController : PlayerController
             triggerorb = false;
             SpawnTrigger spawn = OrbTouched.GetComponent<SpawnTrigger>();
             StartCoroutine(spawn.Begin());
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
 
         if (blue_j || green_j)
@@ -367,6 +372,11 @@ public class WaveController : PlayerController
 
             player_body.gravityScale *= -1;
             grav_scale *= -1;
+
+            if (OrbTouched != null)
+            {
+                orbscript.Pulse();
+            }
         }
         /*
         int rev = 1;
@@ -380,16 +390,6 @@ public class WaveController : PlayerController
         {
             player_body.velocity = new Vector2(player_body.velocity.x, rev * -player_body.velocity.x);
         }*/
-    }
-
-    public override bool isJumping()
-    {
-        return isjumping;
-    }
-
-    public override void setIsJumping(bool j)
-    {
-        isjumping = j;
     }
 
     public override void Pad()
