@@ -28,7 +28,7 @@ public class Diamond : MonoBehaviour
     private IEnumerator Collect()
     {
         transform.parent = null;
-        pickup.PlayOneShot(pickup.clip, 1f);
+        pickup.PlayOneShot(pickup.clip, gamemanager.sfx_volume);
         //pickup.Play();
 
         while (true)
@@ -61,7 +61,7 @@ public class Diamond : MonoBehaviour
         }
 
         gamemanager.incrementDiamondCount(1);
-        sfx.PlayOneShot(sfx.clip, 1f);
+        sfx.PlayOneShot(sfx.clip, gamemanager.sfx_volume);
         //sfx.Play();
         Destroy(gameObject);
     }

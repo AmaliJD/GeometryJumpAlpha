@@ -780,7 +780,7 @@ public class AutoShipController : PlayerController
         //player_renderer.enabled = false;
         //death_animation.GetComponent<SpriteRenderer>().enabled = true;
         death_particles.Play();
-        death_sfx.PlayOneShot(death_sfx.clip, 1f);
+        death_sfx.PlayOneShot(death_sfx.clip, gamemanager.sfx_volume);
         player_body.gravityScale = 0;
 
         Invoke("reposition", 1f);
@@ -822,7 +822,7 @@ public class AutoShipController : PlayerController
 
         player_body.gravityScale = grav_scale;
 
-        bgmusic.volume = 1;
+        //bgmusic.volume = 1;
         if (restartmusic) { bgmusic.Play(); }
 
         dead = false;

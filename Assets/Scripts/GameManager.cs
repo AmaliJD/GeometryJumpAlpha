@@ -30,6 +30,11 @@ public class GameManager : MonoBehaviour
     public Button Res1080_Button;
     public Button Res720_Button;
 
+    public Slider MusicSlider;
+    public Slider SfxSlider;
+
+    public Animator UIAnimator;
+    public GameObject UIRestartSignal;
     public GameObject UIIntroSequence;
 
     public CinemachineBrain main_camera_brain;
@@ -78,6 +83,11 @@ public class GameManager : MonoBehaviour
 
     private int mana_count = 0;
     private int diamond_count = 0;
+    private int[] coin_count = new int[3];
+
+    [Range(0f,1f)]
+    public float music_volume = 1, sfx_volume = 1;
+    public float bgMusicVolume = 1;
 
     private int min = 0, sec = 0, milli = 0, m = 0, s = 0;
 
@@ -96,8 +106,8 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         //PLAYROOM
-        editorTrail.emitting = false;
-        bgmusic = GameObject.Find("BG Music 1").GetComponent<AudioSource>();
+        //editorTrail.emitting = false;
+        //bgmusic = GameObject.Find("BG Music 1").GetComponent<AudioSource>();
         //
 
         Resources.UnloadUnusedAssets();
@@ -106,7 +116,7 @@ public class GameManager : MonoBehaviour
         prev_width = Screen.width;
         prev_height = Screen.height;
 
-        Restart_Button.onClick.AddListener(Restart);
+        Restart_Button.onClick.AddListener(/*Restart*/StartRestart);
         Options_Button.onClick.AddListener(Options);
         Menu_Button.onClick.AddListener(ReturnToMenu);
         Fullscreen_Button.onClick.AddListener(ToggleFullscreen);
@@ -115,6 +125,9 @@ public class GameManager : MonoBehaviour
         Res1440_Button.onClick.AddListener(() => { SetResolution(1440); });
         Res1080_Button.onClick.AddListener(() => { SetResolution(1080); });
         Res720_Button.onClick.AddListener(() => { SetResolution(720); });
+
+        MusicSlider.value = music_volume;
+        SfxSlider.value = sfx_volume;
 
         player = GameObject.Find("Player");
         playerlight = GameObject.Find("Player Light Bright"); playerlight.SetActive(false);
@@ -217,6 +230,12 @@ public class GameManager : MonoBehaviour
     }
 
     // Button Functions
+    public void StartRestart()
+    {
+        playercontroller.setAble(false);
+        playercontroller.stopBGMusic();
+        UIAnimator.Play("UI_Restart_Sequence");
+    }
     public void Restart()
     {
         playercontroller.resetStaticVariables();
@@ -270,6 +289,7 @@ public class GameManager : MonoBehaviour
     }
     void Update()
     {
+        if (UIRestartSignal.activeSelf) { Restart(); }
         if (UIIntroSequence.activeSelf)
         {
             playercontroller.forceRespawn();
@@ -301,7 +321,7 @@ public class GameManager : MonoBehaviour
         }
         if (Input.GetKeyDown("r"))
         {
-            Restart();
+            StartRestart();
         }
 
         /*if(!Input.GetMouseButton(0))
@@ -329,6 +349,10 @@ public class GameManager : MonoBehaviour
                 prev_width = newWidth;
             }
         }*/
+
+        music_volume = MusicSlider.value;
+        sfx_volume = SfxSlider.value;
+        bgmusic.volume = bgMusicVolume * music_volume;
 
         // PLAYROOM
         //*
@@ -690,7 +714,9 @@ public class GameManager : MonoBehaviour
             if (startmusic)
             {
                 bgmusic.Play();
-                bgmusic.volume = 1;
+                //bgmusic.volume = music_volume;
+                bgMusicVolume = 1;
+                bgmusic.volume = music_volume;
             }
             /*
             if (checkpointcontroller.getIndex() != -1)
@@ -719,7 +745,9 @@ public class GameManager : MonoBehaviour
 
         playercontroller.setBGMusic(bgmusic);
 
-        bgmusic.volume = playvolume;
+        //bgmusic.volume = playvolume * music_volume;
+        bgMusicVolume = playvolume;
+        bgmusic.volume = bgMusicVolume * music_volume;
         bgmusic.Play();
     }
 
@@ -753,6 +781,16 @@ public class GameManager : MonoBehaviour
         return diamond_count;
     }
 
+    public void incrementCoinCount(int num)
+    {
+        coin_count[num-1] = 1;
+    }
+
+    public int[] getCoinCount()
+    {
+        return coin_count;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Player")
@@ -761,13 +799,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public bool shorten()
-    {
-        return shortcuts_enabled;
-    }
-
     public bool getpostfx()
     {
         return postfxon;
+    }
+
+    public float getTime()
+    {
+        return time;
+    }
+
+    public int getLevelNumber()
+    {
+        return 1;
     }
 }

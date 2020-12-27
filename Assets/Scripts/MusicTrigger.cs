@@ -25,7 +25,7 @@ public class MusicTrigger : MonoBehaviour
     {
         gamemanager.setBGMusic(bgmusic);
 
-        if(play)
+        if (play)
         {
             gamemanager.playBGMusic(playvolume);
         }
@@ -40,19 +40,19 @@ public class MusicTrigger : MonoBehaviour
 
     public IEnumerator setMusicVolume()
     {
-        AudioSource bgMusic = gamemanager.getBGMusic();
+        //AudioSource bgMusic = gamemanager.getBGMusic();
 
-        if (fadetime == 0) { bgMusic.volume = volume; }
+        if (fadetime == 0) { /*bgMusic.volume = volume;*/ gamemanager.bgMusicVolume = volume; }
         else
         {
             float time = 0;
-            //float timer = 0;
-            float step = (bgMusic.volume - volume) / (fadetime / Time.deltaTime);
+            //float step = (bgMusic.volume - volume) / (fadetime / Time.deltaTime);
+            float step = (gamemanager.bgMusicVolume - volume) / (fadetime / Time.deltaTime);
 
             while (time < fadetime)
             {
-                bgMusic.volume = bgMusic.volume - step;
-                //bgMusic.volume = Mathf.Lerp(bgMusic.volume, volume, time);
+                //bgMusic.volume = bgMusic.volume - step;
+                gamemanager.bgMusicVolume = gamemanager.bgMusicVolume - step;
 
                 time += Time.deltaTime;
                 //time += Time.deltaTime / (fadetime * 100);
@@ -60,7 +60,8 @@ public class MusicTrigger : MonoBehaviour
             }
         }
 
-        bgMusic.volume = volume;
+        //bgMusic.volume = volume;
+        gamemanager.bgMusicVolume = volume;
         finished = true;
 
         if (oneuse)

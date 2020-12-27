@@ -131,6 +131,14 @@ public abstract class PlayerController : MonoBehaviour
         }
     }
 
+    public void stopBGMusic()
+    {
+        if (bgmusic.isPlaying)
+        {
+            bgmusic.Stop();
+        }
+    }
+
     public void forceRespawn()
     {
         transform.position = respawn;

@@ -857,7 +857,7 @@ public class AutoSpiderController : PlayerController
         //player_renderer.enabled = false;
         //death_animation.GetComponent<SpriteRenderer>().enabled = true;
         death_particles.Play();
-        death_sfx.PlayOneShot(death_sfx.clip, 1f);
+        death_sfx.PlayOneShot(death_sfx.clip, gamemanager.sfx_volume);
         player_body.gravityScale = 0;
 
         Invoke("reposition", 1f);
@@ -901,7 +901,7 @@ public class AutoSpiderController : PlayerController
         //player_renderer.enabled = true;
         player_body.gravityScale = grav_scale;
 
-        bgmusic.volume = 1;
+        //bgmusic.volume = 1;
         if (restartmusic) { bgmusic.Play(); }
 
         Vector2 targetVelocity = new Vector2(speed * Time.fixedDeltaTime * 10f, player_body.velocity.y);

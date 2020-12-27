@@ -15,6 +15,7 @@ public class OrbComponent : MonoBehaviour
     public Transform TeleportTo;
 
     public AudioSource sfx;
+    private GameManager gamemanager;
 
     // Start is called before the first frame update
     void Awake()
@@ -27,6 +28,8 @@ public class OrbComponent : MonoBehaviour
         green = pulse.GetComponent<SpriteRenderer>().color.g;
         blue = pulse.GetComponent<SpriteRenderer>().color.b;
         scale = pulse.transform.localScale.x;
+
+        gamemanager = FindObjectOfType<GameManager>();
     }
 
     void FixedUpdate()
@@ -49,7 +52,7 @@ public class OrbComponent : MonoBehaviour
         
         if (jumped)
         {
-            if (pulse.transform.localScale.x == scale && sfx != null) { sfx.PlayOneShot(sfx.clip, 1f); }
+            if (pulse.transform.localScale.x == scale && sfx != null) { sfx.PlayOneShot(sfx.clip, gamemanager.sfx_volume); }
             pulse.transform.localScale = new Vector2(pulse.transform.localScale.x * .95f, pulse.transform.localScale.y * .95f); //.92
             pulse.GetComponent<SpriteRenderer>().color = new Color(red, green, blue, pulse.GetComponent<SpriteRenderer>().color.a * .7f); //.92
             pulse_light.intensity = pulse_light.intensity * .9f;

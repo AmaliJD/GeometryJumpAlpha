@@ -71,7 +71,7 @@ public class ManaOrb : MonoBehaviour
     private IEnumerator Collect()
     {
         transform.parent = null;
-        pickup.PlayOneShot(pickup.clip, 1f);
+        pickup.PlayOneShot(pickup.clip, gamemanager.sfx_volume);
 
         while (true)
         {
@@ -103,7 +103,7 @@ public class ManaOrb : MonoBehaviour
             yield return null;
         }
 
-        sfx.PlayOneShot(sfx.clip, 1f);
+        sfx.PlayOneShot(sfx.clip, gamemanager.sfx_volume);
         //sfx.Play();
         gamemanager.incrementManaCount(1);
         Destroy(gameObject);

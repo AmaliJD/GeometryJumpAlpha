@@ -1100,7 +1100,7 @@ public class CubeController : PlayerController
         player_renderer.SetActive(false);
         //death_animation.GetComponent<SpriteRenderer>().enabled = true;
         death_particles.Play();
-        death_sfx.PlayOneShot(death_sfx.clip, 1f);
+        death_sfx.PlayOneShot(death_sfx.clip, gamemanager.sfx_volume);
         player_body.gravityScale = 0;
 
         Invoke("undead", 1);
