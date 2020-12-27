@@ -30,6 +30,8 @@ public class GameManager : MonoBehaviour
     public Button Res1080_Button;
     public Button Res720_Button;
 
+    public Text MusicText;
+    public Text SfxText;
     public Slider MusicSlider;
     public Slider SfxSlider;
 
@@ -51,8 +53,8 @@ public class GameManager : MonoBehaviour
     private GameObject globallight;
     private GameObject playerlight;
     private GameObject player;
-    public AudioSource bgmusic;
-    private AudioSource newbgmusic;
+    public MusicSource bgmusic;
+    private MusicSource newbgmusic;
 
     private PlayerController playercontroller;
     private CubeController cubecontroller;
@@ -87,7 +89,6 @@ public class GameManager : MonoBehaviour
 
     [Range(0f,1f)]
     public float music_volume = 1, sfx_volume = 1;
-    public float bgMusicVolume = 1;
 
     private int min = 0, sec = 0, milli = 0, m = 0, s = 0;
 
@@ -160,7 +161,7 @@ public class GameManager : MonoBehaviour
         playercontroller = cubecontroller;
         checkpointcontroller = FindObjectOfType<Checkpoint_Controller>();
 
-        playercontroller.setBGMusic(bgmusic);
+        playercontroller.setBGMusic(bgmusic.audio);
         newbgmusic = bgmusic;
 
         iconcontroller = FindObjectOfType<IconController>();
@@ -232,6 +233,8 @@ public class GameManager : MonoBehaviour
     // Button Functions
     public void StartRestart()
     {
+        paused = false;
+        Time.timeScale = 1;
         playercontroller.setAble(false);
         playercontroller.stopBGMusic();
         UIAnimator.Play("UI_Restart_Sequence");
@@ -350,9 +353,12 @@ public class GameManager : MonoBehaviour
             }
         }*/
 
+        // SOUND
         music_volume = MusicSlider.value;
         sfx_volume = SfxSlider.value;
-        bgmusic.volume = bgMusicVolume * music_volume;
+        MusicText.text = "Music: " + (int)(music_volume * 100);
+        SfxText.text = "Sfx: " + (int)(sfx_volume * 100);
+        bgmusic.audio.volume = bgmusic.realVolume * music_volume;
 
         // PLAYROOM
         //*
@@ -707,7 +713,7 @@ public class GameManager : MonoBehaviour
             playercontroller.setAble(false);
             playercontroller.setColliders();
             playercontroller.setIcons(icon);
-            playercontroller.setBGMusic(bgmusic);
+            playercontroller.setBGMusic(bgmusic.audio);
             //playercontroller.setSpeed(speed);
             playercontroller.setRestartMusicOnDeath(restartmusic);
 
@@ -715,8 +721,8 @@ public class GameManager : MonoBehaviour
             {
                 bgmusic.Play();
                 //bgmusic.volume = music_volume;
-                bgMusicVolume = 1;
-                bgmusic.volume = music_volume;
+                bgmusic.realVolume = 1;
+                bgmusic.audio.volume = music_volume;
             }
             /*
             if (checkpointcontroller.getIndex() != -1)
@@ -743,20 +749,20 @@ public class GameManager : MonoBehaviour
             bgmusic = newbgmusic;
         }
 
-        playercontroller.setBGMusic(bgmusic);
+        playercontroller.setBGMusic(bgmusic.audio);
 
         //bgmusic.volume = playvolume * music_volume;
-        bgMusicVolume = playvolume;
-        bgmusic.volume = bgMusicVolume * music_volume;
+        bgmusic.realVolume = playvolume;
+        bgmusic.audio.volume = bgmusic.realVolume * music_volume;
         bgmusic.Play();
     }
 
-    public void setBGMusic(AudioSource audio)
+    public void setBGMusic(MusicSource music)
     {
-        newbgmusic = audio;
+        newbgmusic = music;
     }
 
-    public AudioSource getBGMusic()
+    public MusicSource getBGMusic()
     {
         return bgmusic;
     }
