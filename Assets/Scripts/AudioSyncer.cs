@@ -12,6 +12,13 @@ public class AudioSyncer : MonoBehaviour
 
     protected bool isBeat;
 
+    private GameManager gamemanager;
+
+    private void Awake()
+    {
+        gamemanager = FindObjectOfType<GameManager>();
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -20,11 +27,12 @@ public class AudioSyncer : MonoBehaviour
 
     public virtual void OnUpdate()
     {
+        float adj_bias = bias * gamemanager.music_volume;
         previousAudioValue = audioValue;
         audioValue = AudioSpectrum.spectrumValue;
 
-        if(previousAudioValue > bias &&
-            audioValue <= bias)
+        if(previousAudioValue > adj_bias &&
+            audioValue <= adj_bias)
         {
             if(timer > timeStep)
             {
@@ -32,8 +40,8 @@ public class AudioSyncer : MonoBehaviour
             }
         }
 
-        if (previousAudioValue <= bias &&
-            audioValue > bias)
+        if (previousAudioValue <= adj_bias &&
+            audioValue > adj_bias)
         {
             if (timer > timeStep)
             {

@@ -21,7 +21,7 @@ public class MusicSource : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (audio.isPlaying) { Debug.Log(audio.timeSamples); }
+        //if (audio.isPlaying) { Debug.Log(audio.timeSamples); }
         if(endSong == 0) { return; }
 
         if(audio.timeSamples >= endSong)

@@ -18,11 +18,13 @@ public class GlobalData
     public string username, password;
     public int total_diamonds;
 
-    public float[] master_volume; //music, sfx
-
-    public GlobalData(GameManager gamemanager)
+    public string ToJson()
     {
-        level_times[gamemanager.getLevelNumber()] = gamemanager.getTime();
-        total_diamonds += gamemanager.getDiamondCount();
+        return JsonUtility.ToJson(this);
+    }
+
+    public void LoadFromJson(string data)
+    {
+        JsonUtility.FromJsonOverwrite(data, this);
     }
 }

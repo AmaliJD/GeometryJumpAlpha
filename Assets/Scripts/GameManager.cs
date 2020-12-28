@@ -10,7 +10,7 @@ using UnityEngine.Experimental.Rendering.Universal;
 
 public class GameManager : MonoBehaviour
 {
-    private bool start = false;
+    public int levelNumber;
 
     public Text ManaCount;
     public Text DiamondCount;
@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
     private Color[] channel_colors;
 
     private float time = 0;
-    private bool shortcuts_enabled = false, game = false, paused = false;
+    private bool shortcuts_enabled = false, game = false, paused = false, start = false;
 
     private GameObject effects;
     private GameObject globallight;
@@ -88,7 +88,7 @@ public class GameManager : MonoBehaviour
     private int[] coin_count = new int[3];
 
     [Range(0f,1f)]
-    public float music_volume = 1, sfx_volume = 1;
+    public float music_volume, sfx_volume;
 
     private int min = 0, sec = 0, milli = 0, m = 0, s = 0;
 
@@ -110,6 +110,7 @@ public class GameManager : MonoBehaviour
         //editorTrail.emitting = false;
         //bgmusic = GameObject.Find("BG Music 1").GetComponent<AudioSource>();
         //
+        LoadPrefs();
 
         Resources.UnloadUnusedAssets();
         Screen.SetResolution(Screen.resolutions[Screen.resolutions.Length - 1].width, Screen.resolutions[Screen.resolutions.Length - 1].height, true);
@@ -220,7 +221,7 @@ public class GameManager : MonoBehaviour
         return player.transform;
     }
 
-    void resetColorChannels()
+    /*void resetColorChannels()
     {
         int i = 0;
         foreach (ColorReference c in color_channels)
@@ -228,7 +229,7 @@ public class GameManager : MonoBehaviour
             c.Set(channel_colors[i]);
             i++;
         }
-    }
+    }*/
 
     // Button Functions
     public void StartRestart()
@@ -237,12 +238,15 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
         playercontroller.setAble(false);
         playercontroller.stopBGMusic();
+
+        SavePrefs();
+
         UIAnimator.Play("UI_Restart_Sequence");
     }
     public void Restart()
     {
         playercontroller.resetStaticVariables();
-        resetColorChannels();
+        //resetColorChannels();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         Time.timeScale = 1.0f;
     }
@@ -308,7 +312,7 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown("q"))
         {
-            resetColorChannels();
+            //resetColorChannels();
             Application.Quit();
         }
         if (Input.GetKeyDown("f"))
@@ -818,5 +822,19 @@ public class GameManager : MonoBehaviour
     public int getLevelNumber()
     {
         return 1;
+    }
+
+    // PLAYER PREFERENCES
+    public void SavePrefs()
+    {
+        PlayerPrefs.SetFloat("music_volume", music_volume);
+        PlayerPrefs.SetFloat("sfx_volume", sfx_volume);
+        PlayerPrefs.Save();
+    }
+
+    public void LoadPrefs()
+    {
+        music_volume = PlayerPrefs.GetFloat("music_volume", .8f);
+        sfx_volume = PlayerPrefs.GetFloat("sfx_volume", 1);
     }
 }
