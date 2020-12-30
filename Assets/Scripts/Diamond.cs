@@ -61,6 +61,7 @@ public class Diamond : MonoBehaviour
         }
 
         gamemanager.incrementDiamondCount(1);
+
         sfx.PlayOneShot(sfx.clip, gamemanager.sfx_volume);
         //sfx.Play();
         Destroy(gameObject);
