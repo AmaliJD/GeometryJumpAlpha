@@ -1177,6 +1177,11 @@ public class CubeController : PlayerController
     {
         player_collider.enabled = false;
         crouch_collider.enabled = false;
+
+        Cube_Anim.ResetTrigger("Crouch");
+        Cube_Anim.ResetTrigger("Squash");
+        Cube_Anim.ResetTrigger("Stretch");
+        Cube_Anim.SetTrigger("Default");
     }
 
     public override void setColliders()
