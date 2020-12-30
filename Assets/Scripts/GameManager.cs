@@ -43,8 +43,8 @@ public class GameManager : MonoBehaviour
     private float aspectratio = 16f / 9f;
     private int prev_width, prev_height;
 
-    public ColorReference[] color_channels;
-    private Color[] channel_colors;
+    //public ColorReference[] color_channels;
+    //private Color[] channel_colors;
 
     private float time = 0;
     private bool shortcuts_enabled = false, game = false, paused = false, start = false;
@@ -86,6 +86,7 @@ public class GameManager : MonoBehaviour
     private int mana_count = 0;
     private int diamond_count = 0;
     private int[] coin_count = new int[3];
+    public Coin[] Coins;
 
     [Range(0f,1f)]
     public float music_volume, sfx_volume;
@@ -131,6 +132,13 @@ public class GameManager : MonoBehaviour
         MusicSlider.value = music_volume;
         SfxSlider.value = sfx_volume;
 
+        int i = 0;
+        foreach (Coin c in Coins)
+        {
+            c.gameObject.SetActive(coin_count[0] == 0);
+            i++;
+        }
+
         player = GameObject.Find("Player");
         playerlight = GameObject.Find("Player Light Bright"); playerlight.SetActive(false);
         effects = GameObject.Find("EFFECTS");
@@ -171,14 +179,14 @@ public class GameManager : MonoBehaviour
         playercontroller.setIcons(icon);
 
         // ------------------------------------------------------------------------------------------------
-        channel_colors = new Color[color_channels.Length];
+        /*channel_colors = new Color[color_channels.Length];
         int i = 0;
         foreach(ColorReference c in color_channels)
         {
             channel_colors[i] = c.channelcolor;
             if(c.refer != null) { channel_colors[i] = c.refer.channelcolor; }
             i++;
-        }
+        }*/
 
         // camera list ------------------------
         cameraList = new List<CinemachineVirtualCamera>();
@@ -356,6 +364,8 @@ public class GameManager : MonoBehaviour
                 prev_width = newWidth;
             }
         }*/
+
+        Debug.Log(coin_count[0] + ", " + coin_count[1] + ", " + coin_count[2]);
 
         // SOUND
         music_volume = MusicSlider.value;
@@ -791,14 +801,34 @@ public class GameManager : MonoBehaviour
         return diamond_count;
     }
 
-    public void incrementCoinCount(int num)
+    public void incrementCoinCount(int num, bool check)
     {
-        coin_count[num-1] = 1;
+        if (check) { coin_count[num - 1] = 2; }
+        else { coin_count[num - 1] = 1; }
     }
 
     public int[] getCoinCount()
     {
         return coin_count;
+    }
+
+    public void resolveCoins(bool proceed)
+    {
+        for (int i = 0; i < coin_count.Length; i++)
+        {
+            if(coin_count[i] == 2)
+            {
+                coin_count[i] = proceed ? 1 : 0;
+                if (!proceed)
+                {
+                    Coins[i].resetCoin();
+                }
+                else
+                {
+                    Destroy(Coins[i].gameObject);
+                }
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

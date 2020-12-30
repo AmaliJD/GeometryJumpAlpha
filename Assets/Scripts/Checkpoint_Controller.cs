@@ -5,12 +5,16 @@ using System;
 
 public class Checkpoint_Controller : MonoBehaviour
 {
+    private GameManager gamemanager;
+
     private List<Checkpoint> c_scripts;
     private List<Vector3> c_positions;
     private List<int> c_states;
     private int currentActive = -1;
     void Awake()
     {
+        gamemanager = FindObjectOfType<GameManager>();
+
         c_scripts = new List<Checkpoint>();
         c_positions = new List<Vector3>();
         c_states = new List<int>();
@@ -28,11 +32,14 @@ public class Checkpoint_Controller : MonoBehaviour
 
     public void updateStates(int index)
     {
-        if(currentActive != -1 && currentActive != index)
+        int prevCurr = currentActive;
+        if (currentActive != -1 && currentActive != index)
         {
             c_scripts[currentActive].Green();
         }
         currentActive = index;
+
+        gamemanager.resolveCoins(prevCurr != index);
     }
 
     public Vector3 getTransform()

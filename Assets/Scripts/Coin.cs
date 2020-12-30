@@ -15,8 +15,11 @@ public class Coin : MonoBehaviour
     public Light2D coinLight;
     public ParticleSystem particles;
     public int coinNum;
+    public bool checkpoint_collect;
 
     private GameManager gamemanager;
+    private Vector3 startingPos;
+    private float startingIntens;
 
     private void Awake()
     {
@@ -24,14 +27,17 @@ public class Coin : MonoBehaviour
         cube = FindObjectOfType<CubeController>();
         animator = gameObject.GetComponent<Animator>();
         sprite = gameObject.GetComponent<SpriteRenderer>();
+
+        startingPos = transform.position;
+        startingIntens = coinLight.intensity;
     }
 
     private IEnumerator Collect()
     {
-        transform.parent = null;
+        //transform.parent = null;
         if (particles.isPlaying) { particles.Stop(); }
         pickup.PlayOneShot(pickup.clip, gamemanager.sfx_volume);
-        gamemanager.incrementCoinCount(coinNum);
+        gamemanager.incrementCoinCount(coinNum, checkpoint_collect);
         animator.speed = 3;
         sprite.color = new Color(1, 1, 1, 1);
 
@@ -44,7 +50,18 @@ public class Coin : MonoBehaviour
             yield return null;
         }
 
-        Destroy(gameObject);
+        if (!checkpoint_collect) { Destroy(gameObject); }
+    }
+
+    public void resetCoin()
+    {
+        StopAllCoroutines();
+        collected = false;
+        if (!particles.isPlaying) { particles.Play(); }
+        animator.speed = 0.8f;
+        sprite.color = new Color(1, 1, 1, 1);
+        coinLight.intensity = startingIntens;
+        transform.position = startingPos;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
