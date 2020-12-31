@@ -9,6 +9,8 @@ public class MoveTrigger : MonoBehaviour
     GameManager gamemanager;
 
     public GameObject group;
+    public GameObject target;
+    public bool xOnly, yOnly;
     public float x, y;
     public float duration;
 
@@ -31,6 +33,7 @@ public class MoveTrigger : MonoBehaviour
     private void Awake()
     {
         original_position = group.transform.position;
+
         x /= 10; y /= 10;
 
         gameObject.transform.GetChild(0).gameObject.SetActive(false);
@@ -40,6 +43,11 @@ public class MoveTrigger : MonoBehaviour
     public IEnumerator Move()
     {
         finished = false;
+        if (target != null)
+        {
+            x += ((target.transform.position.x - group.transform.position.x) * (yOnly ? 0 : 1));
+            y += ((target.transform.position.y - group.transform.position.y) * (xOnly ? 0 : 1));
+        }
 
         float time = 0, step = (Time.deltaTime / duration) / 10, t = 0, t0 = 0, d = duration;
         float x1 = 0, y1 = 0, x0 = 0, y0 = 0, xPos = 0, yPos = 0;

@@ -144,6 +144,17 @@ public abstract class PlayerController : MonoBehaviour
         transform.position = respawn;
     }
 
+    public void TurnOffEverything()
+    {
+        grounded_particles.Stop();
+        ground_impact_particles.Stop();
+
+        Cube_Anim.ResetTrigger("Crouch");
+        Cube_Anim.ResetTrigger("Squash");
+        Cube_Anim.ResetTrigger("Stretch");
+        Cube_Anim.SetTrigger("Default");
+    }
+
     public void Interpolate(short rot, short lin)
     {
         //rot = 0; lin = 0;

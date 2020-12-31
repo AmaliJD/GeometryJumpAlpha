@@ -88,7 +88,7 @@ public class GameManager : MonoBehaviour
     private int[] coin_count = new int[3];
     public Coin[] Coins;
 
-    [Range(0f,1f)]
+    [Range(0f,1f)] [HideInInspector]
     public float music_volume, sfx_volume;
 
     private int min = 0, sec = 0, milli = 0, m = 0, s = 0;
@@ -96,10 +96,13 @@ public class GameManager : MonoBehaviour
     private bool postfxon = true;
 
     private float deltaTime = 0.0f;
+    private float endgame_timer = 0;
 
     private GameObject[] initialList;
     private List<CinemachineVirtualCamera> cameraList;
     CinemachineVirtualCamera activeCamera;
+
+    public GameObject End;
 
     //PLAYROOM
     public SpriteRenderer Background;
@@ -285,7 +288,7 @@ public class GameManager : MonoBehaviour
     public void TogglePostProcessing()
     {
         effects.SetActive(!effects.activeSelf);
-        Debug.Log(main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>() == null);
+        //Debug.Log(main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>() == null);
         postfxon = !postfxon;
         if (postfxon && main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>() != null)
         {
@@ -294,6 +297,17 @@ public class GameManager : MonoBehaviour
         else
         {
             main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>().enabled = false;
+        }
+    }
+    public void setButtonOn(Button button, bool on)
+    {
+        if(on)
+        {
+            //button.colors.
+        }
+        else
+        {
+
         }
     }
     public void ReturnToMenu()
@@ -339,6 +353,63 @@ public class GameManager : MonoBehaviour
             StartRestart();
         }
 
+        // SOUND
+        music_volume = MusicSlider.value;
+        sfx_volume = SfxSlider.value;
+        MusicText.text = "Music: " + (int)(music_volume * 100);
+        SfxText.text = "Sfx: " + (int)(sfx_volume * 100);
+        bgmusic.audio.volume = bgmusic.realVolume * music_volume;
+
+        if (!game)
+        {
+            // PAUSE MENU
+            if (Input.GetKeyDown("escape"))
+            {
+                if (!paused)
+                {
+                    paused = !paused;
+                    Pause_Menu.SetActive(true);
+                    bgmusic.Pause();
+                    Time.timeScale = 0;
+                }
+                else if (paused)
+                {
+                    if (Menu1.activeSelf)
+                    {
+                        paused = !paused;
+                        Pause_Menu.SetActive(false);
+                        Time.timeScale = 1;
+                        bgmusic.Play();
+                    }
+                    else
+                    {
+                        Menu1.SetActive(true);
+                        Menu2.SetActive(false);
+                    }
+                }
+            }
+
+            // UI TEXT
+            deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
+
+            milli = (int)(time * 1000) % 1000;
+            sec = (int)(time);
+            min = (int)(sec / 60);
+
+            milli -= (1000 * m);
+            sec -= (60 * s);
+
+            if (milli == 1000) { m++; };
+            if (sec == 60) { s++; };
+
+            ManaCount.text = "x" + mana_count;
+            DiamondCount.text = "x" + diamond_count;
+            Timer.text = "Time: " + min + " : " + (sec < 10 ? "0" : "") + sec + " : " + (milli < 100 ? "0" : "") + (milli < 10 ? "0" : "") + milli;
+            FPS.text = Mathf.RoundToInt((1 / deltaTime)) + " FPS\n" + Time.timeScale + "x speed";
+
+            time += Time.deltaTime;
+        }
+
         /*if(!Input.GetMouseButton(0))
         {
             if (prev_height != Screen.height && !Screen.fullScreen)
@@ -365,17 +436,12 @@ public class GameManager : MonoBehaviour
             }
         }*/
 
-        Debug.Log(coin_count[0] + ", " + coin_count[1] + ", " + coin_count[2]);
+        //Debug.Log(coin_count[0] + ", " + coin_count[1] + ", " + coin_count[2]);
 
-        // SOUND
-        music_volume = MusicSlider.value;
-        sfx_volume = SfxSlider.value;
-        MusicText.text = "Music: " + (int)(music_volume * 100);
-        SfxText.text = "Sfx: " + (int)(sfx_volume * 100);
-        bgmusic.audio.volume = bgmusic.realVolume * music_volume;
+        
 
         // PLAYROOM
-        //*
+        /*
         if (Input.GetKeyDown("c"))
         {
             playercontroller.Respawn();
@@ -434,32 +500,6 @@ public class GameManager : MonoBehaviour
         }
         //*/
 
-        if (Input.GetKeyDown("escape"))
-        {
-            if (!paused)
-            {
-                paused = !paused;
-                Pause_Menu.SetActive(true);
-                bgmusic.Pause();
-                Time.timeScale = 0;
-            }
-            else if(paused)
-            {
-                if(Menu1.activeSelf)
-                {
-                    paused = !paused;
-                    Pause_Menu.SetActive(false);
-                    Time.timeScale = 1;
-                    bgmusic.Play();
-                }
-                else
-                {
-                    Menu1.SetActive(true);
-                    Menu2.SetActive(false);
-                }
-            }
-        }
-
         /*
         if (shortcuts_enabled)
         {
@@ -507,30 +547,6 @@ public class GameManager : MonoBehaviour
             }
         }//*/
 
-
-        if (!game)
-        {
-            deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
-
-            milli = (int)(time * 1000) % 1000;
-            sec = (int)(time);
-            min = (int)(sec / 60);
-
-            milli -= (1000 * m);
-            sec -= (60 * s);
-
-            if (milli == 1000) { m++; };
-            if (sec == 60) { s++; };
-
-            ManaCount.text = "x" + mana_count;
-            DiamondCount.text = "x" + diamond_count;
-            Timer.text = "Time: " + min + " : " + (sec < 10 ? "0" : "") + sec + " : " + (milli < 100 ? "0" : "") + (milli < 10 ? "0" : "") + milli;
-            FPS.text = Mathf.RoundToInt((1 / deltaTime)) + " FPS\n" + Time.timeScale + "x speed";
-            //Timer.text = "Time: " + min + " : " + sec + " : " + milli + "\nFPS: " + Mathf.RoundToInt((1/deltaTime)) + "\nTime Scale: " + Time.timeScale;
-
-            time += Time.deltaTime;
-        }
-
         /*
         if(postfxon)
         {
@@ -544,6 +560,25 @@ public class GameManager : MonoBehaviour
 
         prev_height = Screen.height;
         prev_width = Screen.width;
+    }
+
+    private void FixedUpdate()
+    {
+        if(game)
+        {
+            player.GetComponent<Collider2D>().isTrigger = true;
+
+            Rigidbody2D playerbody = player.GetComponent<Rigidbody2D>();
+
+            playercontroller.setAble(false);
+            playercontroller.TurnOffEverything();
+            playercontroller.enabled = false;
+
+            playerbody.interpolation = RigidbodyInterpolation2D.Extrapolate;
+            playerbody.velocity = Vector2.zero;
+            playerbody.gravityScale = 0;
+            playerbody.rotation = Mathf.Lerp(playerbody.rotation, playerbody.rotation - 10, .6f);
+        }
     }
 
     public PlayerController getController()

@@ -62,6 +62,15 @@ TextureImporter:
   - first:
       213: 9182784909436024217
     second: triggers_10
+  - first:
+      213: -8410233288970220865
+    second: triggers_9
+  - first:
+      213: -4108631386309220439
+    second: triggers_10
+  - first:
+      213: 7982895362034560368
+    second: triggers_11
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -385,8 +394,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 22429be8b0e6d5ab0800000000000000
-      internalID: -5017733413902670814
+      spriteID: fbac3cc0269d84b80800000000000000
+      internalID: -8410233288970220865
       vertices: []
       indices: 
       edges: []
@@ -406,8 +415,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 99570cff83ecf6f70800000000000000
-      internalID: 9182784909436024217
+      spriteID: 9a7a40ac5853bf6c0800000000000000
+      internalID: -4108631386309220439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: triggers_11
+      rect:
+        serializedVersion: 2
+        x: 316
+        y: 0
+        width: 158
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07dee2d5901f8ce60800000000000000
+      internalID: 7982895362034560368
       vertices: []
       indices: 
       edges: []
