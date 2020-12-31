@@ -6,7 +6,7 @@ using Cinemachine;
 public class ShakeTrigger : MonoBehaviour
 {
     public float intensity, fadein, hold, fadeout;
-    public bool holdOnStay;
+    public bool holdOnStay, oneuse;
 
     private GameManager gamemanager;
     private bool entered;
@@ -26,7 +26,7 @@ public class ShakeTrigger : MonoBehaviour
         float time = 0;
         while(time < fadein)
         {
-            camera.m_AmplitudeGain = Mathf.Lerp(startingIntensity, intensity, fadein * time);
+            camera.m_AmplitudeGain = Mathf.Lerp(startingIntensity, intensity, time / fadein);
             Debug.Log("fadein: " + camera.m_AmplitudeGain);
             time += Time.deltaTime;
             yield return null;
@@ -44,13 +44,18 @@ public class ShakeTrigger : MonoBehaviour
         time = 0;
         while (time < fadeout)
         {
-            camera.m_AmplitudeGain = Mathf.Lerp(intensity, 0, fadeout * time);
+            camera.m_AmplitudeGain = Mathf.Lerp(intensity, 0, time / fadein);
             Debug.Log("fadeout: " + camera.m_AmplitudeGain);
             time += Time.deltaTime;
             yield return null;
         }
 
         camera.m_AmplitudeGain = 0;
+
+        if(oneuse)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
