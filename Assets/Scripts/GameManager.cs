@@ -139,6 +139,12 @@ public class GameManager : MonoBehaviour
         Res1080_Button.onClick.AddListener(() => { SetResolution(1080); });
         Res720_Button.onClick.AddListener(() => { SetResolution(720); });
 
+        setButtonOn(Fullscreen_Button, Screen.fullScreen);
+        Fullscreen_Button.GetComponentInChildren<Text>().text = "FULLSCREEN: " + (Screen.fullScreen ? "ON" : "OFF");
+
+        setButtonOn(Effects_Button, postfxon);
+        Effects_Button.GetComponentInChildren<Text>().text = "POST PROCESSING: " + (postfxon ? "ON" : "OFF");
+
         MusicSlider.value = music_volume;
         SfxSlider.value = sfx_volume;
 
@@ -277,17 +283,29 @@ public class GameManager : MonoBehaviour
     public void ToggleFullscreen()
     {
         Screen.fullScreen = !Screen.fullScreen;
+        setButtonOn(Fullscreen_Button, !Screen.fullScreen);
+        Fullscreen_Button.GetComponentInChildren<Text>().text = "FULLSCREEN: " + (!Screen.fullScreen ? "ON" : "OFF");
+        setButtonOn(Res1440_Button, false); setButtonOn(Res1080_Button, false); setButtonOn(Res720_Button, false);
     }
     public void SetResolution(int width)
     {
         switch(width)
         {
             case 1440:
-                Screen.SetResolution(2560, 1440, true); Screen.fullScreen = false; break;
+                Screen.SetResolution(2560, 1440, true); Screen.fullScreen = false;
+                setButtonOn(Res1440_Button, true); setButtonOn(Res1080_Button, false); setButtonOn(Res720_Button, false);
+                setButtonOn(Fullscreen_Button, false);
+                Fullscreen_Button.GetComponentInChildren<Text>().text = "FULLSCREEN: OFF"; break;
             case 1080:
-                Screen.SetResolution(1920, 1080, true); Screen.fullScreen = false; break;
+                Screen.SetResolution(1920, 1080, true); Screen.fullScreen = false;
+                setButtonOn(Res1440_Button, false); setButtonOn(Res1080_Button, true); setButtonOn(Res720_Button, false);
+                setButtonOn(Fullscreen_Button, false);
+                Fullscreen_Button.GetComponentInChildren<Text>().text = "FULLSCREEN: OFF"; break;
             case 720:
-                Screen.SetResolution(1280, 720, true); Screen.fullScreen = false; break;
+                Screen.SetResolution(1280, 720, true); Screen.fullScreen = false;
+                setButtonOn(Res1440_Button, false); setButtonOn(Res1080_Button, false); setButtonOn(Res720_Button, true);
+                setButtonOn(Fullscreen_Button, false);
+                Fullscreen_Button.GetComponentInChildren<Text>().text = "FULLSCREEN: OFF"; break;
             default:
                 break;
         }
@@ -306,16 +324,35 @@ public class GameManager : MonoBehaviour
         {
             main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>().enabled = false;
         }
+
+        setButtonOn(Effects_Button, postfxon);
+        Effects_Button.GetComponentInChildren<Text>().text = "POST PROCESSING: " + (postfxon ? "ON" : "OFF");
     }
     public void setButtonOn(Button button, bool on)
     {
         if(on)
         {
-            //button.colors.
+            ColorBlock colorblock = button.colors;
+            colorblock.normalColor = new Color32(255, 255, 255, 255);
+            colorblock.highlightedColor = new Color32(245, 245, 245, 112);
+            colorblock.pressedColor = new Color32(200, 200, 200, 255);
+            colorblock.selectedColor = new Color32(245, 245, 245, 255);
+            colorblock.disabledColor = new Color32(128, 128, 128, 255);
+
+            button.colors = colorblock;
+            button.GetComponentInChildren<Text>().color = Color.black;
         }
         else
         {
+            ColorBlock colorblock = button.colors;
+            colorblock.normalColor = new Color32(255, 255, 242, 13);
+            colorblock.highlightedColor = new Color32(245, 245, 245, 112);
+            colorblock.pressedColor = new Color32(200, 200, 200, 255);
+            colorblock.selectedColor = new Color32(245, 245, 245, 255);
+            colorblock.disabledColor = new Color32(128, 128, 128, 255);
 
+            button.colors = colorblock;
+            button.GetComponentInChildren<Text>().color = Color.white;
         }
     }
     public void ReturnToMenu()
