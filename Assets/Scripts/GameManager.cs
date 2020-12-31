@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour
     public Text ManaCount;
     public Text DiamondCount;
     public Text Timer;
+    public Text ManaScore;
+    public Text DiamondScore;
+    public Text TimeScore;
     public Text FPS;
     public GameObject Pause_Menu;
     public GameObject Menu1;
@@ -36,8 +39,9 @@ public class GameManager : MonoBehaviour
     public Slider SfxSlider;
 
     public Animator UIAnimator;
+    public GameObject UIIntroSignal;
     public GameObject UIRestartSignal;
-    public GameObject UIIntroSequence;
+    public GameObject UIEndSignal;
 
     public CinemachineBrain main_camera_brain;
     private float aspectratio = 16f / 9f;
@@ -87,6 +91,9 @@ public class GameManager : MonoBehaviour
     private int diamond_count = 0;
     private int[] coin_count = new int[3];
     public Coin[] Coins;
+    public GameObject[] CoinIcons;
+    public AudioSource coinget;
+    public AudioSource diamondget;
 
     [Range(0f,1f)] [HideInInspector]
     public float music_volume, sfx_volume;
@@ -138,7 +145,8 @@ public class GameManager : MonoBehaviour
         int i = 0;
         foreach (Coin c in Coins)
         {
-            c.gameObject.SetActive(coin_count[0] == 0);
+            CoinIcons[i].GetComponent<Image>().color = new Color(1,1,1, coin_count[i] == 1 ? 1 : 0);
+            c.gameObject.SetActive(coin_count[i] == 0);
             i++;
         }
 
@@ -319,7 +327,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         if (UIRestartSignal.activeSelf) { Restart(); }
-        if (UIIntroSequence.activeSelf)
+        if (UIIntroSignal.activeSelf)
         {
             playercontroller.forceRespawn();
             //playercontroller.setAble(false);
@@ -406,6 +414,10 @@ public class GameManager : MonoBehaviour
             DiamondCount.text = "x" + diamond_count;
             Timer.text = "Time: " + min + " : " + (sec < 10 ? "0" : "") + sec + " : " + (milli < 100 ? "0" : "") + (milli < 10 ? "0" : "") + milli;
             FPS.text = Mathf.RoundToInt((1 / deltaTime)) + " FPS\n" + Time.timeScale + "x speed";
+
+            ManaScore.text = ManaCount.text;
+            DiamondScore.text = DiamondCount.text;
+            TimeScore.text = min + " : " + (sec < 10 ? "0" : "") + sec + " : " + (milli < 100 ? "0" : "") + (milli < 10 ? "0" : "") + milli;
 
             time += Time.deltaTime;
         }
@@ -578,6 +590,71 @@ public class GameManager : MonoBehaviour
             playerbody.velocity = Vector2.zero;
             playerbody.gravityScale = 0;
             playerbody.rotation = Mathf.Lerp(playerbody.rotation, playerbody.rotation - 10, .6f);
+        }
+    }
+
+    public IEnumerator countScore()
+    {
+        while(!UIEndSignal.activeSelf)
+        {
+            yield return null;
+        }
+        
+        for (int i = 0; i < coin_count.Length; i++)
+        {
+            if (coin_count[i] == 2)
+            {
+                CoinIcons[i].transform.localScale = new Vector3(3, 3, 1);
+                Image coinimage = CoinIcons[i].GetComponent<Image>();
+                coinimage.color = new Color(1, 1, 1, 0);
+
+                yield return null;
+
+                float timer = 0;
+
+                coinget.PlayOneShot(coinget.clip, sfx_volume);
+                while (coinimage.color.a < 1f)
+                {
+                    CoinIcons[i].transform.localScale = Vector3.Lerp(new Vector3(3, 3, 1), new Vector3(1, 1, 1), timer / .2f);
+                    coinimage.color = Color.Lerp(new Color(1, 1, 1, 0), new Color(1, 1, 1, 1), timer / .2f);
+                    timer += Time.deltaTime;
+
+                    yield return null;
+                }
+
+                //CoinIcons[i].transform.localScale = new Vector3(1, 1, 1);
+                coinimage.color =new Color(1, 1, 1, 1);
+
+                timer = 0;
+                while(timer < .1f)
+                {
+                    timer += Time.deltaTime;
+                    yield return new WaitForEndOfFrame();
+                }
+            }
+        }
+        
+        int diamondgain = 0;
+        for(int i = mana_count; i > 0; i--)
+        {
+            float timer = 0;
+            while (timer < .001f)
+            {
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            mana_count--;
+            diamondgain++;
+
+            if(diamondgain % 25 == 0)
+            {
+                diamond_count++;
+                diamondget.PlayOneShot(diamondget.clip, sfx_volume);
+            }
+
+            ManaScore.text = "x" + mana_count;
+            DiamondScore.text = "x" + diamond_count;
         }
     }
 
@@ -838,8 +915,8 @@ public class GameManager : MonoBehaviour
 
     public void incrementCoinCount(int num, bool check)
     {
-        if (check) { coin_count[num - 1] = 2; }
-        else { coin_count[num - 1] = 1; }
+        if (check) { coin_count[num - 1] = -1; }
+        else { coin_count[num - 1] = 2; }
     }
 
     public int[] getCoinCount()
@@ -851,9 +928,9 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < coin_count.Length; i++)
         {
-            if(coin_count[i] == 2)
+            if(coin_count[i] == -1)
             {
-                coin_count[i] = proceed ? 1 : 0;
+                coin_count[i] = proceed ? 2 : 0;
                 if (!proceed)
                 {
                     Coins[i].resetCoin();

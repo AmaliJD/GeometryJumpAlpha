@@ -23,9 +23,12 @@ public class MoveTrigger : MonoBehaviour
         ExpoInOut, ExpoIn, ExpoOut,
         SinInOut, SinIn, SinOut,
         BackInOut, BackIn, BackOut,
-        BounceInOut, BounceIn, BounceOut
+        BounceInOut, BounceIn, BounceOut,
+        Custom
     };
     public Ease easing;
+
+    public float U0, U1, U2, U3;
 
     private bool inuse;
     private Vector2 original_position;
@@ -120,7 +123,7 @@ public class MoveTrigger : MonoBehaviour
                     x0 = x * (t0 * t0 * t0 + 1);
                     y0 = y * (t0 * t0 * t0 + 1);
                     break;
-
+                // ELAS DOESN'T WORK
                 case Ease.ElasInOut:
                     if ((t /= d / 2) == 2)
                     {
@@ -228,7 +231,7 @@ public class MoveTrigger : MonoBehaviour
                     }
 
                     break;
-
+                
                 case Ease.ExpoInOut:
                     u0 = 1f; u1 = 0f; u2 = 0f; u3 = 1f;
 
@@ -379,6 +382,17 @@ public class MoveTrigger : MonoBehaviour
                     y1 /= 10;
                     x0 /= 10;
                     y0 /= 10;
+
+                    break;
+
+                case Ease.Custom:
+                    u0 = U0; u1 = U1; u2 = U2; u3 = U3;
+
+                    x1 = x * cubic_bezier(t / d, u0, u1, u2, u3);
+                    x0 = x * cubic_bezier(t0 / d, u0, u1, u2, u3);
+
+                    y1 = y * cubic_bezier(t / d, u0, u1, u2, u3);
+                    y0 = y * cubic_bezier(t0 / d, u0, u1, u2, u3);
 
                     break;
 

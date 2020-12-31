@@ -27,7 +27,7 @@ public class ShakeTrigger : MonoBehaviour
         while(time < fadein)
         {
             camera.m_AmplitudeGain = Mathf.Lerp(startingIntensity, intensity, time / fadein);
-            Debug.Log("fadein: " + camera.m_AmplitudeGain);
+            //Debug.Log("fadein: " + camera.m_AmplitudeGain);
             time += Time.deltaTime;
             yield return null;
         }
@@ -36,7 +36,7 @@ public class ShakeTrigger : MonoBehaviour
         while (holdOnStay ? entered : time < hold)
         {
             camera.m_AmplitudeGain = intensity;
-            Debug.Log("hold: " + camera.m_AmplitudeGain);
+            //Debug.Log("hold: " + camera.m_AmplitudeGain);
             time += Time.deltaTime;
             yield return null;
         }
@@ -45,7 +45,7 @@ public class ShakeTrigger : MonoBehaviour
         while (time < fadeout)
         {
             camera.m_AmplitudeGain = Mathf.Lerp(intensity, 0, time / fadein);
-            Debug.Log("fadeout: " + camera.m_AmplitudeGain);
+            //Debug.Log("fadeout: " + camera.m_AmplitudeGain);
             time += Time.deltaTime;
             yield return null;
         }

@@ -6,6 +6,7 @@ public class LevelComplete : MonoBehaviour
 {
     public AudioSource sfx;
     public ParticleSystem rays, burst;
+    public Animator UIAnimator;
 
     private GameManager gamemanager;
     private bool active;
@@ -30,6 +31,16 @@ public class LevelComplete : MonoBehaviour
         }
 
         burst.Play();
+
+        timer = 0;
+        while (timer < 1f)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        UIAnimator.Play("UI_Ending_Sequence");
+        StartCoroutine(gamemanager.countScore());
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
