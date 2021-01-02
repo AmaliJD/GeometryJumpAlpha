@@ -16,6 +16,7 @@ public class Coin : MonoBehaviour
     public ParticleSystem particles;
     public int coinNum;
     public bool checkpoint_collect;
+    public bool ghost;
 
     private GameManager gamemanager;
     private Vector3 startingPos;
@@ -36,8 +37,8 @@ public class Coin : MonoBehaviour
     {
         //transform.parent = null;
         if (particles.isPlaying) { particles.Stop(); }
-        pickup.PlayOneShot(pickup.clip, gamemanager.sfx_volume);
-        gamemanager.incrementCoinCount(coinNum, checkpoint_collect);
+        if (pickup != null) { pickup.PlayOneShot(pickup.clip, gamemanager.sfx_volume); }
+        gamemanager.incrementCoinCount(coinNum, checkpoint_collect, ghost);
         animator.speed = 3;
         sprite.color = new Color(1, 1, 1, 1);
 

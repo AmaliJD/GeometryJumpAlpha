@@ -124,8 +124,8 @@ public class GameManager : MonoBehaviour
         LoadPrefs();
 
         Resources.UnloadUnusedAssets();
-        Screen.SetResolution(Screen.resolutions[Screen.resolutions.Length - 1].width, Screen.resolutions[Screen.resolutions.Length - 1].height, true);
-        Screen.fullScreen = true;
+        //Screen.SetResolution(Screen.resolutions[Screen.resolutions.Length - 1].width, Screen.resolutions[Screen.resolutions.Length - 1].height, true);
+        //Screen.fullScreen = true;
         prev_width = Screen.width;
         prev_height = Screen.height;
 
@@ -148,12 +148,26 @@ public class GameManager : MonoBehaviour
         MusicSlider.value = music_volume;
         SfxSlider.value = sfx_volume;
 
-        int i = 0;
+        /*int i = 0;
         foreach (Coin c in Coins)
         {
             CoinIcons[i].GetComponent<Image>().color = new Color(1,1,1, coin_count[i] == 1 ? 1 : 0);
             c.gameObject.SetActive(coin_count[i] == 0);
             i++;
+        }*/
+        int i = 0;
+        coin_count[0] = Random.Range(0, 2);
+        coin_count[1] = Random.Range(0, 2);
+        coin_count[2] = Random.Range(0, 2);
+        for (int j = 0; j < coin_count.Length; j++)
+        {
+            CoinIcons[i].GetComponent<Image>().color = new Color(1, 1, 1, coin_count[j] == 1 ? 1 : 0);
+            CoinIcons[i+1].GetComponent<Image>().color = new Color(1, 1, 1, 0);
+            CoinIcons[i + 1].gameObject.SetActive(false);
+
+            Coins[i].gameObject.SetActive(coin_count[j] == 0);
+            Coins[i+1].gameObject.SetActive(coin_count[j] == 1);
+            i += 2;
         }
 
         player = GameObject.Find("Player");
@@ -283,6 +297,10 @@ public class GameManager : MonoBehaviour
     public void ToggleFullscreen()
     {
         Screen.fullScreen = !Screen.fullScreen;
+        if(!Screen.fullScreen)
+        {
+            Screen.SetResolution(Screen.resolutions[Screen.resolutions.Length - 1].width, Screen.resolutions[Screen.resolutions.Length - 1].height, true);
+        }
         setButtonOn(Fullscreen_Button, !Screen.fullScreen);
         Fullscreen_Button.GetComponentInChildren<Text>().text = "FULLSCREEN: " + (!Screen.fullScreen ? "ON" : "OFF");
         setButtonOn(Res1440_Button, false); setButtonOn(Res1080_Button, false); setButtonOn(Res720_Button, false);
@@ -380,6 +398,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown("q"))
         {
             //resetColorChannels();
+            SavePrefs();
             Application.Quit();
         }
         if (Input.GetKeyDown("f"))
@@ -397,6 +416,7 @@ public class GameManager : MonoBehaviour
         {
             StartRestart();
         }
+        Debug.Log("[" + coin_count[0] + " " + coin_count[1] + " " + coin_count[2] + "]");
 
         // SOUND
         music_volume = MusicSlider.value;
@@ -636,13 +656,16 @@ public class GameManager : MonoBehaviour
         {
             yield return null;
         }
-        
+
+        int j = 0;
         for (int i = 0; i < coin_count.Length; i++)
         {
             if (coin_count[i] == 2)
             {
-                CoinIcons[i].transform.localScale = new Vector3(3, 3, 1);
-                Image coinimage = CoinIcons[i].GetComponent<Image>();
+                j = 2 * i;
+                coin_count[i] = 1;
+                CoinIcons[j].transform.localScale = new Vector3(3, 3, 1);
+                Image coinimage = CoinIcons[j].GetComponent<Image>();
                 coinimage.color = new Color(1, 1, 1, 0);
 
                 yield return null;
@@ -652,7 +675,7 @@ public class GameManager : MonoBehaviour
                 coinget.PlayOneShot(coinget.clip, sfx_volume);
                 while (coinimage.color.a < 1f)
                 {
-                    CoinIcons[i].transform.localScale = Vector3.Lerp(new Vector3(3, 3, 1), new Vector3(1, 1, 1), timer / .2f);
+                    CoinIcons[j].transform.localScale = Vector3.Lerp(new Vector3(3, 3, 1), new Vector3(1, 1, 1), timer / .2f);
                     coinimage.color = Color.Lerp(new Color(1, 1, 1, 0), new Color(1, 1, 1, 1), timer / .2f);
                     timer += Time.deltaTime;
 
@@ -664,6 +687,40 @@ public class GameManager : MonoBehaviour
 
                 timer = 0;
                 while(timer < .1f)
+                {
+                    timer += Time.deltaTime;
+                    yield return new WaitForEndOfFrame();
+                }
+            }
+            else if(coin_count[i] == 3)
+            {
+                j = 2 * i;
+                coin_count[i] = 1;
+                CoinIcons[j].gameObject.SetActive(false);
+                CoinIcons[j+1].gameObject.SetActive(true);
+                CoinIcons[j+1].transform.localScale = new Vector3(3, 3, 1);
+                Image coinimage = CoinIcons[j+1].GetComponent<Image>();
+                coinimage.color = new Color(1, 1, 1, 0);
+
+                yield return null;
+
+                float timer = 0;
+
+                coinget.PlayOneShot(coinget.clip, sfx_volume);
+                while (coinimage.color.a < 1f)
+                {
+                    CoinIcons[j+1].transform.localScale = Vector3.Lerp(new Vector3(3, 3, 1), new Vector3(1, 1, 1), timer / .2f);
+                    coinimage.color = Color.Lerp(new Color(1, 1, 1, 0), new Color(1, 1, 1, 1), timer / .2f);
+                    timer += Time.deltaTime;
+
+                    yield return null;
+                }
+
+                //CoinIcons[i].transform.localScale = new Vector3(1, 1, 1);
+                coinimage.color = new Color(1, 1, 1, 1);
+
+                timer = 0;
+                while (timer < .1f)
                 {
                     timer += Time.deltaTime;
                     yield return new WaitForEndOfFrame();
@@ -950,10 +1007,10 @@ public class GameManager : MonoBehaviour
         return diamond_count;
     }
 
-    public void incrementCoinCount(int num, bool check)
+    public void incrementCoinCount(int num, bool check, bool ghost)
     {
-        if (check) { coin_count[num - 1] = -1; }
-        else { coin_count[num - 1] = 2; }
+        if (check) { coin_count[num - 1] = -1 + (ghost?-1:0); }
+        else { coin_count[num - 1] = 2 + (ghost ? 1 : 0); }
     }
 
     public int[] getCoinCount()
@@ -970,11 +1027,25 @@ public class GameManager : MonoBehaviour
                 coin_count[i] = proceed ? 2 : 0;
                 if (!proceed)
                 {
-                    Coins[i].resetCoin();
+                    Coins[i*2].resetCoin();
                 }
                 else
                 {
-                    Destroy(Coins[i].gameObject);
+                    Destroy(Coins[i * 2].gameObject);
+                }
+            }
+            else if (coin_count[i] == -2)
+            {
+                coin_count[i] = proceed ? 3 : 1;
+                if (!proceed)
+                {
+                    Coins[(i * 2) + 1].resetCoin();
+                }
+                else
+                {
+                    Destroy(Coins[(i * 2) + 1].gameObject);
+                    //CoinIcons[i * 2].gameObject.SetActive(false);
+                    //CoinIcons[(i * 2) + 1].gameObject.SetActive(true);
                 }
             }
         }
@@ -1008,6 +1079,7 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetFloat("music_volume", music_volume);
         PlayerPrefs.SetFloat("sfx_volume", sfx_volume);
+        PlayerPrefs.SetInt("post_proccessing_on", postfxon ? 1 : 0);
         PlayerPrefs.Save();
     }
 
@@ -1015,5 +1087,6 @@ public class GameManager : MonoBehaviour
     {
         music_volume = PlayerPrefs.GetFloat("music_volume", .8f);
         sfx_volume = PlayerPrefs.GetFloat("sfx_volume", 1);
+        postfxon = PlayerPrefs.GetInt("post_proccessing_on") == 1 ? true : false;
     }
 }
