@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
     public Button Restart_Button;
     public Button Options_Button;
     public Button Fullscreen_Button;
+    public Button Particles_Button;
     public Button Effects_Button;
     public Button Res1440_Button;
     public Button Res1080_Button;
@@ -125,6 +126,7 @@ public class GameManager : MonoBehaviour
         Options_Button.onClick.AddListener(Options);
         Menu_Button.onClick.AddListener(ReturnToMenu);
         Fullscreen_Button.onClick.AddListener(ToggleFullscreen);
+        Particles_Button.onClick.AddListener(ToggleParticles);
         Effects_Button.onClick.AddListener(TogglePostProcessing);
 
         Res1440_Button.onClick.AddListener(() => { SetResolution(1440); });
@@ -133,6 +135,9 @@ public class GameManager : MonoBehaviour
 
         setButtonOn(Fullscreen_Button, Screen.fullScreen);
         Fullscreen_Button.GetComponentInChildren<Text>().text = "FULLSCREEN: " + (Screen.fullScreen ? "ON" : "OFF");
+
+        setButtonOn(Particles_Button, PlayerPrefs.GetInt("screen_particles") == 1 ? true : false);
+        Particles_Button.GetComponentInChildren<Text>().text = "SCREEN PARTICLES: " + (PlayerPrefs.GetInt("screen_particles") == 1 ? "ON" : "OFF");
 
         setButtonOn(Effects_Button, postfxon);
         Effects_Button.GetComponentInChildren<Text>().text = "POST PROCESSING: " + (postfxon ? "ON" : "OFF");
@@ -287,6 +292,12 @@ public class GameManager : MonoBehaviour
         setButtonOn(Fullscreen_Button, !Screen.fullScreen);
         Fullscreen_Button.GetComponentInChildren<Text>().text = "FULLSCREEN: " + (!Screen.fullScreen ? "ON" : "OFF");
         setButtonOn(Res1440_Button, false); setButtonOn(Res1080_Button, false); setButtonOn(Res720_Button, false);
+    }
+    public void ToggleParticles()
+    {
+        PlayerPrefs.SetInt("screen_particles", PlayerPrefs.GetInt("screen_particles") == 1 ? 0 : 1);
+        setButtonOn(Particles_Button, PlayerPrefs.GetInt("screen_particles") == 1 ? true : false);
+        Particles_Button.GetComponentInChildren<Text>().text = "SCREEN PARTICLES: " + (PlayerPrefs.GetInt("screen_particles") == 1 ? "ON" : "OFF");
     }
     public void SetResolution(int width)
     {

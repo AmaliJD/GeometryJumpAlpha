@@ -368,6 +368,8 @@ public class WaveController : PlayerController
                 green_j = false;
             }
 
+            playGravityParticles();
+
             reversed = !reversed;
 
             player_body.gravityScale *= -1;

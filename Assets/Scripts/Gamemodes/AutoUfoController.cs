@@ -488,6 +488,8 @@ public class AutoUfoController : PlayerController
 
             maxSpeed = 17;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .4f);
+
+            playGravityParticles();
             reversed = !reversed;
             player_body.gravityScale *= -1;
             grav_scale *= -1;
@@ -511,6 +513,7 @@ public class AutoUfoController : PlayerController
 
             jump = false;
             green = false;
+            playGravityParticles();
             reversed = !reversed;
 
             if (reversed)

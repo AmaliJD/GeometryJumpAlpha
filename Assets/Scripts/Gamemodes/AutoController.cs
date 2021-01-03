@@ -544,6 +544,8 @@ public class AutoController : PlayerController
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(true);
 
+            playGravityParticles();
+
             fromGround = false;
             released = false;
             jump = false;
@@ -569,6 +571,8 @@ public class AutoController : PlayerController
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(true);
+
+            playGravityParticles();
 
             fromGround = false;
             released = false;

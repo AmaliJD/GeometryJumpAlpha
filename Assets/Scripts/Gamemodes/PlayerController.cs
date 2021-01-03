@@ -91,6 +91,8 @@ public abstract class PlayerController : MonoBehaviour
 
     [SerializeField] protected ParticleSystem grounded_particles;
     [SerializeField] protected ParticleSystem ground_impact_particles;
+    [SerializeField] protected ParticleSystem grav_particles;
+    [SerializeField] protected ParticleSystem antigrav_particles;
     [SerializeField] protected ParticleSystem speed0_particles;
     [SerializeField] protected ParticleSystem speed1_particles;
     [SerializeField] protected ParticleSystem speed2_particles;
@@ -260,6 +262,7 @@ public abstract class PlayerController : MonoBehaviour
     }
     public void playSpeedParticles(int s)
     {
+        if(PlayerPrefs.GetInt("screen_particles") == 0) { return; }
         switch(s)
         {
             case 0: speed0_particles.Play(); break;
@@ -267,6 +270,16 @@ public abstract class PlayerController : MonoBehaviour
             case 2: speed2_particles.Play(); break;
             case 3: speed3_particles.Play(); break;
             case 4: speed4_particles.Play(); break;
+        }
+    }
+
+    public void playGravityParticles()
+    {
+        if (PlayerPrefs.GetInt("screen_particles") == 0) { return; }
+        switch (reversed)
+        {
+            case true: grav_particles.Play(); break;
+            case false: antigrav_particles.Play(); break;
         }
     }
 
@@ -325,14 +338,17 @@ public abstract class PlayerController : MonoBehaviour
         if (collision.gameObject.tag == "PortalGravity")
         {
             grav = true;
+            playGravityParticles();
         }
         if (collision.gameObject.tag == "PortalGravityN")
         {
             gravN = true;
+            playGravityParticles();
         }
         if (collision.gameObject.tag == "PortalGravityC")
         {
             gravC = true;
+            playGravityParticles();
         }
         if (collision.gameObject.tag == "TeleportA")
         {
@@ -377,27 +393,32 @@ public abstract class PlayerController : MonoBehaviour
         if (collision.gameObject.tag == "BluePad")
         {
             blue_p = true;
+            playGravityParticles();
         }
         if (collision.gameObject.tag == "Speed0x")
         {
             speed = speed0;
+            playSpeedParticles(0);
         }
         if (collision.gameObject.tag == "Speed1x")
         {
             speed = speed1;
+            playSpeedParticles(1);
         }
         if (collision.gameObject.tag == "Speed2x")
         {
             speed = speed2;
-            speed2_particles.Play();
+            playSpeedParticles(2);
         }
         if (collision.gameObject.tag == "Speed3x")
         {
             speed = speed3;
+            playSpeedParticles(3);
         }
         if (collision.gameObject.tag == "Speed4x")
         {
             speed = speed4;
+            playSpeedParticles(4);
         }
         if (collision.gameObject.tag == "Mini")
         {

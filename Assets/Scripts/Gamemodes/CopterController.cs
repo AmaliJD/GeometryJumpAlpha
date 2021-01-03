@@ -467,6 +467,8 @@ public class CopterController : PlayerController
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
 
+            playGravityParticles();
+
             reversed = !reversed;
             goingUp = !goingUp;
 
@@ -495,6 +497,8 @@ public class CopterController : PlayerController
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
+
+            playGravityParticles();
 
             reversed = !reversed;
             goingUp = !goingUp;

@@ -440,6 +440,8 @@ public class ShipController : PlayerController
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
 
+            playGravityParticles();
+
             reversed = !reversed;
 
             maxSpeed = 12f;
@@ -465,6 +467,8 @@ public class ShipController : PlayerController
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Wide").gameObject.SetActive(true);
+
+            playGravityParticles();
 
             reversed = !reversed;
 

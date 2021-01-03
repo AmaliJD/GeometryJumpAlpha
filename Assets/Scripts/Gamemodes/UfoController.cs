@@ -461,6 +461,8 @@ public class UfoController : PlayerController
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(true);
 
+            playGravityParticles();
+
             jump = false;
             blue = false;
             trail.emitting = true;
@@ -487,6 +489,8 @@ public class UfoController : PlayerController
             eyes.transform.Find("Eyes_Normal").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Irked").gameObject.SetActive(false);
             eyes.transform.Find("Eyes_Squint").gameObject.SetActive(true);
+
+            playGravityParticles();
 
             jump = false;
             green = false;

@@ -351,7 +351,9 @@ public class AutoWaveController : PlayerController
                 green = false;
                 green_j = false;
             }
-            
+
+            playGravityParticles();
+
             reversed = !reversed;
 
             player_body.gravityScale *= -1;
