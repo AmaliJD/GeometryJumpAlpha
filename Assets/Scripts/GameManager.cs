@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 using Cinemachine;
 using Cinemachine.PostFX;
 using UnityEngine.Experimental.Rendering.Universal;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 
 public class GameManager : MonoBehaviour
@@ -148,22 +150,12 @@ public class GameManager : MonoBehaviour
         MusicSlider.value = music_volume;
         SfxSlider.value = sfx_volume;
 
-        /*int i = 0;
-        foreach (Coin c in Coins)
-        {
-            CoinIcons[i].GetComponent<Image>().color = new Color(1,1,1, coin_count[i] == 1 ? 1 : 0);
-            c.gameObject.SetActive(coin_count[i] == 0);
-            i++;
-        }*/
+        LoadData();
+
         int i = 0;
-        coin_count[0] = Random.Range(0, 2);
-        coin_count[1] = Random.Range(0, 2);
-        coin_count[2] = Random.Range(0, 2);
         for (int j = 0; j < coin_count.Length; j++)
         {
-            CoinIcons[i].GetComponent<Image>().color = new Color(1, 1, 1, coin_count[j] == 1 ? 1 : 0);
-            CoinIcons[i+1].GetComponent<Image>().color = new Color(1, 1, 1, 0);
-            CoinIcons[i + 1].gameObject.SetActive(false);
+            CoinIcons[j].GetComponent<Image>().color = new Color(1, 1, 1, coin_count[j] == 1 ? 1 : 0);
 
             Coins[i].gameObject.SetActive(coin_count[j] == 0);
             Coins[i+1].gameObject.SetActive(coin_count[j] == 1);
@@ -649,6 +641,62 @@ public class GameManager : MonoBehaviour
             playerbody.rotation = Mathf.Lerp(playerbody.rotation, playerbody.rotation - 10, .6f);
         }
     }
+    private void LoadData()
+    {
+        string path = /*Application.persistentDataPath + "/gjdata.ajd"*/"C:/Users/hp/Documents/Unity/GDL/Assets/savedata.dat";
+        if (File.Exists(path))
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(path, FileMode.Open);
+
+            GlobalData data = formatter.Deserialize(stream) as GlobalData;
+
+            coin_count[0] = data.levels_completed_and_coins[levelNumber, 1];
+            coin_count[1] = data.levels_completed_and_coins[levelNumber, 2];
+            coin_count[2] = data.levels_completed_and_coins[levelNumber, 3];
+
+            stream.Close();
+        }
+        else
+        {
+            Debug.LogError("No Save File Found");
+        }
+    }
+
+    private void SaveData()
+    {
+        string path = /*Application.persistentDataPath + "/gjdata.dat"*/"C:/Users/hp/Documents/Unity/GDL/Assets/savedata.dat";
+        BinaryFormatter formatter = new BinaryFormatter();
+        GlobalData data = new GlobalData();
+        FileStream stream;
+
+        if (File.Exists(path))
+        {
+            
+            stream = new FileStream(path, FileMode.Open);
+            data = formatter.Deserialize(stream) as GlobalData;
+            stream.Close();
+        }
+
+        bool allcoins = true;
+        for(int i = 0; i < coin_count.Length; i++)
+        {
+            if(coin_count[i] == 2 || coin_count[i] == 3)
+            {
+                coin_count[i] = 1;
+            }
+            else
+            {
+                allcoins = false;
+            }
+        }
+
+        data.SaveLevelData(levelNumber, coin_count, time, allcoins ? time : float.MaxValue, diamond_count);
+
+        stream = new FileStream(path, FileMode.Create);
+        formatter.Serialize(stream, data);
+        stream.Close();
+    }
 
     public IEnumerator countScore()
     {
@@ -657,15 +705,12 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        int j = 0;
         for (int i = 0; i < coin_count.Length; i++)
         {
-            if (coin_count[i] == 2)
+            if (coin_count[i] == 2 || coin_count[i] == 3)
             {
-                j = 2 * i;
-                coin_count[i] = 1;
-                CoinIcons[j].transform.localScale = new Vector3(3, 3, 1);
-                Image coinimage = CoinIcons[j].GetComponent<Image>();
+                CoinIcons[i].transform.localScale = new Vector3(3, 3, 1);
+                Image coinimage = CoinIcons[i].GetComponent<Image>();
                 coinimage.color = new Color(1, 1, 1, 0);
 
                 yield return null;
@@ -675,7 +720,7 @@ public class GameManager : MonoBehaviour
                 coinget.PlayOneShot(coinget.clip, sfx_volume);
                 while (coinimage.color.a < 1f)
                 {
-                    CoinIcons[j].transform.localScale = Vector3.Lerp(new Vector3(3, 3, 1), new Vector3(1, 1, 1), timer / .2f);
+                    CoinIcons[i].transform.localScale = Vector3.Lerp(new Vector3(3, 3, 1), new Vector3(1, 1, 1), timer / .2f);
                     coinimage.color = Color.Lerp(new Color(1, 1, 1, 0), new Color(1, 1, 1, 1), timer / .2f);
                     timer += Time.deltaTime;
 
@@ -687,40 +732,6 @@ public class GameManager : MonoBehaviour
 
                 timer = 0;
                 while(timer < .1f)
-                {
-                    timer += Time.deltaTime;
-                    yield return new WaitForEndOfFrame();
-                }
-            }
-            else if(coin_count[i] == 3)
-            {
-                j = 2 * i;
-                coin_count[i] = 1;
-                CoinIcons[j].gameObject.SetActive(false);
-                CoinIcons[j+1].gameObject.SetActive(true);
-                CoinIcons[j+1].transform.localScale = new Vector3(3, 3, 1);
-                Image coinimage = CoinIcons[j+1].GetComponent<Image>();
-                coinimage.color = new Color(1, 1, 1, 0);
-
-                yield return null;
-
-                float timer = 0;
-
-                coinget.PlayOneShot(coinget.clip, sfx_volume);
-                while (coinimage.color.a < 1f)
-                {
-                    CoinIcons[j+1].transform.localScale = Vector3.Lerp(new Vector3(3, 3, 1), new Vector3(1, 1, 1), timer / .2f);
-                    coinimage.color = Color.Lerp(new Color(1, 1, 1, 0), new Color(1, 1, 1, 1), timer / .2f);
-                    timer += Time.deltaTime;
-
-                    yield return null;
-                }
-
-                //CoinIcons[i].transform.localScale = new Vector3(1, 1, 1);
-                coinimage.color = new Color(1, 1, 1, 1);
-
-                timer = 0;
-                while (timer < .1f)
                 {
                     timer += Time.deltaTime;
                     yield return new WaitForEndOfFrame();
@@ -750,6 +761,8 @@ public class GameManager : MonoBehaviour
             ManaScore.text = "x" + mana_count;
             DiamondScore.text = "x" + diamond_count;
         }
+
+        SaveData();
     }
 
     public PlayerController getController()
