@@ -10,7 +10,7 @@ public class MoveTrigger : MonoBehaviour
 
     public GameObject group;
     public GameObject target;
-    public bool rigidbody;
+    public bool userigidbody;
     public bool xOnly, yOnly;
     public float x, y;
     public float duration;
@@ -38,6 +38,11 @@ public class MoveTrigger : MonoBehaviour
     {
         original_position = group.transform.position;
 
+        /*if (userigidbody)
+        {
+            x -= .1f;
+            y -= .1f;
+        }*/
         x /= 10; y /= 10;
 
         gameObject.transform.GetChild(0).gameObject.SetActive(false);
@@ -404,18 +409,28 @@ public class MoveTrigger : MonoBehaviour
             xPos = x1 - x0;
             yPos = y1 - y0;
 
-            if (!rigidbody) { group.transform.position = new Vector2(group.transform.position.x + xPos, group.transform.position.y + yPos); }
-            else { group.GetComponent<Rigidbody2D>().MovePosition(new Vector2(group.GetComponent<Rigidbody2D>().position.x + xPos, group.GetComponent<Rigidbody2D>().position.y + yPos)); }
+            if (!userigidbody) { group.transform.position = new Vector3(group.transform.position.x + xPos, group.transform.position.y + yPos, group.transform.position.z); }
+            else {
+                //group.GetComponent<Rigidbody2D>().position = new Vector2(group.GetComponent<Rigidbody2D>().position.x + xPos, group.GetComponent<Rigidbody2D>().position.y + yPos);
+                group.GetComponent<Rigidbody2D>().velocity = new Vector2(xPos / Time.fixedDeltaTime, yPos / Time.fixedDeltaTime);
+            }
             t0 = time;
             time += Time.deltaTime;
-            yield return null;
+
+            if (!userigidbody) { yield return null; }
+            else { yield return new WaitForFixedUpdate(); }
         }
 
         xPos = x - x1;
         yPos = y - y1;
 
-        if (!rigidbody) { group.transform.position = new Vector2(group.transform.position.x + xPos, group.transform.position.y + yPos); }
-        else { group.GetComponent<Rigidbody2D>().MovePosition(new Vector2(group.GetComponent<Rigidbody2D>().position.x + xPos, group.GetComponent<Rigidbody2D>().position.y + yPos)); }
+        if (!userigidbody) { group.transform.position = new Vector3(group.transform.position.x + xPos, group.transform.position.y + yPos, group.transform.position.z); }
+        else {
+            //group.GetComponent<Rigidbody2D>().position = new Vector2(group.GetComponent<Rigidbody2D>().position.x + xPos, group.GetComponent<Rigidbody2D>().position.y + yPos);
+            group.GetComponent<Rigidbody2D>().velocity = new Vector2(xPos / Time.fixedDeltaTime, yPos / Time.fixedDeltaTime);
+            yield return new WaitForFixedUpdate();
+            group.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        }
 
         finished = true;
         if (oneuse) { inuse = true; }

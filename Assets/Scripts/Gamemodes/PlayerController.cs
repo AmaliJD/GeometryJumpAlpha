@@ -501,11 +501,12 @@ public abstract class PlayerController : MonoBehaviour
         }
     }
 
-    protected void OnCollisionEnter2D(Collision2D collision)
+    protected void OnCollisionStay2D(Collision2D collision)
     {
         if(collision.gameObject.tag == "MovingObject")
         {
-            gameObject.transform.parent = collision.gameObject.transform;
+            //gameObject.transform.SetParent(collision.gameObject.transform);
+            player_body.AddForce(collision.gameObject.GetComponent<Rigidbody2D>().velocity);
         }
     }
 
@@ -513,7 +514,7 @@ public abstract class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.tag == "MovingObject")
         {
-            gameObject.transform.parent = null;
+            //gameObject.transform.SetParent(null);
         }
     }
 
