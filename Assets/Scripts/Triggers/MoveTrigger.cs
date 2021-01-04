@@ -10,6 +10,7 @@ public class MoveTrigger : MonoBehaviour
 
     public GameObject group;
     public GameObject target;
+    public bool rigidbody;
     public bool xOnly, yOnly;
     public float x, y;
     public float duration;
@@ -403,7 +404,8 @@ public class MoveTrigger : MonoBehaviour
             xPos = x1 - x0;
             yPos = y1 - y0;
 
-            group.transform.position = new Vector2(group.transform.position.x + xPos, group.transform.position.y + yPos);
+            if (!rigidbody) { group.transform.position = new Vector2(group.transform.position.x + xPos, group.transform.position.y + yPos); }
+            else { group.GetComponent<Rigidbody2D>().MovePosition(new Vector2(group.GetComponent<Rigidbody2D>().position.x + xPos, group.GetComponent<Rigidbody2D>().position.y + yPos)); }
             t0 = time;
             time += Time.deltaTime;
             yield return null;
@@ -412,7 +414,8 @@ public class MoveTrigger : MonoBehaviour
         xPos = x - x1;
         yPos = y - y1;
 
-        group.transform.position = new Vector2(group.transform.position.x + xPos, group.transform.position.y + yPos);
+        if (!rigidbody) { group.transform.position = new Vector2(group.transform.position.x + xPos, group.transform.position.y + yPos); }
+        else { group.GetComponent<Rigidbody2D>().MovePosition(new Vector2(group.GetComponent<Rigidbody2D>().position.x + xPos, group.GetComponent<Rigidbody2D>().position.y + yPos)); }
 
         finished = true;
         if (oneuse) { inuse = true; }

@@ -68647,13 +68647,6 @@ MonoBehaviour:
     m_Bits: 1024
   grounded_particles: {fileID: 7977929855950078266}
   ground_impact_particles: {fileID: 7977929854295374121}
-  grav_particles: {fileID: 0}
-  antigrav_particles: {fileID: 0}
-  speed0_particles: {fileID: 0}
-  speed1_particles: {fileID: 0}
-  speed2_particles: {fileID: 0}
-  speed3_particles: {fileID: 0}
-  speed4_particles: {fileID: 0}
   death_particles: {fileID: 4871045824072756161}
   death_sfx: {fileID: 0}
   player_collider: {fileID: 7977929855656230316}
@@ -68703,13 +68696,6 @@ MonoBehaviour:
     m_Bits: 1024
   grounded_particles: {fileID: 7977929855950078266}
   ground_impact_particles: {fileID: 7977929854295374121}
-  grav_particles: {fileID: 0}
-  antigrav_particles: {fileID: 0}
-  speed0_particles: {fileID: 0}
-  speed1_particles: {fileID: 0}
-  speed2_particles: {fileID: 0}
-  speed3_particles: {fileID: 0}
-  speed4_particles: {fileID: 0}
   death_particles: {fileID: 4871045824072756161}
   death_sfx: {fileID: 0}
   player_collider: {fileID: 7977929855656230316}
@@ -68736,13 +68722,6 @@ MonoBehaviour:
     m_Bits: 1024
   grounded_particles: {fileID: 7977929855950078266}
   ground_impact_particles: {fileID: 7977929854295374121}
-  grav_particles: {fileID: 0}
-  antigrav_particles: {fileID: 0}
-  speed0_particles: {fileID: 0}
-  speed1_particles: {fileID: 0}
-  speed2_particles: {fileID: 0}
-  speed3_particles: {fileID: 0}
-  speed4_particles: {fileID: 0}
   death_particles: {fileID: 4871045824072756161}
   death_sfx: {fileID: 0}
   player_collider: {fileID: 7977929855656230316}
@@ -68789,13 +68768,6 @@ MonoBehaviour:
     m_Bits: 1024
   grounded_particles: {fileID: 7977929855950078266}
   ground_impact_particles: {fileID: 7977929854295374121}
-  grav_particles: {fileID: 0}
-  antigrav_particles: {fileID: 0}
-  speed0_particles: {fileID: 0}
-  speed1_particles: {fileID: 0}
-  speed2_particles: {fileID: 0}
-  speed3_particles: {fileID: 0}
-  speed4_particles: {fileID: 0}
   death_particles: {fileID: 4871045824072756161}
   death_sfx: {fileID: 0}
   player_collider: {fileID: 7977929855656230316}
@@ -68825,13 +68797,6 @@ MonoBehaviour:
     m_Bits: 1024
   grounded_particles: {fileID: 7977929855950078266}
   ground_impact_particles: {fileID: 7977929854295374121}
-  grav_particles: {fileID: 0}
-  antigrav_particles: {fileID: 0}
-  speed0_particles: {fileID: 0}
-  speed1_particles: {fileID: 0}
-  speed2_particles: {fileID: 0}
-  speed3_particles: {fileID: 0}
-  speed4_particles: {fileID: 0}
   death_particles: {fileID: 4871045824072756161}
   death_sfx: {fileID: 0}
   player_collider: {fileID: 7977929855656230316}
@@ -68859,13 +68824,6 @@ MonoBehaviour:
     m_Bits: 1024
   grounded_particles: {fileID: 7977929855950078266}
   ground_impact_particles: {fileID: 7977929854295374121}
-  grav_particles: {fileID: 0}
-  antigrav_particles: {fileID: 0}
-  speed0_particles: {fileID: 0}
-  speed1_particles: {fileID: 0}
-  speed2_particles: {fileID: 0}
-  speed3_particles: {fileID: 0}
-  speed4_particles: {fileID: 0}
   death_particles: {fileID: 4871045824072756161}
   death_sfx: {fileID: 0}
   player_collider: {fileID: 7977929855656230316}
@@ -68893,13 +68851,6 @@ MonoBehaviour:
     m_Bits: 1024
   grounded_particles: {fileID: 7977929855950078266}
   ground_impact_particles: {fileID: 7977929854295374121}
-  grav_particles: {fileID: 0}
-  antigrav_particles: {fileID: 0}
-  speed0_particles: {fileID: 0}
-  speed1_particles: {fileID: 0}
-  speed2_particles: {fileID: 0}
-  speed3_particles: {fileID: 0}
-  speed4_particles: {fileID: 0}
   death_particles: {fileID: 4871045824072756161}
   death_sfx: {fileID: 0}
   player_collider: {fileID: 7977929855656230316}
@@ -68927,13 +68878,6 @@ MonoBehaviour:
     m_Bits: 1024
   grounded_particles: {fileID: 7977929855950078266}
   ground_impact_particles: {fileID: 7977929854295374121}
-  grav_particles: {fileID: 0}
-  antigrav_particles: {fileID: 0}
-  speed0_particles: {fileID: 0}
-  speed1_particles: {fileID: 0}
-  speed2_particles: {fileID: 0}
-  speed3_particles: {fileID: 0}
-  speed4_particles: {fileID: 0}
   death_particles: {fileID: 4871045824072756161}
   death_sfx: {fileID: 0}
   player_collider: {fileID: 7977929855656230316}
@@ -68989,13 +68933,6 @@ MonoBehaviour:
     m_Bits: 1024
   grounded_particles: {fileID: 7977929855950078266}
   ground_impact_particles: {fileID: 7977929854295374121}
-  grav_particles: {fileID: 0}
-  antigrav_particles: {fileID: 0}
-  speed0_particles: {fileID: 0}
-  speed1_particles: {fileID: 0}
-  speed2_particles: {fileID: 0}
-  speed3_particles: {fileID: 0}
-  speed4_particles: {fileID: 0}
   death_particles: {fileID: 4871045824072756161}
   death_sfx: {fileID: 0}
   player_collider: {fileID: 7977929855656230316}
@@ -69025,13 +68962,6 @@ MonoBehaviour:
     m_Bits: 1024
   grounded_particles: {fileID: 7977929855950078266}
   ground_impact_particles: {fileID: 7977929854295374121}
-  grav_particles: {fileID: 0}
-  antigrav_particles: {fileID: 0}
-  speed0_particles: {fileID: 0}
-  speed1_particles: {fileID: 0}
-  speed2_particles: {fileID: 0}
-  speed3_particles: {fileID: 0}
-  speed4_particles: {fileID: 0}
   death_particles: {fileID: 4871045824072756161}
   death_sfx: {fileID: 0}
   player_collider: {fileID: 7977929855656230316}
@@ -69087,13 +69017,6 @@ MonoBehaviour:
     m_Bits: 1024
   grounded_particles: {fileID: 7977929855950078266}
   ground_impact_particles: {fileID: 7977929854295374121}
-  grav_particles: {fileID: 0}
-  antigrav_particles: {fileID: 0}
-  speed0_particles: {fileID: 0}
-  speed1_particles: {fileID: 0}
-  speed2_particles: {fileID: 0}
-  speed3_particles: {fileID: 0}
-  speed4_particles: {fileID: 0}
   death_particles: {fileID: 4871045824072756161}
   death_sfx: {fileID: 0}
   player_collider: {fileID: 7977929855656230316}
@@ -69125,13 +69048,6 @@ MonoBehaviour:
     m_Bits: 1024
   grounded_particles: {fileID: 7977929855950078266}
   ground_impact_particles: {fileID: 7977929854295374121}
-  grav_particles: {fileID: 0}
-  antigrav_particles: {fileID: 0}
-  speed0_particles: {fileID: 0}
-  speed1_particles: {fileID: 0}
-  speed2_particles: {fileID: 0}
-  speed3_particles: {fileID: 0}
-  speed4_particles: {fileID: 0}
   death_particles: {fileID: 4871045824072756161}
   death_sfx: {fileID: 0}
   player_collider: {fileID: 7977929855656230316}
@@ -69163,13 +69079,6 @@ MonoBehaviour:
     m_Bits: 1024
   grounded_particles: {fileID: 7977929855950078266}
   ground_impact_particles: {fileID: 7977929854295374121}
-  grav_particles: {fileID: 0}
-  antigrav_particles: {fileID: 0}
-  speed0_particles: {fileID: 0}
-  speed1_particles: {fileID: 0}
-  speed2_particles: {fileID: 0}
-  speed3_particles: {fileID: 0}
-  speed4_particles: {fileID: 0}
   death_particles: {fileID: 4871045824072756161}
   death_sfx: {fileID: 0}
   player_collider: {fileID: 7977929855656230316}
@@ -69199,13 +69108,6 @@ MonoBehaviour:
     m_Bits: 1024
   grounded_particles: {fileID: 7977929855950078266}
   ground_impact_particles: {fileID: 7977929854295374121}
-  grav_particles: {fileID: 0}
-  antigrav_particles: {fileID: 0}
-  speed0_particles: {fileID: 0}
-  speed1_particles: {fileID: 0}
-  speed2_particles: {fileID: 0}
-  speed3_particles: {fileID: 0}
-  speed4_particles: {fileID: 0}
   death_particles: {fileID: 4871045824072756161}
   death_sfx: {fileID: 0}
   player_collider: {fileID: 7977929855656230316}

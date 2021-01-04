@@ -407,11 +407,11 @@ public class GameManager : MonoBehaviour
 
         if(endscreen)
         {
-            if (Input.GetKeyDown("escape") && !halt)
+            if (Input.GetKeyDown("space") && !halt)
             {
                 StartRestart();
             }
-            if (Input.GetKeyDown("space") && !halt)
+            if (Input.GetKeyDown("escape") && !halt)
             {
                 ReturnToMenu();
             }

@@ -11,6 +11,14 @@ public abstract class PlayerController : MonoBehaviour
     protected static GameObject eyes;
     protected static GameObject icon;
 
+    protected static ParticleSystem grav_particles;
+    protected static ParticleSystem antigrav_particles;
+    protected static ParticleSystem speed0_particles;
+    protected static ParticleSystem speed1_particles;
+    protected static ParticleSystem speed2_particles;
+    protected static ParticleSystem speed3_particles;
+    protected static ParticleSystem speed4_particles;
+
     protected static Rigidbody2D player_body;
     protected Animator Cube_Anim;
 
@@ -91,13 +99,13 @@ public abstract class PlayerController : MonoBehaviour
 
     [SerializeField] protected ParticleSystem grounded_particles;
     [SerializeField] protected ParticleSystem ground_impact_particles;
-    [SerializeField] protected ParticleSystem grav_particles;
+    /*[SerializeField] protected ParticleSystem grav_particles;
     [SerializeField] protected ParticleSystem antigrav_particles;
     [SerializeField] protected ParticleSystem speed0_particles;
     [SerializeField] protected ParticleSystem speed1_particles;
     [SerializeField] protected ParticleSystem speed2_particles;
     [SerializeField] protected ParticleSystem speed3_particles;
-    [SerializeField] protected ParticleSystem speed4_particles;
+    [SerializeField] protected ParticleSystem speed4_particles;*/
     [SerializeField] protected ParticleSystem death_particles;
     [SerializeField] protected AudioSource death_sfx;
 
@@ -114,6 +122,14 @@ public abstract class PlayerController : MonoBehaviour
         eyes.transform.Find("Eyes_Squint").gameObject.SetActive(false);
         eyes.transform.Find("Eyes_Wide").gameObject.SetActive(false);
         eyes.transform.Find("Eyes_Normal").gameObject.SetActive(true);
+
+        speed0_particles = GameObject.Find("Speed 0 Particles").GetComponent<ParticleSystem>();
+        speed1_particles = GameObject.Find("Speed 1 Particles").GetComponent<ParticleSystem>();
+        speed2_particles = GameObject.Find("Speed 2 Particles").GetComponent<ParticleSystem>();
+        speed3_particles = GameObject.Find("Speed 3 Particles").GetComponent<ParticleSystem>();
+        speed4_particles = GameObject.Find("Speed 4 Particles").GetComponent<ParticleSystem>();
+        grav_particles = GameObject.Find("Normal Gravity Particles").GetComponent<ParticleSystem>();
+        antigrav_particles = GameObject.Find("Reverse Gravity Particles").GetComponent<ParticleSystem>();
 
         setRespawn(transform.position, reversed, mini);
         setRepawnSpeed(1);
@@ -338,12 +354,12 @@ public abstract class PlayerController : MonoBehaviour
         if (collision.gameObject.tag == "PortalGravity")
         {
             grav = true;
-            playGravityParticles();
+            if (!reversed) { playGravityParticles(); }
         }
         if (collision.gameObject.tag == "PortalGravityN")
         {
             gravN = true;
-            playGravityParticles();
+            if (reversed) { playGravityParticles(); }
         }
         if (collision.gameObject.tag == "PortalGravityC")
         {
@@ -482,6 +498,22 @@ public abstract class PlayerController : MonoBehaviour
         if (collision.gameObject.tag == "BluePad")
         {
             blue_p = false;
+        }
+    }
+
+    protected void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == "MovingObject")
+        {
+            gameObject.transform.parent = collision.gameObject.transform;
+        }
+    }
+
+    protected void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "MovingObject")
+        {
+            gameObject.transform.parent = null;
         }
     }
 

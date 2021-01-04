@@ -14,16 +14,19 @@ public class UIParticleSystem : MonoBehaviour
         Bottom,
         BottomLeft,
         Left,
-        TopLeft
+        TopLeft,
+        Player
     }
 
     public Anchor anchor;
 
+    private Transform player;
     private Camera mainCam;
     private int xOff, yOff;
     void Start()
     {
         mainCam = Camera.main;
+        player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     void LateUpdate()
@@ -56,6 +59,9 @@ public class UIParticleSystem : MonoBehaviour
 
             case "TopLeft":
                 xOff = 0; yOff = mainCam.pixelHeight; break;
+
+            case "Player":
+                xOff = (int)mainCam.WorldToScreenPoint(player.position).x; yOff = (int)mainCam.WorldToScreenPoint(player.position).y; break;
         }
 
         transform.localScale = new Vector3(mainCam.orthographicSize / 10, mainCam.orthographicSize / 10, 1);

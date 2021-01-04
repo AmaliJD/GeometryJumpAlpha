@@ -40,6 +40,7 @@ TagManager:
   - MusicTrigger
   - ColorTrigger
   - PulseTrigger
+  - MovingObject
   layers:
   - Default
   - TransparentFX
