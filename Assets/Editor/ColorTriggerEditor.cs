@@ -74,6 +74,7 @@ public class ColorTriggerEditor : Editor
         //trigger.oneuse = EditorGUILayout.Toggle("Oneuse", trigger.oneuse);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("duration"), true);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("oneuse"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("keepcolor"), true);
 
         //EditorUtility.SetDirty(target);
         serializedObject.ApplyModifiedProperties();

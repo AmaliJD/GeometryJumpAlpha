@@ -114,6 +114,17 @@ public class SpawnTrigger : MonoBehaviour
                         }
                         break;
 
+                    // COLOR TRIGGER
+                    case "ColorTrigger":
+                        ColorTrigger color = trigger.GetComponent<ColorTrigger>();
+                        color.SpawnActivate();
+                        while (!color.getFinished())
+                        {
+                            //Debug.Log("Waiting to finish");
+                            yield return null;
+                        }
+                        break;
+
                     default:
                         break;
                 }
@@ -178,6 +189,17 @@ public class SpawnTrigger : MonoBehaviour
                     case "ToggleTrigger":
                         ToggleTrigger toggle = trigger.GetComponent<ToggleTrigger>();
                         StartCoroutine(toggle.Toggle());
+                        break;
+
+                    // COLOR TRIGGER
+                    case "ColorTrigger":
+                        ColorTrigger color = trigger.GetComponent<ColorTrigger>();
+                        color.SpawnActivate();
+                        while (!color.getFinished())
+                        {
+                            //Debug.Log("Waiting to finish");
+                            yield return null;
+                        }
                         break;
 
                     default:

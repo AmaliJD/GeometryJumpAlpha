@@ -27,6 +27,8 @@ public class ColorTrigger : MonoBehaviour
     public bool oneuse = false;
     private bool inuse = false;
 
+    public bool keepcolor;
+
     void Awake()
     {
         curr_color = new List<Color>();
@@ -135,6 +137,25 @@ public class ColorTrigger : MonoBehaviour
         }
     }
 
+    public void SpawnActivate()
+    {
+        inuse = true;
+        StopAllCoroutines();
+
+        parent.Send(channel_id);
+        parent.setActiveTrigger(gameObject, channel_id);
+
+        updateColor();
+
+        if (channelmode) { StartCoroutine(ChangeColor(0)); return; }
+        int i = 0;
+        foreach (GameObject obj in objects)
+        {
+            StartCoroutine(ChangeColor(i));
+            i++;
+        }
+    }
+
     private IEnumerator ChangeColor(int index)
     {
         float time = 0;
@@ -218,34 +239,42 @@ public class ColorTrigger : MonoBehaviour
     {
         StopAllCoroutines();
 
-        if (channelmode) { channel.Set(new_color); }
-        else
+        if (!keepcolor)
         {
-            foreach (GameObject obj in objects)
+            if (channelmode) { channel.Set(new_color); }
+            else
             {
-                if (obj.GetComponent<SpriteRenderer>() != null)
+                foreach (GameObject obj in objects)
                 {
-                    SpriteRenderer renderer = obj.GetComponent<SpriteRenderer>();
-                    renderer.color = new_color;
-                }
-                else if (obj.GetComponent<Tilemap>() != null)
-                {
-                    Tilemap renderer = obj.GetComponent<Tilemap>();
-                    renderer.color = new_color;
-                }
-                else if (obj.GetComponent<Light2D>() != null)
-                {
-                    Light2D renderer = obj.GetComponent<Light2D>();
-                    renderer.color = new_color;
-                }
-                else if (obj.GetComponent<Graphic>() != null)
-                {
-                    Graphic renderer = obj.GetComponent<Graphic>();
-                    renderer.color = new_color;
+                    if (obj.GetComponent<SpriteRenderer>() != null)
+                    {
+                        SpriteRenderer renderer = obj.GetComponent<SpriteRenderer>();
+                        renderer.color = new_color;
+                    }
+                    else if (obj.GetComponent<Tilemap>() != null)
+                    {
+                        Tilemap renderer = obj.GetComponent<Tilemap>();
+                        renderer.color = new_color;
+                    }
+                    else if (obj.GetComponent<Light2D>() != null)
+                    {
+                        Light2D renderer = obj.GetComponent<Light2D>();
+                        renderer.color = new_color;
+                    }
+                    else if (obj.GetComponent<Graphic>() != null)
+                    {
+                        Graphic renderer = obj.GetComponent<Graphic>();
+                        renderer.color = new_color;
+                    }
                 }
             }
         }
 
         inuse = false;
+    }
+
+    public bool getFinished()
+    {
+        return !inuse;
     }
 }

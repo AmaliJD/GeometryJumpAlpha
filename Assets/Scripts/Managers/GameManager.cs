@@ -218,6 +218,17 @@ public class GameManager : MonoBehaviour
             cameraList[i].gameObject.SetActive(true);
             cameraList[i].Priority = 5;
         }
+
+        /*if (postfxon && main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>() != null)
+        {
+            main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>().enabled = true;
+            effects.SetActive(true);
+        }
+        else
+        {
+            main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>().enabled = false;
+            effects.SetActive(false);
+        }*/
     }
 
     private void Start()
