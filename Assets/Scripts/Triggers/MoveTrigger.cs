@@ -49,6 +49,12 @@ public class MoveTrigger : MonoBehaviour
         gamemanager = GameObject.FindObjectOfType<GameManager>();
     }
 
+    public void Initialize()
+    {
+        original_position = group.transform.position;
+        x /= 10; y /= 10;
+    }
+
     public IEnumerator Move()
     {
         finished = false;

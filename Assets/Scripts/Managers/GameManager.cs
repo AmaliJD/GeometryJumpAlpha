@@ -237,6 +237,7 @@ public class GameManager : MonoBehaviour
         {
             bgmusic.Play();
         }*/
+        //SetPostProcessing(postfxon);
     }
 
     public List<CinemachineVirtualCamera> getCameraList()
@@ -334,6 +335,23 @@ public class GameManager : MonoBehaviour
         }
         
     }
+    public void SetPostProcessing(bool set)
+    {
+        effects.SetActive(set);
+        //Debug.Log(main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>() == null);
+        postfxon = set;
+        if (postfxon && main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>() != null)
+        {
+            main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>().enabled = true;
+        }
+        else
+        {
+            main_camera_brain.ActiveVirtualCamera.VirtualCameraGameObject.GetComponent<CinemachineVolumeSettings>().enabled = false;
+        }
+
+        setButtonOn(Effects_Button, postfxon);
+        Effects_Button.GetComponentInChildren<Text>().text = "POST PROCESSING: " + (postfxon ? "ON" : "OFF");
+    }
     public void TogglePostProcessing()
     {
         effects.SetActive(!effects.activeSelf);
@@ -395,6 +413,7 @@ public class GameManager : MonoBehaviour
         if (!start)
         {
             start = true;
+            SetPostProcessing(postfxon);
             playercontroller.playBGMusic();
             playercontroller.setAble(true);
         }

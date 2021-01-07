@@ -173,6 +173,29 @@ public abstract class PlayerController : MonoBehaviour
         Cube_Anim.SetTrigger("Default");
     }
 
+    public void playSpeedParticles(int s)
+    {
+        if (PlayerPrefs.GetInt("screen_particles") == 0) { return; }
+        switch (s)
+        {
+            case 0: speed0_particles.Play(); break;
+            case 1: speed1_particles.Play(); break;
+            case 2: speed2_particles.Play(); break;
+            case 3: speed3_particles.Play(); break;
+            case 4: speed4_particles.Play(); break;
+        }
+    }
+
+    public void playGravityParticles()
+    {
+        if (PlayerPrefs.GetInt("screen_particles") == 0) { return; }
+        switch (reversed)
+        {
+            case true: grav_particles.Play(); break;
+            case false: antigrav_particles.Play(); break;
+        }
+    }
+
     public void Interpolate(short rot, short lin)
     {
         //rot = 0; lin = 0;
@@ -275,28 +298,6 @@ public abstract class PlayerController : MonoBehaviour
     public bool getAble()
     {
         return able;
-    }
-    public void playSpeedParticles(int s)
-    {
-        if(PlayerPrefs.GetInt("screen_particles") == 0) { return; }
-        switch(s)
-        {
-            case 0: speed0_particles.Play(); break;
-            case 1: speed1_particles.Play(); break;
-            case 2: speed2_particles.Play(); break;
-            case 3: speed3_particles.Play(); break;
-            case 4: speed4_particles.Play(); break;
-        }
-    }
-
-    public void playGravityParticles()
-    {
-        if (PlayerPrefs.GetInt("screen_particles") == 0) { return; }
-        switch (reversed)
-        {
-            case true: grav_particles.Play(); break;
-            case false: antigrav_particles.Play(); break;
-        }
     }
 
     // OnCollision
