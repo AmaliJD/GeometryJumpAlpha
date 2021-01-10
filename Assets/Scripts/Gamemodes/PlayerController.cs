@@ -53,7 +53,7 @@ public abstract class PlayerController : MonoBehaviour
     static public bool grav = false, gravN = false, gravC = false, teleA = false;
     static public Vector3 teleB, respawn, teleOrb_translate;
 
-    static public float speed, speed0 = 40f, speed1 = 55f, speed2 = 75f, speed3 = 90f, speed4 = 110f, respawn_speed;
+    static public float speed, speed0 = 40f, speed1 = 55f /*50*/, speed2 = 75f, speed3 = 90f, speed4 = 110f, respawn_speed;
 
     public void resetStaticVariables()
     {
@@ -507,7 +507,7 @@ public abstract class PlayerController : MonoBehaviour
         if(collision.gameObject.tag == "MovingObject")
         {
             //gameObject.transform.SetParent(collision.gameObject.transform);
-            player_body.AddForce(collision.gameObject.GetComponent<Rigidbody2D>().velocity);
+            player_body.AddForce(collision.gameObject.GetComponent<Rigidbody2D>().velocity / (crouch?3:.9f), ForceMode2D.Force);
         }
     }
 

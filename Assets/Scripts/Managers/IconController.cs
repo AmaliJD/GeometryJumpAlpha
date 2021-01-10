@@ -22,7 +22,7 @@ public class IconController : MonoBehaviour
         Color.RGBToHSV(p1, out h, out s, out v);
 
         float R1 = Random.Range(0f, 360f);
-        float R2 = Random.Range(.3f * 360f, .7f * 360f);
+        float R2 = Random.Range(.1f * 360f, .9f * 360f);
         int V = Random.Range(0, 21);
 
         h += (R1 / 360);

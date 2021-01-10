@@ -271,6 +271,11 @@ public class ColorTrigger : MonoBehaviour
         }
 
         inuse = false;
+
+        if (oneuse)
+        {
+            Destroy(gameObject);
+        }
     }
 
     public bool getFinished()

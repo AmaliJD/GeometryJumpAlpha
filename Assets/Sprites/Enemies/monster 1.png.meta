@@ -8,6 +8,18 @@ TextureImporter:
   - first:
       213: -1611587394604406020
     second: monster 1_1
+  - first:
+      213: -5035002457300726132
+    second: monster 1_0
+  - first:
+      213: 6689167966822649584
+    second: monster 1_1
+  - first:
+      213: -2401808086031191831
+    second: monster 1_2
+  - first:
+      213: -6338396896506482757
+    second: monster 1_3
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -132,9 +144,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 226
+        y: 266
         width: 226
-        height: 226
+        height: 266
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -142,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c19fed54089a47580800000000000000
-      internalID: -8830246600973551332
+      spriteID: c8e0f5111f3102ab0800000000000000
+      internalID: -5035002457300726132
       vertices: []
       indices: 
       edges: []
@@ -152,10 +164,10 @@ TextureImporter:
       name: monster 1_1
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
+        x: 226
+        y: 266
         width: 226
-        height: 226
+        height: 266
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -163,8 +175,50 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cfa6b1c9dcd72a9e0800000000000000
-      internalID: -1611587394604406020
+      spriteID: 0fec26933d2b4dc50800000000000000
+      internalID: 6689167966822649584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: monster 1_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 226
+        height: 266
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e0337565401baed0800000000000000
+      internalID: -2401808086031191831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: monster 1_3
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 0
+        width: 226
+        height: 266
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbfea4ada9d7908a0800000000000000
+      internalID: -6338396896506482757
       vertices: []
       indices: 
       edges: []

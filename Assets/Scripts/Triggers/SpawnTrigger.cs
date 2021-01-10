@@ -74,6 +74,16 @@ public class SpawnTrigger : MonoBehaviour
                         SpawnTrigger spawn = trigger.GetComponent<SpawnTrigger>();
                         spawn.StopAllCoroutines();
                         StartCoroutine(spawn.Begin());
+
+                        if(spawn.exe == ExecutionType.Parallel)
+                        {
+                            while (spawn.getFinished() != true)
+                            {
+                                //Debug.Log("Waiting to finish");
+                                yield return null;
+                            }
+                        }
+
                         break;
 
                     // MUSIC TRIGGER
@@ -143,6 +153,7 @@ public class SpawnTrigger : MonoBehaviour
 
         else if (exe == (ExecutionType)1) //Parallel
         {
+            finished = false;
             float longestDelay = 0, time = 0;
 
             while (i < triggers.Length)
@@ -195,11 +206,6 @@ public class SpawnTrigger : MonoBehaviour
                     case "ColorTrigger":
                         ColorTrigger color = trigger.GetComponent<ColorTrigger>();
                         color.SpawnActivate();
-                        while (!color.getFinished())
-                        {
-                            //Debug.Log("Waiting to finish");
-                            yield return null;
-                        }
                         break;
 
                     default:
@@ -213,6 +219,8 @@ public class SpawnTrigger : MonoBehaviour
                 time += Time.deltaTime;
                 yield return null;
             }
+
+            finished = true;
         }
     }
 

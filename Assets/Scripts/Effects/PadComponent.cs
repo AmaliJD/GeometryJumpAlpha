@@ -10,6 +10,9 @@ public class PadComponent : MonoBehaviour
     private bool enter = false, start = false;
     private float red = 255, green = 255, blue = 255, scale = 1;
     private float pulse_speed = .1f;
+
+    public AudioSource sfx;
+    private GameManager gamemanager;
     void Awake()
     {
         pulse.SetActive(false);
@@ -18,6 +21,8 @@ public class PadComponent : MonoBehaviour
         green = pulse.GetComponent<SpriteRenderer>().color.g;
         blue = pulse.GetComponent<SpriteRenderer>().color.b;
         scale = pulse.transform.localScale.x;
+
+        gamemanager = FindObjectOfType<GameManager>();
     }
 
     // Update is called once per frame
@@ -29,6 +34,7 @@ public class PadComponent : MonoBehaviour
             enter = false;
             start = true;
             pulse.SetActive(true);
+            if (sfx != null) { sfx.Stop();  sfx.PlayOneShot(sfx.clip, gamemanager.sfx_volume); }
         }
     }
 

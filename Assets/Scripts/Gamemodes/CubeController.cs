@@ -16,7 +16,7 @@ public class CubeController : PlayerController
     public GameObject ball;
     public GameObject spider;
 
-    private float jumpForce = 21f;
+    private float jumpForce = 21f;//20f;
     private float posJump;
 
     private float moveX, grav_scale;
@@ -366,11 +366,11 @@ public class CubeController : PlayerController
 
             if (Mathf.Abs(targetVelocity.x) > Mathf.Abs(player_body.velocity.x) || !grounded)
             {
-                player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * .7f); // .7
+                player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * .7f); // .9
             }
             else
             {
-                player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 1.1f); //1.2
+                player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 1.1f); //1.1
             }
         }
 
@@ -549,7 +549,7 @@ public class CubeController : PlayerController
             jump = false;
             pink = false;
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .85f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .95f);
             //StartCoroutine(RotateArc(Vector3.forward, negate * -25.0f, 0.5f));
 
             if (grav) { grav = false; }
@@ -763,7 +763,7 @@ public class CubeController : PlayerController
             fromGround = false;
             released = false;
             trail.emitting = true;
-            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .8f);
+            player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .9f);
 
             if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > .6)
             {
@@ -1129,9 +1129,6 @@ public class CubeController : PlayerController
         player_renderer.SetActive(true);
         player_collider.enabled = true;
         player_body.gravityScale = grav_scale;
-
-        //gamemanager.disableCameras();
-        //gamemanager.enableCameras();
 
         //bgmusic.volume = 1;
         if (restartmusic) { bgmusic.Play(); }
