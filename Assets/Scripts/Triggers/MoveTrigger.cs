@@ -348,7 +348,8 @@ public class MoveTrigger : MonoBehaviour
                     break;
 
                 case Ease.BounceOut:
-                    if ((t /= d) < (1f / 2.75f))
+                    float k = t / d;
+                    if (t < (1f / 2.75f))
                     {
                         x1 = x * (7.5625f * t * t);
                         y1 = y * (7.5625f * t * t);
@@ -369,7 +370,8 @@ public class MoveTrigger : MonoBehaviour
                         y1 = y * (7.5625f * (t -= (2.625f / 2.75f)) * t + .984375f);
                     }
 
-                    if ((t0 /= d) < (1f / 2.75f))
+                    float k0 = t0 / d;
+                    if (t0 < (1f / 2.75f))
                     {
                         x0 = x * (7.5625f * t0 * t0);
                         y0 = y * (7.5625f * t0 * t0);
@@ -389,11 +391,11 @@ public class MoveTrigger : MonoBehaviour
                         x0 = x * (7.5625f * (t0 -= (2.625f / 2.75f)) * t0 + .984375f);
                         y0 = y * (7.5625f * (t0 -= (2.625f / 2.75f)) * t0 + .984375f);
                     }
-
-                    x1 /= 10;
-                    y1 /= 10;
-                    x0 /= 10;
-                    y0 /= 10;
+                    
+                    //x1 /= 10;
+                    //y1 /= 10;
+                    //x0 /= 10;
+                    //y0 /= 10;
 
                     break;
 

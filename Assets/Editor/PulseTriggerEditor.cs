@@ -42,8 +42,9 @@ public class PulseTriggerEditor : Editor
 
         EditorGUILayout.Space();
 
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("duration"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("fadein"), true);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("hold"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("duration"), true);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("oneuse"), true);
 
         serializedObject.ApplyModifiedProperties();

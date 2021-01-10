@@ -23,7 +23,7 @@ public class PulseTrigger : MonoBehaviour
     [Range(-1f, 1f)] public float alpha;
 
     private List<Color> curr_color, old_color;
-    public float duration, hold;
+    public float fadein, hold, duration;
     public bool oneuse = false;
     private bool finished = true;
 
@@ -157,7 +157,33 @@ public class PulseTrigger : MonoBehaviour
             }
         }
 
-        
+        if (copy && copy_color != null)
+        {
+            new_color = copy_color.channelcolor;
+        }
+
+        float h = 0, s = 0, v = 0, a = new_color.a;
+        Color.RGBToHSV(new_color, out h, out s, out v);
+
+        h += (hue / 360);
+        s += sat;
+        v += val;
+        a += alpha;
+
+        if (h > 1) { h -= 1; }
+        else if (h < 0) { h += 1; }
+
+        if (s > 1) { s = 1; }
+        else if (s < 0) { s = 0; }
+
+        if (v > 1) { v = 1; }
+        else if (v < 0) { v = 0; }
+
+        if (a > 1) { a = 1; }
+        else if (a < 0) { a = 0; }
+
+        new_color = Color.HSVToRGB(h, s, v);
+        new_color.a = a;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -208,7 +234,44 @@ public class PulseTrigger : MonoBehaviour
         Color curr = curr_color[index];
         Color old = old_color[index];
         GameObject obj = new GameObject();
-        if(channelmode)
+
+        if (fadein > 0)
+        {
+            while (curr != new_color)
+            {
+                curr = Color.Lerp(curr, new_color, time);
+
+                if (channelmode) { channel.Set(curr); }
+                else
+                {
+                    if (obj.GetComponent<SpriteRenderer>() != null)
+                    {
+                        SpriteRenderer renderer = obj.GetComponent<SpriteRenderer>();
+                        renderer.color = curr;
+                    }
+                    else if (obj.GetComponent<Tilemap>() != null)
+                    {
+                        Tilemap renderer = obj.GetComponent<Tilemap>();
+                        renderer.color = curr;
+                    }
+                    else if (obj.GetComponent<Light2D>() != null)
+                    {
+                        Light2D renderer = obj.GetComponent<Light2D>();
+                        renderer.color = curr;
+                    }
+                    else if (obj.GetComponent<Graphic>() != null)
+                    {
+                        Graphic renderer = obj.GetComponent<Graphic>();
+                        renderer.color = curr;
+                    }
+                }
+
+                time += Time.deltaTime / fadein;
+                yield return null;
+            }
+        }
+
+        if (channelmode)
         {
             channel.Set(new_color);
         }
@@ -237,7 +300,8 @@ public class PulseTrigger : MonoBehaviour
                 renderer.color = new_color;
             }
         }
-        
+
+        time = 0;
 
         while (time < hold)
         {
