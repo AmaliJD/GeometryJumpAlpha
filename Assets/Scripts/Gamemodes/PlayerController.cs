@@ -317,11 +317,6 @@ public abstract class PlayerController : MonoBehaviour
             yellow = true;
             OrbTouched = collision.gameObject;
         }
-        if (collision.gameObject.tag == "BlueOrb")
-        {
-            blue = true;
-            OrbTouched = collision.gameObject;
-        }
         if (collision.gameObject.tag == "PinkOrb")
         {
             pink = true;
@@ -394,6 +389,11 @@ public abstract class PlayerController : MonoBehaviour
             teleB.y -= offsetBY;
 
             teleB.z = 0;
+        }
+        if (collision.gameObject.tag == "BlueOrb")
+        {
+            blue = true;
+            OrbTouched = collision.gameObject;
         }
         if (collision.gameObject.tag == "YellowPad")
         {
