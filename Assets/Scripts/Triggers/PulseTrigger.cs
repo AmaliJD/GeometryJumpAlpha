@@ -114,10 +114,39 @@ public class PulseTrigger : MonoBehaviour
         new_color.a = a;
 
         duration *= 10;
+        fadein *= 10;
     }
 
     private void updateColor()
     {
+        if (copy && copy_color != null)
+        {
+            new_color = copy_color.channelcolor;
+
+            float h = 0, s = 0, v = 0, a = new_color.a;
+            Color.RGBToHSV(new_color, out h, out s, out v);
+
+            h += (hue / 360);
+            s += sat;
+            v += val;
+            a += alpha;
+
+            if (h > 1) { h -= 1; }
+            else if (h < 0) { h += 1; }
+
+            if (s > 1) { s = 1; }
+            else if (s < 0) { s = 0; }
+
+            if (v > 1) { v = 1; }
+            else if (v < 0) { v = 0; }
+
+            if (a > 1) { a = 1; }
+            else if (a < 0) { a = 0; }
+
+            new_color = Color.HSVToRGB(h, s, v);
+            new_color.a = a;
+        }
+
         // svae old color
         if (finished)
         {
@@ -156,34 +185,6 @@ public class PulseTrigger : MonoBehaviour
                 }
             }
         }
-
-        if (copy && copy_color != null)
-        {
-            new_color = copy_color.channelcolor;
-        }
-
-        float h = 0, s = 0, v = 0, a = new_color.a;
-        Color.RGBToHSV(new_color, out h, out s, out v);
-
-        h += (hue / 360);
-        s += sat;
-        v += val;
-        a += alpha;
-
-        if (h > 1) { h -= 1; }
-        else if (h < 0) { h += 1; }
-
-        if (s > 1) { s = 1; }
-        else if (s < 0) { s = 0; }
-
-        if (v > 1) { v = 1; }
-        else if (v < 0) { v = 0; }
-
-        if (a > 1) { a = 1; }
-        else if (a < 0) { a = 0; }
-
-        new_color = Color.HSVToRGB(h, s, v);
-        new_color.a = a;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -231,7 +232,7 @@ public class PulseTrigger : MonoBehaviour
         finished = false;
         float time = 0;
 
-        Color curr = curr_color[index];
+        Color curr = channel.channelcolor;
         Color old = old_color[index];
         GameObject obj = new GameObject();
 
@@ -239,7 +240,7 @@ public class PulseTrigger : MonoBehaviour
         {
             while (curr != new_color)
             {
-                curr = Color.Lerp(curr, new_color, time);
+                curr = Color.Lerp(curr, new_color, time / fadein);
 
                 if (channelmode) { channel.Set(curr); }
                 else
@@ -266,10 +267,12 @@ public class PulseTrigger : MonoBehaviour
                     }
                 }
 
-                time += Time.deltaTime / fadein;
+                time += Time.deltaTime;
                 yield return null;
             }
         }
+
+        curr = curr_color[index];
 
         if (channelmode)
         {
@@ -313,7 +316,7 @@ public class PulseTrigger : MonoBehaviour
 
         while (curr != old)
         {
-            curr = Color.Lerp(curr, old, time);
+            curr = Color.Lerp(curr, old, time / duration);
 
             if (channelmode) { channel.Set(curr); }
             else
@@ -340,7 +343,7 @@ public class PulseTrigger : MonoBehaviour
                 }
             }
             
-            time += Time.deltaTime / duration;
+            time += Time.deltaTime;
             yield return null;
         }
 

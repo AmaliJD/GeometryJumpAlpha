@@ -7,6 +7,7 @@ public class ToggleTrigger : MonoBehaviour
     public int activeCount;
     public bool childTrigger;
     public bool toggleMode;
+    public bool oneuse = true;
     GameManager gamemanager;
 
     public GameObject[] on_targets;
@@ -77,8 +78,12 @@ public class ToggleTrigger : MonoBehaviour
 
         finished = true;
 
-        if(omaewamou)
+        if(oneuse)
+        {
             Destroy(gameObject);
+        }
+
+        omaewamou = false;
     }
 
     public bool getFinished()
