@@ -41,6 +41,7 @@ TagManager:
   - ColorTrigger
   - PulseTrigger
   - MovingObject
+  - RandomTrigger
   layers:
   - Default
   - TransparentFX

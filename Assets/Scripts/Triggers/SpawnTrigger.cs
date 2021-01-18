@@ -199,6 +199,7 @@ public class SpawnTrigger : MonoBehaviour
                     // TOGGLE TRIGGER
                     case "ToggleTrigger":
                         ToggleTrigger toggle = trigger.GetComponent<ToggleTrigger>();
+                        longestDelay = Mathf.Max((toggle.on_targets.Length + toggle.off_targets.Length) * Time.fixedDeltaTime * 10, longestDelay);
                         StartCoroutine(toggle.Toggle());
                         break;
 

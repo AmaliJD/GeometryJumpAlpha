@@ -71,6 +71,12 @@ TextureImporter:
   - first:
       213: 7982895362034560368
     second: triggers_11
+  - first:
+      213: 6447480526599347954
+    second: triggers_11
+  - first:
+      213: -8941273112370646272
+    second: triggers_12
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -195,7 +201,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 316
-        y: 372
+        y: 496
         width: 158
         height: 124
       alignment: 0
@@ -216,7 +222,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 248
+        y: 372
         width: 158
         height: 124
       alignment: 0
@@ -237,7 +243,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 158
-        y: 248
+        y: 372
         width: 158
         height: 124
       alignment: 0
@@ -258,7 +264,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 316
-        y: 248
+        y: 372
         width: 158
         height: 124
       alignment: 0
@@ -279,7 +285,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 124
+        y: 248
         width: 158
         height: 124
       alignment: 0
@@ -300,7 +306,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 158
-        y: 124
+        y: 248
         width: 158
         height: 124
       alignment: 0
@@ -321,7 +327,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 372
+        y: 496
         width: 158
         height: 124
       alignment: 0
@@ -342,7 +348,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 158
-        y: 372
+        y: 496
         width: 158
         height: 124
       alignment: 0
@@ -363,7 +369,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 316
-        y: 124
+        y: 248
         width: 158
         height: 124
       alignment: 0
@@ -384,7 +390,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 124
         width: 158
         height: 124
       alignment: 0
@@ -405,7 +411,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 158
-        y: 0
+        y: 124
         width: 158
         height: 124
       alignment: 0
@@ -426,6 +432,27 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 316
+        y: 124
+        width: 158
+        height: 124
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2fed334f06d0a7950800000000000000
+      internalID: 6447480526599347954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: triggers_12
+      rect:
+        serializedVersion: 2
+        x: 0
         y: 0
         width: 158
         height: 124
@@ -436,8 +463,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 07dee2d5901f8ce60800000000000000
-      internalID: 7982895362034560368
+      spriteID: 00375692a773ae380800000000000000
+      internalID: -8941273112370646272
       vertices: []
       indices: 
       edges: []
