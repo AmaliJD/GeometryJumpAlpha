@@ -575,15 +575,6 @@ public class CubeController : PlayerController
             trail.emitting = true;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.45f);
 
-            if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > .6)
-            {
-                //StartCoroutine(RotateAround(Vector3.forward, negate * -360.0f, 0.5f));
-            }
-            else
-            {
-                //StartCoroutine(RotateArc(Vector3.forward, negate * -40.0f, 0.5f));
-            }
-
             if (grav) { grav = false; }
             if (gravN) { gravN = false; }
 
@@ -737,14 +728,6 @@ public class CubeController : PlayerController
             trail.emitting = true;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.4f);
 
-            if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > .6)
-            {
-                //StartCoroutine(RotateAround(Vector3.forward, negate * -360.0f, .7f));
-            }
-            else
-            {
-                //StartCoroutine(RotateArc(Vector3.forward, negate * -10.0f, 0.5f));
-            }
             checkGrounded = true;
         }
         else if (pink_p)
@@ -765,14 +748,6 @@ public class CubeController : PlayerController
             trail.emitting = true;
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * .9f);
 
-            if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > .6)
-            {
-                //StartCoroutine(RotateArc(Vector3.forward, negate * -45f, 0.7f));
-            }
-            else
-            {
-                //StartCoroutine(RotateArc(Vector3.forward, negate * -5.0f, 0.5f));
-            }
             checkGrounded = true;
         }
         else if (red_p)
@@ -794,14 +769,6 @@ public class CubeController : PlayerController
             player_body.velocity = new Vector2(player_body.velocity.x, jumpForce * 1.6f);
             grounded = false;
 
-            if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) > .6)
-            {
-                //StartCoroutine(RotateAround(Vector3.forward, negate * -360.0f, .7f));
-            }
-            else
-            {
-                //StartCoroutine(RotateArc(Vector3.forward, negate * -45.0f, .5f));
-            }
             checkGrounded = true;
         }
         else if (blue_p)

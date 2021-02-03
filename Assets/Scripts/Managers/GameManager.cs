@@ -119,7 +119,8 @@ public class GameManager : MonoBehaviour
     {
         LoadPrefs();
 
-        Resources.UnloadUnusedAssets();prev_width = Screen.width;
+        Resources.UnloadUnusedAssets();
+        prev_width = Screen.width;
         prev_height = Screen.height;
 
         Restart_Button.onClick.AddListener(/*Restart*/StartRestart);
