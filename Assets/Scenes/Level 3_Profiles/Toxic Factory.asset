@@ -17,7 +17,7 @@ MonoBehaviour:
   mode:
     m_OverrideState: 1
     m_Value: 1
---- !u!114 &-1433209862355641041
+--- !u!114 &-3251609330694966589
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -26,34 +26,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5e1dc532bcb41949b58bc4f2abfbb7e, type: 3}
-  m_Name: LensDistortion
+  m_Script: {fileID: 11500000, guid: 70afe9e12c7a7ed47911bb608a23a8ff, type: 3}
+  m_Name: SplitToning
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   m_AdvancedMode: 0
-  intensity:
+  shadows:
     m_OverrideState: 1
-    m_Value: -0.24
-    min: -1
-    max: 1
-  xMultiplier:
+    m_Value: {r: 0.5660378, g: 0.532266, b: 0.4619082, a: 1}
+    hdr: 0
+    showAlpha: 0
+    showEyeDropper: 1
+  highlights:
     m_OverrideState: 1
-    m_Value: 1
-    min: 0
-    max: 1
-  yMultiplier:
+    m_Value: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    hdr: 0
+    showAlpha: 0
+    showEyeDropper: 1
+  balance:
     m_OverrideState: 1
-    m_Value: 1
-    min: 0
-    max: 1
-  center:
-    m_OverrideState: 1
-    m_Value: {x: 0.5, y: 0.5}
-  scale:
-    m_OverrideState: 1
-    m_Value: 1
-    min: 0.01
-    max: 5
+    m_Value: 0
+    min: -100
+    max: 100
 --- !u!114 &-126844344362377656
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -79,7 +73,7 @@ MonoBehaviour:
     m_Value: {x: 0.5, y: 0.5}
   intensity:
     m_OverrideState: 1
-    m_Value: 0.145
+    m_Value: 0.164
     min: 0
     max: 1
   smoothness:
@@ -108,8 +102,8 @@ MonoBehaviour:
   - {fileID: 4042073732503802973}
   - {fileID: -5870464699598956034}
   - {fileID: -126844344362377656}
-  - {fileID: 4213496447366309413}
-  - {fileID: -1433209862355641041}
+  - {fileID: 7307947729801638213}
+  - {fileID: -3251609330694966589}
 --- !u!114 &4042073732503802973
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -127,30 +121,6 @@ MonoBehaviour:
   intensity:
     m_OverrideState: 1
     m_Value: 0.009
-    min: 0
-    max: 1
---- !u!114 &4213496447366309413
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb60a22f311433c4c962b888d1393f88, type: 3}
-  m_Name: PaniniProjection
-  m_EditorClassIdentifier: 
-  active: 0
-  m_AdvancedMode: 0
-  distance:
-    m_OverrideState: 1
-    m_Value: 0.138
-    min: 0
-    max: 1
-  cropToFit:
-    m_OverrideState: 1
-    m_Value: 0.422
     min: 0
     max: 1
 --- !u!114 &6098698099334225538
@@ -177,7 +147,7 @@ MonoBehaviour:
     min: 0
   scatter:
     m_OverrideState: 1
-    m_Value: 0.04
+    m_Value: 0.414
     min: 0
     max: 1
   clamp:
@@ -200,6 +170,36 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 0
     min: 0
+--- !u!114 &7307947729801638213
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29fa0085f50d5e54f8144f766051a691, type: 3}
+  m_Name: FilmGrain
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  type:
+    m_OverrideState: 1
+    m_Value: 0
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0.486
+    min: 0
+    max: 1
+  response:
+    m_OverrideState: 1
+    m_Value: 0.8
+    min: 0
+    max: 1
+  texture:
+    m_OverrideState: 1
+    m_Value: {fileID: 0}
 --- !u!114 &8547650462591457691
 MonoBehaviour:
   m_ObjectHideFlags: 3
