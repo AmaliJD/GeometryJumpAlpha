@@ -6,9 +6,10 @@ public class OnTimerHazard : MonoBehaviour
 {
     public AudioSource sound;
     public Transform player;
-    public ParticleSystem particles;
+    public ParticleSystem particles, entryparticles;
     public BoxCollider2D collider;
     public float inittime, timeon, timeoff, fadein, fadeout;
+    public float entrytime;
     public Vector4 startBox, endBox;
     public float minDistance, maxDistance, nullDistance;
 
@@ -69,6 +70,7 @@ public class OnTimerHazard : MonoBehaviour
     IEnumerator Sequence()
     {
         sound.Stop();
+        entryparticles.Stop();
         particles.Stop();
         collider.size = new Vector2(endBox.x, endBox.y);
         collider.offset = new Vector2(endBox.z, endBox.w);
@@ -80,12 +82,24 @@ public class OnTimerHazard : MonoBehaviour
             yield return null;
         }
 
-        if(Vector2.Distance(transform.position, player.position) < nullDistance)
+        if(entrytime > 0)
+        {
+            time = 0;
+            entryparticles.Play();
+            while (time < entrytime)
+            {
+                time += Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        if (Vector2.Distance(transform.position, player.position) < nullDistance)
         {
             sound.Play();
-            particles.Play();
         }
-            
+
+        particles.Play();
+
 
         time = 0;
         while(time/fadein < 1)
