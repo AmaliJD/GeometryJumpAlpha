@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0457ffbc3f8d52d458db5b10ebb9f241, type: 3}
-  m_Name: Deco
+  m_Name: Deco 1
   m_EditorClassIdentifier: 
-  color: {r: 0.7746663, g: 0, b: 1, a: 1}
-  reference: {fileID: 11400000, guid: e54508838cc32814ebaf52a304e51bed, type: 2}
+  color: {r: 1, g: 0.94493365, b: 0, a: 1}
+  reference: {fileID: 0}
