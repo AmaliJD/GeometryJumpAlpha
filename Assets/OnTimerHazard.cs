@@ -13,6 +13,8 @@ public class OnTimerHazard : MonoBehaviour
     public Vector4 startBox, endBox;
     public float minDistance, maxDistance, nullDistance;
 
+    public bool disablecollider, mute_if_invisivle;
+
     private bool start = false;
     private GameManager gamemanager;
 
@@ -24,19 +26,23 @@ public class OnTimerHazard : MonoBehaviour
 
     private void Start()
     {
+        collider.size = new Vector2(endBox.x, endBox.y);
+        collider.offset = new Vector2(endBox.z, endBox.w);
+        collider.enabled = !disablecollider;
         StartCoroutine(Init());
     }
 
     void Update()
     {
+        Vector3 screen_pos = Camera.main.WorldToViewportPoint(gameObject.transform.position);
         float distance = Vector2.Distance(transform.position, player.position);
-        if(distance > nullDistance)
+        if(distance > nullDistance || (mute_if_invisivle && !(screen_pos.x >= -0.05 && screen_pos.x <= 1.05 && screen_pos.y >= -0.05 && screen_pos.y <= 1.05)))
         {
-            sound.volume = 0;
+            sound.Stop(); sound.volume = 0;
         }
         else if (distance > maxDistance)
         {
-            sound.Stop();
+            sound.volume = 0;
         }
         else if(distance < minDistance)
         {
@@ -74,6 +80,7 @@ public class OnTimerHazard : MonoBehaviour
         particles.Stop();
         collider.size = new Vector2(endBox.x, endBox.y);
         collider.offset = new Vector2(endBox.z, endBox.w);
+        collider.enabled = !disablecollider;
 
         float time = 0;
         while(time < timeoff)
@@ -100,7 +107,7 @@ public class OnTimerHazard : MonoBehaviour
 
         particles.Play();
 
-
+        collider.enabled = true;
         time = 0;
         while(time/fadein < 1)
         {
@@ -131,6 +138,7 @@ public class OnTimerHazard : MonoBehaviour
 
         collider.size = new Vector2(endBox.x, endBox.y);
         collider.offset = new Vector2(endBox.z, endBox.w);
+        collider.enabled = !disablecollider;
 
         start = true;
     }

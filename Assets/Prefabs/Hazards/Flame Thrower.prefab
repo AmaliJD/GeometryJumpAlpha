@@ -9732,6 +9732,9 @@ MonoBehaviour:
   minDistance: 5
   maxDistance: 15
   nullDistance: 20
+  visible_sprite: {fileID: 8658497140224480173}
+  disablecollider: 0
+  mute_if_invisivle: 0
 --- !u!82 &9219608591077157648
 AudioSource:
   m_ObjectHideFlags: 0
