@@ -18,6 +18,7 @@ public class ToggleTrigger : MonoBehaviour
     private void Awake()
     {
         gamemanager = GameObject.FindObjectOfType<GameManager>();
+        gameObject.transform.GetChild(0).gameObject.SetActive(false);
     }
 
     public void toggle()
@@ -47,11 +48,22 @@ public class ToggleTrigger : MonoBehaviour
             }
             else
             {
+                List<GameObject> childlist = new List<GameObject>();
                 foreach (Transform child in obj.transform)
+                {
+                    childlist.Add(child.gameObject);
+                    //yield return null;
+                }
+                foreach (GameObject child in childlist)
+                {
+                    child.SetActive(true);
+                    yield return null;
+                }
+                /*foreach (Transform child in obj.transform)
                 {
                     child.gameObject.SetActive(true);
                     yield return null;
-                }
+                }*/
             }
         }
         foreach (GameObject obj in off_targets)

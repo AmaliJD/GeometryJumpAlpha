@@ -269,7 +269,15 @@ public class ShipController : PlayerController
         }
         else
         {
-            player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 1f);
+            if (Mathf.Abs(targetVelocity.x) > Mathf.Abs(player_body.velocity.x))
+            {
+                player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 4f); //1
+            }
+            else
+            {
+                player_body.velocity = Vector3.SmoothDamp(player_body.velocity, targetVelocity, ref v_Velocity, smoothing * 2f);
+            }
+            
         }
 
         //Rotate();
