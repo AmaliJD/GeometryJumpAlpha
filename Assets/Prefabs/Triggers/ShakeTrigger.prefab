@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5560393536387274309}
   m_Layer: 0
   m_Name: ShakeTrigger
-  m_TagString: ColorTrigger
+  m_TagString: ShakeTrigger
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -76,6 +76,7 @@ MonoBehaviour:
   hold: 0.5
   fadeout: 0
   holdOnStay: 0
+  oneuse: 0
 --- !u!1 &5560393537363240106
 GameObject:
   m_ObjectHideFlags: 0

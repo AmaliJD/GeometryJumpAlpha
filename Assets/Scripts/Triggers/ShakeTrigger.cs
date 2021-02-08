@@ -44,7 +44,7 @@ public class ShakeTrigger : MonoBehaviour
         time = 0;
         while (time < fadeout)
         {
-            camera.m_AmplitudeGain = Mathf.Lerp(intensity, 0, time / fadein);
+            camera.m_AmplitudeGain = Mathf.Lerp(intensity, 0, time / fadeout);
             //Debug.Log("fadeout: " + camera.m_AmplitudeGain);
             time += Time.deltaTime;
             yield return null;
@@ -70,6 +70,12 @@ public class ShakeTrigger : MonoBehaviour
             }
             entered = true;
         }
+    }
+
+    public void SpawnActivate()
+    {
+        StopAllCoroutines();
+        StartCoroutine(Shake());
     }
 
     private void OnTriggerExit2D(Collider2D collision)

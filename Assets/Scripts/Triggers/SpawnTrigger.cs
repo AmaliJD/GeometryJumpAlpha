@@ -14,6 +14,7 @@ public class SpawnTrigger : MonoBehaviour
     public float[] delay;
     public bool loop;
     public bool TriggerOrg;
+    public bool ignorefinish;
 
     private bool inuse = false, finished = false;
 
@@ -55,12 +56,12 @@ public class SpawnTrigger : MonoBehaviour
                         //Debug.Log("Trigger " +  i);
                         StartCoroutine(move.Move());
 
-                        while (time <= d2)
+                        while (time <= d2 && !ignorefinish)
                         {
                             time += Time.deltaTime;
                             yield return null;
                         }
-                        while (move.getFinished() != true)
+                        while (move.getFinished() != true && !ignorefinish)
                         {
                             //Debug.Log("Waiting to finish");
                             yield return null;
@@ -77,7 +78,7 @@ public class SpawnTrigger : MonoBehaviour
 
                         if(spawn.exe == ExecutionType.Parallel)
                         {
-                            while (spawn.getFinished() != true)
+                            while (spawn.getFinished() != true && !ignorefinish)
                             {
                                 //Debug.Log("Waiting to finish");
                                 yield return null;
@@ -97,7 +98,7 @@ public class SpawnTrigger : MonoBehaviour
                         {
                             StartCoroutine(music.setMusicVolume());
 
-                            while (music.getFinished() != true)
+                            while (music.getFinished() != true && !ignorefinish)
                             {
                                 //Debug.Log("Waiting to finish");
                                 yield return null;
@@ -117,7 +118,7 @@ public class SpawnTrigger : MonoBehaviour
                     case "ToggleTrigger":
                         ToggleTrigger toggle = trigger.GetComponent<ToggleTrigger>();
                         StartCoroutine(toggle.Toggle());
-                        while (toggle.getFinished() != true)
+                        while (toggle.getFinished() != true && !ignorefinish)
                         {
                             //Debug.Log("Waiting to finish");
                             yield return null;
@@ -128,11 +129,17 @@ public class SpawnTrigger : MonoBehaviour
                     case "ColorTrigger":
                         ColorTrigger color = trigger.GetComponent<ColorTrigger>();
                         color.SpawnActivate();
-                        while (!color.getFinished())
+                        while (!color.getFinished() && !ignorefinish)
                         {
                             //Debug.Log("Waiting to finish");
                             yield return null;
                         }
+                        break;
+
+                    // SHAKE TRIGGER
+                    case "ShakeTrigger":
+                        ShakeTrigger shake = trigger.GetComponent<ShakeTrigger>();
+                        shake.SpawnActivate();
                         break;
 
                     default:
