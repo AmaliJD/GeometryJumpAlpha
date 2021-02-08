@@ -25,7 +25,7 @@ public class PulseTrigger : MonoBehaviour
     private List<Color> curr_color, old_color;
     public float fadein, hold, duration;
     public bool oneuse = false;
-    private bool finished = true;
+    private bool finished = true, inuse = false;
 
     // Start is called before the first frame update
     void Awake()
@@ -189,8 +189,9 @@ public class PulseTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Player")
+        if (collision.gameObject.tag == "Player" && !inuse)
         {
+            if (oneuse) { inuse = true; }
             Enter();
             /*StopAllCoroutines();
 
