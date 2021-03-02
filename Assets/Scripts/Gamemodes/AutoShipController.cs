@@ -177,10 +177,10 @@ public class AutoShipController : PlayerController
                 grounded_particles.Stop();
             }
 
-            if ((prev_grounded && !grounded_indirection) || (!prev_grounded && grounded_indirection && prev_velocity > 10f))
+            /*if ((prev_grounded && !grounded_indirection) || (!prev_grounded && grounded_indirection && prev_velocity > 10f))
             {
                 ground_impact_particles.Play();
-            }
+            }*/
 
             // JUMP!
             if (Input.GetButtonDown("Jump") || Input.GetKeyDown("space") || Input.GetMouseButtonDown(0))
@@ -231,7 +231,7 @@ public class AutoShipController : PlayerController
         if (able)
         {
             Move();
-            Interpolate(0, 0);
+            Interpolate(-1, -1);
         }
     }
 
@@ -291,24 +291,24 @@ public class AutoShipController : PlayerController
         {
             player_body.freezeRotation = true;
             //transform.rotation = new Quaternion(0, 0, 0, 0);
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0,0,0), .5f);
-            player_body.rotation = Mathf.Lerp(player_body.rotation, 0, .5f);
+            //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0,0,0), .5f);
+            player_body.rotation = Mathf.LerpAngle(player_body.rotation, 0, .5f);
         }
         else if (player_body.velocity.y >= 0)
         {
-            player_body.freezeRotation = false;
+            player_body.freezeRotation = true;
             //Vector3 newAngle = new Vector3(0, 0, player_body.velocity.y / .25f);
             Vector3 newAngle = new Vector3(0, 0, Mathf.Rad2Deg * Mathf.Atan(player_body.velocity.y / player_body.velocity.x));
-            //transform.rotation = Quaternion.Euler(newAngle);
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(newAngle), mini ? 1f : .3f);
+            //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(newAngle), mini ? 1f : .3f);
+            player_body.rotation = Mathf.LerpAngle(player_body.rotation, newAngle.z, mini ? 1f : .22f);
         }
         else
         {
-            player_body.freezeRotation = false;
+            player_body.freezeRotation = true;
             //Vector3 newAngle = new Vector3(0, 0, 360 + (player_body.velocity.y / .25f));
             Vector3 newAngle = new Vector3(0, 0, 360 + (Mathf.Rad2Deg * Mathf.Atan(player_body.velocity.y / player_body.velocity.x)));
-            //transform.rotation = Quaternion.Euler(newAngle);
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(newAngle), mini ? 1f : .3f);
+            //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(newAngle), mini ? 1f : .3f);
+            player_body.rotation = Mathf.LerpAngle(player_body.rotation, newAngle.z, mini ? 1f : .22f);
         }
     }
 
