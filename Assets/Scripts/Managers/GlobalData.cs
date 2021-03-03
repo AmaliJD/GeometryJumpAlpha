@@ -17,6 +17,9 @@ public class GlobalData
 
     public int total_diamonds;
 
+    public float update;
+    public int extra;
+
     /*public string ToJson()
     {
         return JsonUtility.ToJson(this);
@@ -40,6 +43,8 @@ public class GlobalData
         level_times = new float[13, 2];
 
         total_diamonds = 0;
+        update = 0.4f;
+        extra = 0;
     }
 
     public void SaveLevelData(int level_index, int[] coins, float time, float all_coins_time, int add_diamonds)

@@ -241,6 +241,7 @@ public class PulseTrigger : MonoBehaviour
         {
             while (curr != new_color)
             {
+                old = old_color[index];
                 curr = Color.Lerp(curr, new_color, time / fadein);
 
                 if (channelmode) { channel.Set(curr); }
@@ -317,6 +318,7 @@ public class PulseTrigger : MonoBehaviour
 
         while (curr != old)
         {
+            old = old_color[index];
             curr = Color.Lerp(curr, old, time / duration);
 
             if (channelmode) { channel.Set(curr); }
@@ -356,10 +358,21 @@ public class PulseTrigger : MonoBehaviour
         }
     }
 
+    public void setOldColor(Color c)
+    {
+        old_color[0] = c;
+    }
+
+    public bool getFinished()
+    {
+        return finished;
+    }
+
     public void Stop()
     {
         StopAllCoroutines();
 
+        finished = true;
         if (channelmode) { channel.Set(old_color[0]); }
         else
         {

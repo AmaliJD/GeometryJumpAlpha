@@ -16,6 +16,9 @@ public class ColorTrigger : MonoBehaviour
 
     private string channel_id;
     private StopColorChange parent;
+    private StopColorChange pulseParent;
+    private bool activePulseTrigger;
+    private PulseTrigger pulseTrigger;
 
     [Range(-360f, 360f)] public float hue;
     [Range(-1f, 1f)] public float sat;
@@ -48,9 +51,10 @@ public class ColorTrigger : MonoBehaviour
         // hide trigger's texture
         gameObject.transform.GetChild(0).gameObject.SetActive(false);
         parent = gameObject.transform.parent.gameObject.GetComponent<StopColorChange>();
+        pulseParent = GameObject.FindGameObjectWithTag("PulseManager").GetComponent<StopColorChange>();
 
         // if copy color
-        if(copy && copy_color != null)
+        if (copy && copy_color != null)
         {
             new_color = copy_color.channelcolor;
         }
@@ -200,7 +204,16 @@ public class ColorTrigger : MonoBehaviour
                 //curr_color = Color.Lerp(curr_color, new_color, Mathf.PingPong(Time.time, 1/duration));
                 curr = Color.Lerp(curr, new_color, time);
 
-                if (channelmode) { channel.Set(curr); }
+                if (channelmode)
+                {
+                    try
+                    {
+                        pulseTrigger = pulseParent.getActiveTrigger(channel_id).GetComponent<PulseTrigger>();
+                    }
+                    catch { pulseTrigger = null; }
+                    activePulseTrigger = pulseTrigger != null && !pulseTrigger.getFinished();
+                    if (!activePulseTrigger) { channel.Set(curr); } else { pulseTrigger.setOldColor(curr); }
+                }
                 else
                 {
                     if (obj.GetComponent<SpriteRenderer>() != null)
@@ -230,7 +243,16 @@ public class ColorTrigger : MonoBehaviour
             }
         }
 
-        if (channelmode) { channel.Set(new_color); }
+        if (channelmode)
+        {
+            try
+            {
+                pulseTrigger = pulseParent.getActiveTrigger(channel_id).GetComponent<PulseTrigger>();
+            }
+            catch { pulseTrigger = null; }
+            activePulseTrigger = pulseTrigger != null && !pulseTrigger.getFinished();
+            if (!activePulseTrigger) { channel.Set(new_color); } else { pulseTrigger.setOldColor(new_color); }
+        }
         else
         {
             if (obj.GetComponent<SpriteRenderer>() != null)
@@ -256,7 +278,7 @@ public class ColorTrigger : MonoBehaviour
         }
 
         //Debug.Log("COLOR: " + (channel.channelcolor == new_color));
-
+        
         if (oneuse)
         {
             Destroy(gameObject);
@@ -271,7 +293,17 @@ public class ColorTrigger : MonoBehaviour
 
         if (!keepcolor)
         {
-            if (channelmode) { channel.Set(new_color); }
+            if (channelmode)
+            {
+                try
+                {
+                    pulseTrigger = pulseParent.getActiveTrigger(channel_id).GetComponent<PulseTrigger>();
+                }
+                catch { pulseTrigger = null; }
+                activePulseTrigger = pulseTrigger != null && !pulseTrigger.getFinished();
+                if (!activePulseTrigger) { channel.Set(new_color); } else { pulseTrigger.setOldColor(new_color); }
+                //channel.Set(new_color);
+            }
             else
             {
                 foreach (GameObject obj in objects)

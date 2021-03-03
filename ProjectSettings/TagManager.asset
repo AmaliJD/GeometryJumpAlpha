@@ -43,6 +43,7 @@ TagManager:
   - MovingObject
   - RandomTrigger
   - ShakeTrigger
+  - PulseManager
   layers:
   - Default
   - TransparentFX

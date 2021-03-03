@@ -49,4 +49,28 @@ public class StopColorChange : MonoBehaviour
             active_trigger[index] = g;
         }
     }
+
+    public GameObject getActiveTrigger(string id)
+    {
+        if (channel_ids.IndexOf(id) == -1)
+        {
+            return null;
+        }
+        else
+        {
+            int index = channel_ids.IndexOf(id);
+            return active_trigger[index];
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == "Player")
+        {
+            foreach(GameObject trigger in active_trigger)
+            {
+                trigger.BroadcastMessage("Stop");
+            }
+        }
+    }
 }
